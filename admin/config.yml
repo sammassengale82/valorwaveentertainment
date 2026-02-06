@@ -1,20 +1,29 @@
-# Netlify CMS configuration
 backend:
-  name: git-gateway
+  name: github
+  repo: sammassengale82/valorwaveentertainment
   branch: main
 
-media_folder: static/images/uploads
-public_folder: /images/uploads
+media_folder: "static/images/uploads"
+public_folder: "/images/uploads"
 
 collections:
-  - name: 'blog'
-    label: 'Blogs'
-    folder: 'content/blog'
+  - name: "blog"
+    label: "Blog Posts"
+    folder: "content/blog" # The folder where your markdown files live
     create: true
-    slug: '{{year}}-{{month}}-{{day}}-{{slug}}'
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - { label: 'Title', name: 'title', widget: 'string' }
-      - { label: 'Publish Date', name: 'date', widget: 'datetime' }
-      - { label: 'Body', name: 'body', widget: 'markdown' }
-      - { label: 'Featured Image', name: 'image', widget: 'image' }
-      - { label: 'Tags', name: 'tags', widget: 'list', required: false }
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Publish Date", name: "date", widget: "datetime"}
+      - {label: "Featured Image", name: "thumbnail", widget: "image"}
+      - {label: "Body", name: "body", widget: "markdown"}
+
+  - name: "pages"
+    label: "Pages"
+    files:
+      - label: "About Page"
+        name: "about"
+        file: "content/about.md"
+        fields:
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Content", name: "body", widget: "markdown"}
