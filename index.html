@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head>
+ <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Faith-Based DJ Services | Valor Wave Entertainment</title>
@@ -342,8 +342,20 @@ gtag('js', new Date());
 gtag('config', 'G-PPBLPGS51B');
 </script>
 
+ <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 
+ <script>
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+      if (!user) {
+        window.netlifyIdentity.on("login", () => {
+          document.location.href = "/admin/";
+        });
+      }
+    });
+  }
+</script>
 <body>
 <div id="top"></div>
 <header class="site-header">
