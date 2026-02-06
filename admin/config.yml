@@ -1,0 +1,24 @@
+backend:
+  name: git
+  repo: sammassengale82/valorwaveentertainment
+media_folder: static/images
+public_folder: /images
+collections:
+  - name: "Pages"
+    label: "Pages"
+    folder: "src/pages"
+    create: true
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Text", name: "text", widget: "markdown" }
+      - { label: "Image", name: "image", widget: "image" }
+      - {
+          label: "Colors",
+          name: "colors",
+          widget: "object",
+          fields: [
+            { label: "Background Color", name: "background", widget: "color" },
+            { label: "Text Color", name: "textColor", widget: "color" }
+          ]
+        }
+      - { label: "Visible Sections", name: "visibleSections", widget: "list", field: { label: "Section", name: "section", widget: "string" } }
