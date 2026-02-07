@@ -18,7 +18,7 @@
 
 <script>
 
-window.onload = function() {
+function initCMS() {
 
 if (typeof CMS !== 'undefined') {
 
@@ -144,11 +144,13 @@ fields: [
 
 } else {
 
-console.error("CMS script failed to load from unpkg.");
+setTimeout(initCMS, 100);
 
 }
 
-};
+}
+
+initCMS();
 
 </script>
 
