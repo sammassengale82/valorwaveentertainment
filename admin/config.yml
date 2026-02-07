@@ -1,43 +1,35 @@
 backend:
   name: git-gateway
   repo: sammassengale82/valorwaveentertainment
-  branch: main # [cite: 1, 12]
+  branch: main
 
 media_folder: "images"
 public_folder: "/images"
 
 collections:
-  # 1. Individual Pages (Home, About, etc.)
   - name: "pages"
     label: "Website Pages"
-    delete: false # Prevents accidental deletion of vital files
     files:
       - label: "Home Page"
         name: "index"
         file: "index.html"
         fields:
-          - {label: "Main Content", name: "body", widget: "markdown"}
+          - {label: "Body content", name: "body", widget: "markdown"}
 
-  # 2. Services (Individual DJ Packages)
-  - name: "services"
-    label: "DJ Services"
-    folder: "content/services"
+  - name: "testimonials"
+    label: "Client Testimonials"
+    folder: "content/testimonials" # This is the folder we will create
     create: true
     slug: "{{slug}}"
     fields:
-      - {label: "Package Name", name: "title", widget: "string"}
-      - {label: "Price", name: "price", widget: "string"}
-      - {label: "Service Description", name: "body", widget: "markdown"}
-      - {label: "Service Image", name: "image", widget: "image"}
+      - {label: "Client Name", name: "title", widget: "string"}
+      - {label: "Quote", name: "quote", widget: "text"}
+      - {label: "Event Type", name: "event", widget: "string", hint: "e.g. Wedding, Birthday"}
 
-  # 3. Blogs (Existing section)
   - name: "blog"
     label: "Blogs"
     folder: "content/blog"
     create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - {label: "Title", name: "title", widget: "string"}
-      - {label: "Publish Date", name: "date", widget: "datetime"}
-      - {label: "Featured Image", name: "thumbnail", widget: "image"}
       - {label: "Body", name: "body", widget: "markdown"}
