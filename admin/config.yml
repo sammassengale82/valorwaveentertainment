@@ -7,6 +7,7 @@ media_folder: "images"
 public_folder: "/images"
 
 collections:
+  # Edit your existing index.html
   - name: "pages"
     label: "Website Pages"
     files:
@@ -16,20 +17,33 @@ collections:
         fields:
           - {label: "Body content", name: "body", widget: "markdown"}
 
+  # New Testimonials section
   - name: "testimonials"
     label: "Client Testimonials"
-    folder: "content/testimonials" # This is the folder we will create
+    folder: "content/testimonials"
     create: true
     slug: "{{slug}}"
     fields:
       - {label: "Client Name", name: "title", widget: "string"}
-      - {label: "Quote", name: "quote", widget: "text"}
-      - {label: "Event Type", name: "event", widget: "string", hint: "e.g. Wedding, Birthday"}
+      - {label: "Event Type", name: "event", widget: "string"}
+      - {label: "Review Quote", name: "quote", widget: "text"}
 
+  # DJ Services section
+  - name: "services"
+    label: "DJ Services"
+    folder: "content/services"
+    create: true
+    fields:
+      - {label: "Service Name", name: "title", widget: "string"}
+      - {label: "Price", name: "price", widget: "string"}
+      - {label: "Description", name: "body", widget: "markdown"}
+
+  # Blog section
   - name: "blog"
     label: "Blogs"
     folder: "content/blog"
     create: true
     fields:
       - {label: "Title", name: "title", widget: "string"}
+      - {label: "Publish Date", name: "date", widget: "datetime"}
       - {label: "Body", name: "body", widget: "markdown"}
