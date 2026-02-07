@@ -24,15 +24,14 @@
           collections: [
             {
               name: "pages",
-              label: "Website Pages",
+              label: "Core Website Pages",
               files: [
                 {
                   label: "Home Page",
                   name: "index",
                   file: "index.html",
                   fields: [
-                    { label: "Title", name: "title", widget: "string" },
-                    { label: "Body Content", name: "body", widget: "markdown" }
+                    { label: "Main Content", name: "body", widget: "markdown" }
                   ]
                 }
               ]
@@ -50,12 +49,22 @@
             },
             {
               name: "services",
-              label: "Services",
+              label: "Our Services",
               folder: "content/services",
               create: true,
               fields: [
                 { label: "Service Name", name: "title", widget: "string" },
-                { label: "Description", name: "body", widget: "markdown" }
+                { label: "Price/Details", name: "body", widget: "markdown" }
+              ]
+            },
+            {
+              name: "testimonials",
+              label: "Testimonials",
+              folder: "content/testimonials",
+              create: true,
+              fields: [
+                { label: "Client Name", name: "title", widget: "string" },
+                { label: "Quote/Review", name: "body", widget: "markdown" }
               ]
             }
           ]
