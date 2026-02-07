@@ -20,15 +20,13 @@ export async function onRequestGet(context) {
     <body>
       <script>
         (function() {
-          const token = "${result.access_token}";
           const message = "authorization:github:success:" + JSON.stringify({
-            token: token,
+            token: "${result.access_token}",
             provider: "github"
           });
-          
-          // This tells the main window that login was successful
+          // Using "*" allows the message to cross between www. and non-www. versions
           if (window.opener) {
-            window.opener.postMessage(message, "https://valorwaveentertainment.com");
+            window.opener.postMessage(message, "*");
             window.close();
           }
         })();
