@@ -1,14 +1,25 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Valorwave Entertainment Content Manager</title>
-  <script src="https://unpkg.com/@staticcms/app@^4.0.0/dist/static-cms-app.js"></script>
-</head>
-<body>
-  <script>
-  window.CMS_MANUAL_INIT = true;
-</script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Valorwave Content Manager</title>
+    <script src="https://unpkg.com/@staticcms/app@^4.0.0/dist/static-cms-app.js"></script>
+  </head>
+  <body>
+    <script>
+      // This forces the CMS to load specifically from your config file
+      window.CMS.init({
+        config: {
+          backend: {
+            name: "github",
+            repo: "sammassengale82/valorwaveentertainment",
+            branch: "main",
+            base_url: "https://valorwaveentertainment.com/",
+            auth_endpoint: "/auth/index"
+          }
+        }
+      });
+    </script>
+  </body>
 </html>
