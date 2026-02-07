@@ -23,6 +23,7 @@ collections:
     folder: "content/testimonials"
     create: true
     slug: "{{slug}}"
+    format: "frontmatter"
     fields:
       - { label: "Client Name", name: "title", widget: "string" }
       - { label: "Event Type", name: "event", widget: "string" }
