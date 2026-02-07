@@ -4,11 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Valorwave Admin</title>
-    <link rel="stylesheet" href="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@staticcms/app@^4.0.0/dist/static-cms-app.css" />
   </head>
   <body>
-    <div id="nc-root"></div>
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@staticcms/app@^4.0.0/dist/static-cms-app.js"></script>
     <script>
       CMS.init({
         config: {
@@ -23,19 +22,19 @@
           public_folder: "/images",
           collections: [
             {
-              name: "pages",
+              name: "site_pages",
               label: "Core Website Pages",
               files: [
                 {
                   label: "Home Page",
-                  name: "index",
+                  name: "home_page",
                   file: "index.html",
-                  fields: [{ label: "Main Content", name: "body", widget: "markdown" }]
+                  fields: [{ label: "Body Content", name: "body", widget: "markdown" }]
                 }
               ]
             },
             {
-              name: "blog",
+              name: "blog_posts",
               label: "Blog Posts",
               folder: "content/blog",
               create: true,
@@ -45,17 +44,17 @@
               ]
             },
             {
-              name: "services",
-              label: "Our Services",
+              name: "company_services",
+              label: "Services",
               folder: "content/services",
               create: true,
               fields: [
                 { label: "Service Name", name: "title", widget: "string" },
-                { label: "Details", name: "body", widget: "markdown" }
+                { label: "Description", name: "body", widget: "markdown" }
               ]
             },
             {
-              name: "testimonials",
+              name: "client_testimonials",
               label: "Testimonials",
               folder: "content/testimonials",
               create: true,
