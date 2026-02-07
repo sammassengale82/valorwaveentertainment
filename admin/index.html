@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Valorwave Content Manager</title>
+    <title>Valorwave Admin</title>
     <script src="https://unpkg.com/@staticcms/app@^4.0.0/dist/static-cms-app.js"></script>
   </head>
   <body>
@@ -15,9 +15,7 @@
             repo: "sammassengale82/valorwaveentertainment",
             branch: "main",
             base_url: "https://valorwaveentertainment.com",
-            auth_endpoint: "auth/index", // Removed the leading slash to match the function path exactly
-            site_id: "valorwaveentertainment"
-            use_graphql: false // Added this to prevent the dashboard from timing out on large repositories
+            auth_endpoint: "auth/index"
           },
           media_folder: "images",
           public_folder: "/images",
