@@ -18,7 +18,9 @@
 
 <script>
 
-function runCMS() {
+document.addEventListener('DOMContentLoaded', function () {
+
+var initCMS = function() {
 
 if (window.CMS) {
 
@@ -144,13 +146,15 @@ fields: [
 
 } else {
 
-setTimeout(runCMS, 200);
+setTimeout(initCMS, 100);
 
 }
 
-}
+};
 
-runCMS();
+initCMS();
+
+});
 
 </script>
 
@@ -158,7 +162,7 @@ runCMS();
 
 </html>
 
-2. FILE: functions/auth/callback.js
+FILE: functions/auth/callback.js
 export async function onRequestGet(context) {
 
 const { searchParams } = new URL(context.request.url);
