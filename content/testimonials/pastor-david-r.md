@@ -1,7 +1,5 @@
 ---
-title: Pastor David R.
-event: Event
+title: "Pastor David R."
+event: "Community Gala"
 ---
-  "Highly recommend for church and community events. Clean music and great
-  energy."
----
+Professional, punctual, and high-energy. We will definitely be booking again for next year's event.
