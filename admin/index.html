@@ -14,8 +14,9 @@
             name: "github",
             repo: "sammassengale82/valorwaveentertainment",
             branch: "main",
-            base_url: "https://valorwaveentertainment.com/",
-            auth_endpoint: "/auth/index"
+            base_url: "https://valorwaveentertainment.com",
+            auth_endpoint: "auth/index", // Removed the leading slash to match the function path exactly
+            use_graphql: false // Added this to prevent the dashboard from timing out on large repositories
           },
           media_folder: "images",
           public_folder: "/images",
@@ -57,3 +58,5 @@
         }
       });
     </script>
+  </body>
+</html>
