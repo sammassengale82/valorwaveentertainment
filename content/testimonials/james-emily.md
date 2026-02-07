@@ -1,7 +1,5 @@
 ---
-title: James & Emily
-event: Wedding
+title: "James & Emily"
+event: "Wedding"
 ---
-  "Sam was incredible. From ceremony to reception, everything was smooth and
-  stress-free."
----
+Valor Wave Entertainment made our wedding night unforgettable! The music was perfect.
