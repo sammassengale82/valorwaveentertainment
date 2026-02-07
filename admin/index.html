@@ -1,71 +1,145 @@
 <!DOCTYPE html>
+
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Valorwave Admin</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@staticcms/app@^4.0.0/dist/static-cms-app.css" />
-  </head>
-  <body>
-    <script src="https://cdn.jsdelivr.net/npm/@staticcms/app@^4.0.0/dist/static-cms-app.js"></script>
-    <script>
-      CMS.init({
-        config: {
-          backend: {
-            name: "github",
-            repo: "sammassengale82/valorwaveentertainment",
-            branch: "main",
-            base_url: "https://valorwaveentertainment.com",
-            auth_endpoint: "auth/index"
-          },
-          media_folder: "images",
-          public_folder: "/images",
-          collections: [
-            {
-              name: "site_pages",
-              label: "Core Website Pages",
-              files: [
-                {
-                  label: "Home Page",
-                  name: "home_page",
-                  file: "index.html",
-                  fields: [{ label: "Body Content", name: "body", widget: "markdown" }]
-                }
-              ]
-            },
-            {
-              name: "blog_posts",
-              label: "Blog Posts",
-              folder: "content/blog",
-              create: true,
-              fields: [
-                { label: "Title", name: "title", widget: "string" },
-                { label: "Body", name: "body", widget: "markdown" }
-              ]
-            },
-            {
-              name: "company_services",
-              label: "Services",
-              folder: "content/services",
-              create: true,
-              fields: [
-                { label: "Service Name", name: "title", widget: "string" },
-                { label: "Description", name: "body", widget: "markdown" }
-              ]
-            },
-            {
-              name: "client_testimonials",
-              label: "Testimonials",
-              folder: "content/testimonials",
-              create: true,
-              fields: [
-                { label: "Client Name", name: "title", widget: "string" },
-                { label: "Quote", name: "body", widget: "markdown" }
-              ]
-            }
-          ]
-        }
-      });
-    </script>
-  </body>
+
+<head>
+
+<meta charset="utf-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Valorwave Admin</title>
+
+<script src=""></script>
+
+</head>
+
+<body>
+
+<script>
+
+CMS.init({
+
+config: {
+
+backend: {
+
+name: "github",
+
+repo: "sammassengale82/valorwaveentertainment",
+
+branch: "main",
+
+base_url: "",
+
+auth_endpoint: "auth"
+
+},
+
+media_folder: "assets/images",
+
+public_folder: "/assets/images",
+
+collections: [
+
+{
+
+name: "vw_home_section",
+
+label: "Home",
+
+files: [
+
+{
+
+label: "Home Page",
+
+name: "vw_home_index_unique",
+
+file: "index.html",
+
+fields: [
+
+{ label: "Title", name: "title", widget: "string" },
+
+{ label: "Content", name: "body", widget: "markdown" }
+
+]
+
+}
+
+]
+
+},
+
+{
+
+name: "vw_blog_section",
+
+label: "Blog",
+
+folder: "blog",
+
+create: true,
+
+fields: [
+
+{ label: "Title", name: "title", widget: "string" },
+
+{ label: "Body", name: "body", widget: "markdown" }
+
+]
+
+},
+
+{
+
+name: "vw_services_section",
+
+label: "Services",
+
+folder: "services",
+
+create: true,
+
+fields: [
+
+{ label: "Service Name", name: "title", widget: "string" },
+
+{ label: "Description", name: "description", widget: "text" }
+
+]
+
+},
+
+{
+
+name: "vw_testimonials_section",
+
+label: "Testimonials",
+
+folder: "testimonials",
+
+create: true,
+
+fields: [
+
+{ label: "Author", name: "title", widget: "string" },
+
+{ label: "Quote", name: "quote", widget: "text" }
+
+]
+
+}
+
+]
+
+}
+
+});
+
+</script>
+
+</body>
+
 </html>
