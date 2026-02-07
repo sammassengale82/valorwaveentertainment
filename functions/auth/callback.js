@@ -14,26 +14,20 @@ export async function onRequestGet(context) {
   
   const result = await response.json();
 
-  const html = `
+  // The simplified HTML below is less likely to trigger CORB
+  return new Response(`
     <!DOCTYPE html>
-    <html>
-    <head><meta charset="UTF-8"></head>
+    <html lang="en">
+    <head><meta charset="utf-8"></head>
     <body>
       <script>
-        (function() {
-          const message = "authorization:github:success:" + JSON.stringify({
-            token: "${result.access_token}",
-            provider: "github"
-          });
-          // Targeting your specific domain helps bypass CORB blocking
-          window.opener.postMessage(message, "https://valorwaveentertainment.com");
-          window.close();
-        })();
+        const message = "authorization:github:success:" + JSON.stringify({
+          token: "${result.access_token}",
+          provider: "github"
+        });
+        window.opener.postMessage(message, "https://valorwaveentertainment.com");
+        window.close();
       </script>
     </body>
-    </html>`;
-
-  return new Response(html, { 
-    headers: { "Content-Type": "text/html; charset=utf-8" } 
-  });
+    </html>`, { headers: { "Content-Type": "text/html" } });
 }
