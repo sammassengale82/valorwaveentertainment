@@ -2,6 +2,8 @@ backend:
   name: github
   repo: sammassengale82/valorwaveentertainment
   branch: main
+  base_url: https://valorwaveentertainment.com
+  auth_endpoint: auth/index        
 
 media_folder: "images"
 public_folder: "/images"
