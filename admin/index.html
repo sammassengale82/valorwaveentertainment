@@ -18,6 +18,10 @@
 
 <script>
 
+window.onload = function() {
+
+if (typeof CMS !== 'undefined') {
+
 CMS.init({
 
 config: {
@@ -137,6 +141,14 @@ fields: [
 }
 
 });
+
+} else {
+
+console.error("CMS script failed to load from unpkg.");
+
+}
+
+};
 
 </script>
 
