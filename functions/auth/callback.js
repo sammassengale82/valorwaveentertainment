@@ -14,18 +14,23 @@ export async function onRequestGet(context) {
   
   const result = await response.json();
 
-  // The CMS expects a very specific message format to trigger the login
   return new Response(`
+    <!DOCTYPE html>
     <html>
     <body>
       <script>
         (function() {
+          const token = "${result.access_token}";
           const message = "authorization:github:success:" + JSON.stringify({
-            token: "${result.access_token}",
+            token: token,
             provider: "github"
           });
-          window.opener.postMessage(message, "*");
-          window.close();
+          
+          // This tells the main window that login was successful
+          if (window.opener) {
+            window.opener.postMessage(message, "https://valorwaveentertainment.com");
+            window.close();
+          }
         })();
       </script>
     </body>
