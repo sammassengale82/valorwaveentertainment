@@ -19,14 +19,14 @@ collections:
 
   # New Testimonials section
   - name: "testimonials"
-    label: "Client Testimonials"
+    label: "Testimonials"
     folder: "content/testimonials"
     create: true
     slug: "{{slug}}"
     fields:
-      - {label: "Client Name", name: "title", widget: "string"}
-      - {label: "Event Type", name: "event", widget: "string"}
-      - {label: "Review Quote", name: "quote", widget: "text"}
+      - { label: "Client Name", name: "title", widget: "string" }
+      - { label: "Event Type", name: "event", widget: "string" }
+      - { label: "Quote", name: "body", widget: "markdown" }
 
   # DJ Services section
   - name: "services"
