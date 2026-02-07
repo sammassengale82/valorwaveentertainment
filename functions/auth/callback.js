@@ -5,13 +5,17 @@ export async function onRequestGet(context) {
   const response = await fetch("https://github.com/login/oauth/access_token", {
     method: "POST",
     headers: { "content-type": "application/json", "accept": "application/json" },
-    body: JSON.stringify({ client_id: GITHUB_CLIENT_ID, client_secret: GITHUB_CLIENT_SECRET, code }),
+    body: JSON.stringify({ 
+      client_id: GITHUB_CLIENT_ID, 
+      client_secret: GITHUB_CLIENT_SECRET, 
+      code 
+    }),
   });
   
   const result = await response.json();
 
-  const content = `
-    <!DOCTYPE html>
+  // The CMS expects a very specific message format to trigger the login
+  return new Response(`
     <html>
     <body>
       <script>
@@ -20,13 +24,10 @@ export async function onRequestGet(context) {
             token: "${result.access_token}",
             provider: "github"
           });
-          // Using "*" ensures the message reaches your admin dashboard
           window.opener.postMessage(message, "*");
           window.close();
         })();
       </script>
     </body>
-    </html>`;
-
-  return new Response(content, { headers: { "content-type": "text/html" } });
+    </html>`, { headers: { "content-type": "text/html" } });
 }
