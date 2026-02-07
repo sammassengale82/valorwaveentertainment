@@ -372,7 +372,7 @@ gtag('config', 'G-PPBLPGS51B');
       <a class="nav-link" href="#quote">Request a Quote</a>
       
       <div class="social-links" aria-label="Social links">
-  <a href="https://www.facebook.com/profile.php?id=61586296074548" target="_blank" rel="noopener" aria-label="Facebook">
+  <a href="https://www.facebook.com/valorwaveentertainment" target="_blank" rel="noopener" aria-label="Facebook">
     <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
       <path d="M22 12a10 10 0 1 0-11.6 9.9v-7h-2.4V12h2.4V9.8c0-2.4 1.4-3.7 3.6-3.7 1 0 2 .2 2 .2v2.2h-1.1c-1.1 0-1.4.7-1.4 1.4V12h2.5l-.4 2.9h-2.1v7A10 10 0 0 0 22 12z"/>
     </svg>
@@ -634,19 +634,8 @@ gtag('config', 'G-PPBLPGS51B');
 
 <section>
   <h2>What Our Clients Say</h2>
-  <div class="grid">
-    <div class="card"><div class="card-body">
-      <p>"Valor Wave Entertainment made our wedding absolutely perfect. Professional, faith-centered, and fun!"</p>
-      <strong>- Sarah M.</strong>
-    </div></div>
-    <div class="card"><div class="card-body">
-      <p>"Sam was incredible. From ceremony to reception, everything was smooth and stress-free."</p>
-      <strong>- James & Emily</strong>
-    </div></div>
-    <div class="card"><div class="card-body">
-      <p>"Highly recommend for church and community events. Clean music and great energy."</p>
-      <strong>- Pastor David R.</strong>
-    </div></div>
+  <div class="grid" id="testimonials-container">
+    <p>Loading testimonials...</p>
   </div>
 </section>
 
@@ -693,5 +682,46 @@ gtag('config', 'G-PPBLPGS51B');
     </a>
   </div>
 </div>
+ <script>
+async function fetchTestimonials() {
+  const container = document.getElementById('testimonials-container');
+  const repo = "sammassengale82/valorwaveentertainment";
+  const path = "content/testimonials";
+
+  try {
+    const response = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`);
+    const files = await response.json();
+    
+    // Clear the loading text
+    container.innerHTML = '';
+
+    for (const file of files) {
+      if (file.name === '.gitkeep') continue;
+
+      const contentRes = await fetch(file.download_url);
+      const text = await contentRes.text();
+      
+      // Extract data from the Markdown file created by your CMS
+      const name = text.match(/title:\s*"(.*)"/)?.[1] || "Valued Client";
+      const quote = text.split('---').pop().trim();
+
+      // Build the card using your existing CSS classes
+      container.innerHTML += `
+        <div class="card">
+          <div class="card-body">
+            <p>"${quote}"</p>
+            <strong>- ${name}</strong>
+          </div>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error("Error loading testimonials:", error);
+    container.innerHTML = "<p>Check back soon for new reviews!</p>";
+  }
+}
+
+fetchTestimonials();
+</script>
 </body>
 </html>
