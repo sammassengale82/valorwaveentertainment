@@ -4,11 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Valorwave Admin</title>
-    <script src="https://unpkg.com/@staticcms/app@^4.0.0/dist/static-cms-app.js"></script>
+    <link href="https://unpkg.com/@staticcms/app@^4.0.0/dist/static-cms-app.css" rel="stylesheet" />
   </head>
   <body>
+    <div id="nc-root"></div>
+    <script src="https://unpkg.com/@staticcms/app@^4.0.0/dist/static-cms-app.js"></script>
     <script>
-      window.CMS.init({
+      CMS.init({
         config: {
           backend: {
             name: "github",
@@ -25,10 +27,9 @@
               label: "Blog Posts",
               folder: "content/blog",
               create: true,
-              slug: "{{year}}-{{month}}-{{day}}-{{slug}}",
               fields: [
                 { label: "Title", name: "title", widget: "string" },
-                { label: "Publish Date", name: "date", widget: "datetime" },
+                { label: "Date", name: "date", widget: "datetime" },
                 { label: "Body", name: "body", widget: "markdown" }
               ]
             },
@@ -49,8 +50,7 @@
               create: true,
               fields: [
                 { label: "Client Name", name: "title", widget: "string" },
-                { label: "Event Type", name: "event", widget: "string", required: false },
-                { label: "Quote", name: "body", widget: "markdown" }
+                { label: "Body", name: "body", widget: "markdown" }
               ]
             }
           ]
