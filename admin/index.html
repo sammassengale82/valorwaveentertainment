@@ -18,11 +18,9 @@
 
 <script>
 
-var checkCMS = setInterval(function() {
+function runCMS() {
 
-if (typeof window.CMS !== 'undefined') {
-
-clearInterval(checkCMS);
+if (window.CMS) {
 
 window.CMS.init({
 
@@ -144,9 +142,15 @@ fields: [
 
 });
 
+} else {
+
+setTimeout(runCMS, 200);
+
 }
 
-}, 100);
+}
+
+runCMS();
 
 </script>
 
@@ -155,8 +159,6 @@ fields: [
 </html>
 
 2. FILE: functions/auth/callback.js
-Location: /functions/auth/callback.js (Re-providing with double spacing to match your needs)
-
 export async function onRequestGet(context) {
 
 const { searchParams } = new URL(context.request.url);
@@ -165,7 +167,7 @@ const code = searchParams.get("code");
 
 const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } = context.env;
 
-if (!code) return new Response("Error: No code", { status: 400 });
+if (!code) return new Response("Error: No code received", { status: 400 });
 
 try {
 
