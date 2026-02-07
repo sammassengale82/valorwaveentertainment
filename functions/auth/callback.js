@@ -10,28 +10,19 @@ export async function onRequestGet(context) {
   
   const result = await response.json();
 
-  // This is the "Magic" string that tells Static CMS the login worked
   const content = `
     <!DOCTYPE html>
     <html>
-    <head><title>Authorizing...</title></head>
     <body>
       <script>
         (function() {
-          function receiveMessage(e) {
-            console.log("Receiving message:", e.data);
-          }
-          window.addEventListener("message", receiveMessage, false);
-          
-          const response = {
+          const message = "authorization:github:success:" + JSON.stringify({
             token: "${result.access_token}",
             provider: "github"
-          };
-          
-          window.opener.postMessage(
-            "authorization:github:success:" + JSON.stringify(response),
-            window.location.origin
-          );
+          });
+          // Using "*" ensures the message reaches your admin dashboard
+          window.opener.postMessage(message, "*");
+          window.close();
         })();
       </script>
     </body>
