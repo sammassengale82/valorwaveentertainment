@@ -5,7 +5,11 @@ export async function onRequestGet(context) {
   const response = await fetch("https://github.com/login/oauth/access_token", {
     method: "POST",
     headers: { "content-type": "application/json", "accept": "application/json" },
-    body: JSON.stringify({ client_id: GITHUB_CLIENT_ID, client_secret: GITHUB_CLIENT_SECRET, code }),
+    body: JSON.stringify({ 
+      client_id: GITHUB_CLIENT_ID, 
+      client_secret: GITHUB_CLIENT_SECRET, 
+      code 
+    }),
   });
   
   const result = await response.json();
@@ -21,7 +25,7 @@ export async function onRequestGet(context) {
             token: "${result.access_token}",
             provider: "github"
           });
-          // We target the specific domain to satisfy CORB/CORS requirements
+          // Targeting your specific domain helps bypass CORB blocking
           window.opener.postMessage(message, "https://valorwaveentertainment.com");
           window.close();
         })();
@@ -29,5 +33,7 @@ export async function onRequestGet(context) {
     </body>
     </html>`;
 
-  return new Response(html, { headers: { "content-type": "text/html" } });
+  return new Response(html, { 
+    headers: { "Content-Type": "text/html; charset=utf-8" } 
+  });
 }
