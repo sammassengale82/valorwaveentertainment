@@ -1,21 +1,24 @@
 <header class="site-header">
   <div class="header-inner">
-    <a class="brand-mini" href="#top" aria-label="Go to top">
-      <img src="{{ site.logo }}" alt="Valor Wave Entertainment">
-      <span class="brand-text">{{ site.site_name }}</span>
+
+    <a href="/" class="brand-mini">
+      <img src="/logo.png" alt="Valor Wave Entertainment">
+      <span class="brand-text">Valor Wave Entertainment</span>
     </a>
 
-    <nav class="header-nav" aria-label="Primary">
-      {% for item in navigation.links %}
-        <a class="nav-link" href="{{ item.url }}">{{ item.label }}</a>
-      {% endfor %}
+    <nav class="header-nav">
+      <a class="nav-link" href="#services">Services</a>
+      <a class="nav-link" href="#about">About</a>
+      <a class="nav-link" href="#testimonials">Testimonials</a>
+      <a class="header-cta" href="#contact">Get a Quote</a>
     </nav>
 
-    <!-- THEME TOGGLE BUTTONS -->
-    <div class="theme-toggle" style="display:flex;gap:10px;margin-left:auto;">
-      <button class="btn" onclick="setTheme('original')">Original</button>
-      <button class="btn" onclick="setTheme('patriotic')">Patriotic</button>
-      <button class="btn" onclick="setTheme('multicam')">Multicam</button>
+    <div class="mobile-quicknav">
+      <a href="#services">S</a>
+      <a href="#about">A</a>
+      <a href="#testimonials">T</a>
+      <a href="#contact">Q</a>
     </div>
+
   </div>
 </header>
