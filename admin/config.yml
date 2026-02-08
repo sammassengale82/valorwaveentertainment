@@ -41,6 +41,16 @@ collections:
           - { label: "Quote Banner Title", name: "quote_banner_title", widget: "string" }
           - { label: "Quote Banner Subtitle", name: "quote_banner_subtitle", widget: "string" }
 
+  - name: "site"
+        label: "Site Settings"
+        file: "src/content/settings/site.md"
+        fields:
+          - { label: "Site Name", name: "site_name", widget: "string" }
+          - { label: "Tagline", name: "tagline", widget: "string" }
+          - { label: "Brand Color", name: "brand_color", widget: "color" }
+          - { label: "Logo", name: "logo", widget: "image" }
+          - { label: "Favicon", name: "favicon", widget: "image" }
+
   - name: "services"
     label: "Services"
     folder: "src/content/services"
