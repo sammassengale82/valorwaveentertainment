@@ -10,6 +10,7 @@ hero_subline: "Veteran-owned • Faith-based • Professional DJ services"
 hero_button_text: "Request a Quote"
 hero_button_link: "#quote"
 hero_image: "logo.png"
+hero_background: "images/hero-bg.jpg"
 
 service_area_text: >
   Valor Wave Entertainment proudly serves weddings and events throughout Southeast Tennessee, including Chattanooga and Cleveland,
