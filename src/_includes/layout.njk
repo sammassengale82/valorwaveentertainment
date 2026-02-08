@@ -3,38 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ seo.title or title or "Valor Wave Entertainment" }}</title>
-  <meta name="description" content="{{ seo.description or 'Veteran-owned, faith-based wedding and event DJ in Chattanooga serving Southeast Tennessee and Northwest Georgia.' }}" />
 
-  <!-- Open Graph / Social Sharing -->
+  <title>{{ seo.title or home.seo_title or site.site_name or seo.default_title }}</title>
+  <meta name="description" content="{{ seo.description or home.seo_description or seo.default_description }}">
+
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Valor Wave Entertainment">
-  <meta property="og:title" content="{{ seo.og_title or 'Valor Wave Entertainment | Faith-Based • Veteran-Owned DJ' }}">
-  <meta property="og:description" content="{{ seo.og_description or 'Veteran-owned, faith-based DJ service serving Southeast Tennessee & Northwest Georgia.' }}">
-  <meta property="og:url" content="https://valorwaveentertainment.com/">
-  <meta property="og:image" content="{{ seo.og_image or 'https://valorwaveentertainment.com/og-image.jpg' }}">
+  <meta property="og:title" content="{{ seo.og_title or home.seo_title or seo.default_title }}">
+  <meta property="og:description" content="{{ seo.og_description or home.seo_description or seo.default_description }}">
+  <meta property="og:image" content="{{ seo.og_image or home.hero_background or seo.default_og_image }}">
+
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{ seo.twitter_title or 'Valor Wave Entertainment | Faith-Based • Veteran-Owned DJ' }}">
-  <meta name="twitter:description" content="{{ seo.twitter_description or 'Weddings, church events, corporate & community celebrations across Southeast TN & Northwest GA.' }}">
-  <meta name="twitter:image" content="{{ seo.twitter_image or 'https://valorwaveentertainment.com/og-image.jpg' }}">
+  <meta name="twitter:title" content="{{ seo.twitter_title or home.seo_title or seo.default_title }}">
+  <meta name="twitter:description" content="{{ seo.twitter_description or home.seo_description or seo.default_description }}">
+  <meta name="twitter:image" content="{{ seo.twitter_image or home.hero_background or seo.default_twitter_image }}">
+
+  <link rel="icon" href="{{ site.favicon }}">
 
   <style>
+    :root {
+      --primary: {{ theme.primary_color }};
+      --secondary: {{ theme.secondary_color }};
+      --background: {{ theme.background_color }};
+      --text: {{ theme.text_color }};
+      --button: {{ theme.button_color }};
+      --radius: {{ theme.border_radius }};
+      --space: {{ theme.spacing_scale }};
+    }
+
     {{ css | safe }}
   </style>
 
-  <!-- Google Analytics (GA4) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PPBLPGS51B"></script>
   <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-PPBLPGS51B');
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-PPBLPGS51B');
   </script>
 
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 
-<body>
+<body style="background:var(--background);color:var(--text);">
 <div id="top"></div>
 
 {% include "header.njk" %}
@@ -56,48 +66,4 @@
       Instagram
     </a>
     <a href="https://x.com/ValorwaveEnt" target="_blank" rel="noopener" aria-label="X">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-7.3 8.3L23 22h-6.7l-5.2-6.7L4.9 22H2l7.8-9L1 2h6.8l4.7 6L18.9 2z"/></svg>
-      X
-    </a>
-  </div>
-</div>
-
-<script>
-async function fetchTestimonials() {
-  const container = document.getElementById('testimonials-container');
-  const repo = "sammassengale82/valorwaveentertainment";
-  const path = "src/content/testimonials";
-
-  try {
-    const response = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`);
-    const files = await response.json();
-    container.innerHTML = '';
-
-    for (const file of files) {
-      if (file.name === '.gitkeep') continue;
-
-      const contentRes = await fetch(file.download_url);
-      const text = await contentRes.text();
-      const name = text.match(/name:\s*"(.*)"/)?.[1] || "Valued Client";
-      const quote = text.split('---').pop().trim();
-
-      container.innerHTML += `
-        <div class="card">
-          <div class="card-body">
-            <p>"${quote}"</p>
-            <strong>- ${name}</strong>
-          </div>
-        </div>
-      `;
-    }
-  } catch (error) {
-    console.error("Error loading testimonials:", error);
-    container.innerHTML = "<p>Check back soon for new reviews!</p>";
-  }
-}
-
-fetchTestimonials();
-</script>
-
-</body>
-</html>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
