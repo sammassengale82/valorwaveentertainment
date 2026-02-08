@@ -1,35 +1,38 @@
+<section id="submit-testimonial">
+  <h2>Submit a Testimonial</h2>
+  <form action="https://formsubmit.co/valorwaveentertainment@gmail.com" method="POST" class="testimonial-form">
+
+    <input type="hidden" name="_subject" value="New Testimonial Submission - Valor Wave Entertainment">
+    <input type="hidden" name="_template" value="table">
+    <input type="hidden" name="_next" value="https://valorwaveentertainment.com/testimonial-thank-you.html">
+
+    <input type="text" name="client_name" placeholder="Your Name" required>
+    <input type="email" name="client_email" placeholder="Your Email (optional)">
+    <input type="text" name="event_type" placeholder="Event Type (Wedding, Birthday, Corporate, etc.)" required>
+    <input type="date" name="event_date" placeholder="Event Date">
+
+    <select name="rating" required style="padding:14px;border-radius:10px;border:1px solid #0b1220;background:rgba(248,250,252,0.92);font-size:16px;color:#0b1220;">
+      <option value="" selected disabled>Rating</option>
+      <option>5 - Excellent</option>
+      <option>4 - Great</option>
+      <option>3 - Good</option>
+      <option>2 - Fair</option>
+      <option>1 - Poor</option>
+    </select>
+
+    <textarea name="testimonial" placeholder="Write your testimonial here..." required></textarea>
+
+    <label style="display:block;color:var(--gray);font-size:14px;line-height:1.4;">
+      <input type="checkbox" name="permission" value="Yes" required>
+      I give Valor Wave Entertainment permission to use my testimonial on the website.
+    </label>
+
+    <div class="form-actions">
+      <button type="submit" class="btn">Send Testimonial</button>
+    </div>
+
+    <p style="margin-top:12px;color:var(--gray);font-size:13px;text-align:center;">
+      Thank you—your feedback helps future couples and clients book with confidence.
+    </p>
+  </form>
 </section>
-
-    <section id="submit-testimonial">
-    <h2>Submit a Testimonial</h2>
-    <form action="https://formsubmit.co/valorwaveentertainment@gmail.com" method="POST" class="testimonial-form">
-      <input type="hidden" name="_subject" value="New Testimonial Submission - Valor Wave Entertainment">
-      <input type="hidden" name="_template" value="table">
-      <input type="hidden" name="_next" value="https://valorwaveentertainment.com/testimonial-thank-you.html">
-
-      <input type="text" name="client_name" placeholder="Your Name" required>
-      <input type="email" name="client_email" placeholder="Your Email (optional)">
-      <input type="text" name="event_type" placeholder="Event Type (Wedding, Birthday, Corporate, etc.)" required>
-      <input type="date" name="event_date" placeholder="Event Date">
-      <select name="rating" required style="padding:14px;border-radius:10px;border:1px solid #0b1220;background:rgba(248,250,252,0.92);font-size:16px;color:#0b1220;">
-        <option value="" selected disabled>Rating</option>
-        <option>5 - Excellent</option>
-        <option>4 - Great</option>
-        <option>3 - Good</option>
-        <option>2 - Fair</option>
-        <option>1 - Poor</option>
-      </select>
-      <textarea name="testimonial" placeholder="Write your testimonial here..." required></textarea>
-      <label style="display:block;color:var(--gray);font-size:14px;line-height:1.4;">
-        <input type="checkbox" name="permission" value="Yes" required>
-        I give Valor Wave Entertainment permission to use my testimonial on the website.
-      </label>
-
-      <div class="form-actions">
-        <button type="submit" class="btn">Send Testimonial</button>
-      </div>
-
-      <p style="margin-top:12px;color:var(--gray);font-size:13px;text-align:center;">
-        Thank you—your feedback helps future couples and clients book with confidence.
-      </p>
-    </form>
