@@ -19,6 +19,48 @@
 
   <link rel="icon" href="{{ site.favicon }}">
 
+<script>
+  function setTheme(mode) {
+    const root = document.documentElement;
+
+    const themes = {
+      original: {
+        "--primary": "{{ theme.primary_color }}",
+        "--secondary": "{{ theme.secondary_color }}",
+        "--background": "{{ theme.background_color }}",
+        "--text": "{{ theme.text_color }}",
+        "--button": "{{ theme.button_color }}"
+      },
+      patriotic: {
+        "--primary": "#B22234",
+        "--secondary": "#3C3B6E",
+        "--background": "#0A0A0A",
+        "--text": "#FFFFFF",
+        "--button": "#B22234"
+      },
+      multicam: {
+        "--primary": "#6B705C",
+        "--secondary": "#A5A58D",
+        "--background": "#3A3A3A",
+        "--text": "#F8F8F8",
+        "--button": "#6B705C"
+      }
+    };
+
+    const selected = themes[mode];
+    for (const key in selected) {
+      root.style.setProperty(key, selected[key]);
+    }
+
+    localStorage.setItem("themeMode", mode);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const saved = localStorage.getItem("themeMode") || "original";
+    setTheme(saved);
+  });
+</script>
+
   <style>
     :root {
       --primary: {{ theme.primary_color }};
