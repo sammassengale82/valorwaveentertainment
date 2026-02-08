@@ -1,0 +1,20 @@
+---
+layout: layout.njk
+---
+
+<article style="max-width:900px;margin:0 auto;padding:40px 20px;">
+  <h1>{{ title }}</h1>
+  <p style="color:var(--gray);font-size:14px;">{{ date | date("MMMM d, yyyy") }}</p>
+
+  {% if image %}
+    <img src="{{ image }}" alt="" style="width:100%;border-radius:12px;margin:20px 0;">
+  {% endif %}
+
+  <div class="blog-body">
+    {{ content | safe }}
+  </div>
+
+  <p style="margin-top:40px;">
+    <a class="btn" href="/blog">← Back to Blog</a>
+  </p>
+</article>
