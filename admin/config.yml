@@ -118,3 +118,12 @@ collections:
           - { label: "Button Color", name: "button_color", widget: "color" }
           - { label: "Border Radius", name: "border_radius", widget: "string" }
           - { label: "Spacing Scale", name: "spacing_scale", widget: "string" }
+  - name: "gallery"
+    label: "Gallery"
+    folder: "src/content/gallery"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Alt Text", name: "alt", widget: "string" }
