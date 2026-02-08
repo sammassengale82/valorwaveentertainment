@@ -5,6 +5,10 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("robots.txt");
   eleventyConfig.addPassthroughCopy("sitemap.xml");
 
+eleventyConfig.addCollection("blog", function (collection) {
+  return collection.getFilteredByGlob("src/content/blog/*.md");
+});
+
   return {
     dir: {
       input: "src",
