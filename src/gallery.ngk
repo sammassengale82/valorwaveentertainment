@@ -1,0 +1,22 @@
+---
+layout: layout.njk
+title: "Gallery"
+seo:
+  title: "Event Gallery | Valor Wave Entertainment"
+  description: "A look at weddings, corporate events, church gatherings, and celebrations we've been honored to DJ."
+---
+
+<section style="max-width:1100px;margin:0 auto;padding:40px 20px;">
+  <h2>Gallery</h2>
+
+  <div class="grid" style="margin-top:20px;">
+    {% for item in gallery %}
+      <div class="card">
+        <img src="{{ item.image }}" alt="{{ item.alt }}">
+        <div class="card-body">
+          <h3>{{ item.title }}</h3>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
