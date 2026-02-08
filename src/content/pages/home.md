@@ -32,6 +32,7 @@ hero_discount_body: "We proudly offer a Hero Discount for active-duty military, 
 hero_discount_note: "Proof of service may be requested. Discount amount varies by package and date availability."
 
 calendar_intro: "View our availability and request your date. If you don’t see your date listed, submit a quote request and we’ll confirm promptly."
+
 quote_banner_title: "Ready to lock in your date?"
 quote_banner_subtitle: "Request a quote and we’ll confirm availability quickly."
 
