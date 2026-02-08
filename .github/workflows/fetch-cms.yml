@@ -1,0 +1,24 @@
+name: Fetch Static CMS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Download Static CMS bundle
+        run: |
+          mkdir -p admin/cms
+          curl -L "https://unpkg.com/@staticcms/app@latest/dist/static-cms-app.js" -o admin/cms/static-cms-app.js
+
+      - name: Commit file
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add admin/cms/static-cms-app.js
+          git commit -m "Fetch Static CMS bundle"
+          git push
