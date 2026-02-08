@@ -41,7 +41,7 @@ collections:
       - { label: "Contact Button Text", name: "contact_button", widget: "string" }
 
   # -----------------------------------------
-  # SERVICES (Markdown files)
+  # SERVICES
   # -----------------------------------------
   - name: "services"
     label: "Services"
@@ -49,3 +49,98 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Description", name: "description", widget: "markdown" }
+
+  # -----------------------------------------
+  # TESTIMONIALS
+  # -----------------------------------------
+  - name: "testimonials"
+    label: "Testimonials"
+    folder: "src/content/testimonials"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Quote", name: "quote", widget: "text" }
+
+  # -----------------------------------------
+  # GALLERY
+  # -----------------------------------------
+  - name: "gallery"
+    label: "Gallery"
+    folder: "src/content/gallery"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Caption", name: "caption", widget: "string", required: false }
+
+  # -----------------------------------------
+  # BLOG POSTS
+  # -----------------------------------------
+  - name: "blog"
+    label: "Blog Posts"
+    folder: "src/content/blog"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - { label: "Featured Image", name: "image", widget: "image", required: false }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  # -----------------------------------------
+  # SITE SETTINGS (FILE-BASED GROUP)
+  # -----------------------------------------
+  - name: "settings"
+    label: "Site Settings"
+    files:
+      - name: "site"
+        label: "Site Info"
+        file: "src/content/settings/site.md"
+        fields:
+          - { label: "Site Title", name: "title", widget: "string" }
+          - { label: "Tagline", name: "tagline", widget: "string" }
+          - { label: "Logo", name: "logo", widget: "image" }
+
+      - name: "navigation"
+        label: "Navigation"
+        file: "src/content/settings/navigation.md"
+        fields:
+          - label: "Navigation Links"
+            name: "links"
+            widget: "list"
+            fields:
+              - { label: "Label", name: "label", widget: "string" }
+              - { label: "URL", name: "url", widget: "string" }
+
+      - name: "footer"
+        label: "Footer"
+        file: "src/content/settings/footer.md"
+        fields:
+          - { label: "Footer Text", name: "text", widget: "markdown" }
+
+      - name: "contact"
+        label: "Contact Info"
+        file: "src/content/settings/contact-info.md"
+        fields:
+          - { label: "Phone", name: "phone", widget: "string" }
+          - { label: "Email", name: "email", widget: "string" }
+          - { label: "Address", name: "address", widget: "string" }
+
+      - name: "seo"
+        label: "SEO Settings"
+        file: "src/content/settings/seo.md"
+        fields:
+          - { label: "Meta Title", name: "meta_title", widget: "string" }
+          - { label: "Meta Description", name: "meta_description", widget: "text" }
+
+      - name: "theme"
+        label: "Theme Settings"
+        file: "src/content/settings/theme.md"
+        fields:
+          - { label: "Primary Color", name: "primary", widget: "string" }
+          - { label: "Secondary Color", name: "secondary", widget: "string" }
+          - { label: "Accent Color", name: "accent", widget: "string" }
