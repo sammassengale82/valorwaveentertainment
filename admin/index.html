@@ -3,14 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <title>Valorwave CMS</title>
-
-    <!-- Load Static CMS from your local repo -->
-    <script src="/admin/cms/static-cms-app.js"></script>
   </head>
 
   <body>
-    <script>
-      window.CMS.init();
-    </script>
+    <script src="/admin/cms/static-cms-app.js" onload="window.CMS.init()"></script>
   </body>
 </html>
