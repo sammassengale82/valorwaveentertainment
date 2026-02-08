@@ -1,13 +1,23 @@
+const { DateTime } = require("luxon");
+
 module.exports = function (eleventyConfig) {
+
+  // Add missing date filter
+  eleventyConfig.addFilter("date", function(value, format = "MMMM d, yyyy") {
+    return DateTime.fromJSDate(value).toFormat(format);
+  });
+
+  // Your passthrough copies
   eleventyConfig.addPassthroughCopy("images");
   eleventyConfig.addPassthroughCopy("logo.png");
   eleventyConfig.addPassthroughCopy("og-image.jpg");
   eleventyConfig.addPassthroughCopy("robots.txt");
   eleventyConfig.addPassthroughCopy("sitemap.xml");
 
-eleventyConfig.addCollection("blog", function (collection) {
-  return collection.getFilteredByGlob("src/content/blog/*.md");
-});
+  // Your blog collection
+  eleventyConfig.addCollection("blog", function (collection) {
+    return collection.getFilteredByGlob("src/content/blog/*.md");
+  });
 
   return {
     dir: {
