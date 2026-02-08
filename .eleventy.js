@@ -1,23 +1,15 @@
-const { DateTime } = require("luxon");
-
 module.exports = function (eleventyConfig) {
 
-  // Add missing date filter
-  eleventyConfig.addFilter("date", function(value, format = "MMMM d, yyyy") {
-    return DateTime.fromJSDate(value).toFormat(format);
-  });
+  // Passthrough assets
+  eleventyConfig.addPassthroughCopy("src/styles.css");
+  eleventyConfig.addPassthroughCopy("src/logo.png");
+  eleventyConfig.addPassthroughCopy("src/images");
 
-  // Your passthrough copies
-  eleventyConfig.addPassthroughCopy("images");
-  eleventyConfig.addPassthroughCopy("logo.png");
-  eleventyConfig.addPassthroughCopy("og-image.jpg");
-  eleventyConfig.addPassthroughCopy("robots.txt");
-  eleventyConfig.addPassthroughCopy("sitemap.xml");
+  // Watch CSS for live reload
+  eleventyConfig.addWatchTarget("src/styles.css");
 
-  // Your blog collection
-  eleventyConfig.addCollection("blog", function (collection) {
-    return collection.getFilteredByGlob("src/content/blog/*.md");
-  });
+  // Layouts & includes
+  eleventyConfig.addLayoutAlias("base", "base.njk");
 
   return {
     dir: {
@@ -26,8 +18,8 @@ module.exports = function (eleventyConfig) {
       data: "_data",
       output: "_site"
     },
-    templateFormats: ["njk", "md", "html"],
+    markdownTemplateEngine: "njk",
     htmlTemplateEngine: "njk",
-    markdownTemplateEngine: "njk"
+    templateFormats: ["njk", "md", "html"]
   };
 };
