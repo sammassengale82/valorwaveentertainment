@@ -8,4 +8,6 @@ links:
     url: "#hero-discount"
   - label: "Request a Quote"
     url: "#quote"
+  - label: "Client Portal"
+    url: "/portal"
 ---
