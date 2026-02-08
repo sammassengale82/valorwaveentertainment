@@ -1,6 +1,17 @@
+const { DateTime } = require("luxon");
+
 module.exports = function (eleventyConfig) {
 
+  // -----------------------------
+  // DATE FILTER (REQUIRED)
+  // -----------------------------
+  eleventyConfig.addFilter("date", (value, format = "LLLL d, yyyy") => {
+    return DateTime.fromJSDate(value).toFormat(format);
+  });
+
+  // -----------------------------
   // Passthrough assets
+  // -----------------------------
   eleventyConfig.addPassthroughCopy("src/styles.css");
   eleventyConfig.addPassthroughCopy("src/logo.png");
   eleventyConfig.addPassthroughCopy("src/images");
@@ -8,9 +19,12 @@ module.exports = function (eleventyConfig) {
   // Watch CSS for live reload
   eleventyConfig.addWatchTarget("src/styles.css");
 
-  // Layouts & includes
+  // Layout alias
   eleventyConfig.addLayoutAlias("base", "base.njk");
 
+  // -----------------------------
+  // Directory structure
+  // -----------------------------
   return {
     dir: {
       input: "src",
