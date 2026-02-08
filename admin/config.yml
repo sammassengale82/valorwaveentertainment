@@ -2,51 +2,87 @@ backend:
   name: github
   repo: sammassengale82/valorwaveentertainment
   branch: main
-  base_url: https://valorwaveentertainment.com/
-  auth_endpoint: /auth/index        
+  auth_type: implicit
 
-media_folder: "images"
-public_folder: "/images"
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
 
 collections:
-  # Edit your existing index.html
   - name: "pages"
-    label: "Website Pages"
+    label: "Pages"
     files:
-      - label: "Home Page"
-        name: "index"
-        file: "index.html"
+      - name: "home"
+        label: "Home Page"
+        file: "src/content/pages/home.md"
         fields:
-          - {label: "Body content", name: "body", widget: "markdown"}
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "SEO Title", name: "seo_title", widget: "string" }
+          - { label: "SEO Description", name: "seo_description", widget: "text" }
+          - { label: "Hero H1", name: "hero_h1", widget: "string" }
+          - { label: "Hero Kicker", name: "hero_kicker", widget: "string" }
+          - { label: "Hero Tagline", name: "hero_tagline", widget: "string" }
+          - { label: "Hero Subline", name: "hero_subline", widget: "string" }
+          - { label: "Hero Button Text", name: "hero_button_text", widget: "string" }
+          - { label: "Hero Button Link", name: "hero_button_link", widget: "string" }
+          - { label: "Hero Image", name: "hero_image", widget: "image" }
+          - { label: "Service Area Text", name: "service_area_text", widget: "text" }
+          - label: "Bio Paragraphs"
+            name: "bio_paragraphs"
+            widget: "list"
+            field: { label: "Paragraph", name: "paragraph", widget: "text" }
+          - label: "Brand Meaning Paragraphs"
+            name: "brand_meaning_paragraphs"
+            widget: "list"
+            field: { label: "Paragraph", name: "paragraph", widget: "text" }
+          - { label: "Hero Discount Title", name: "hero_discount_title", widget: "string" }
+          - { label: "Hero Discount Body", name: "hero_discount_body", widget: "text" }
+          - { label: "Hero Discount Note", name: "hero_discount_note", widget: "text" }
+          - { label: "Calendar Intro", name: "calendar_intro", widget: "text" }
+          - { label: "Quote Banner Title", name: "quote_banner_title", widget: "string" }
+          - { label: "Quote Banner Subtitle", name: "quote_banner_subtitle", widget: "string" }
 
-  # New Testimonials section
-  - name: "testimonials"
-    label: "Testimonials"
-    folder: "content/testimonials"
+  - name: "services"
+    label: "Services"
+    folder: "src/content/services"
     create: true
     slug: "{{slug}}"
-    format: "frontmatter"
     fields:
-      - { label: "Client Name", name: "title", widget: "string" }
-      - { label: "Event Type", name: "event", widget: "string" }
-      - { label: "Quote", name: "body", widget: "markdown" }
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Image", name: "image", widget: "image" }
 
-  # DJ Services section
-  - name: "services"
-    label: "DJ Services"
-    folder: "content/services"
+  - name: "testimonials"
+    label: "Testimonials"
+    folder: "src/content/testimonials"
     create: true
+    slug: "{{slug}}"
     fields:
-      - {label: "Service Name", name: "title", widget: "string"}
-      - {label: "Price", name: "price", widget: "string"}
-      - {label: "Description", name: "body", widget: "markdown"}
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Quote", name: "body", widget: "text" }
 
-  # Blog section
-  - name: "blog"
-    label: "Blogs"
-    folder: "content/blog"
-    create: true
-    fields:
-      - {label: "Title", name: "title", widget: "string"}
-      - {label: "Publish Date", name: "date", widget: "datetime"}
-      - {label: "Body", name: "body", widget: "markdown"}
+  - name: "settings"
+    label: "Settings"
+    files:
+      - name: "navigation"
+        label: "Navigation"
+        file: "src/content/settings/navigation.md"
+        fields:
+          - label: "Links"
+            name: "links"
+            widget: "list"
+            fields:
+              - { label: "Label", name: "label", widget: "string" }
+              - { label: "URL", name: "url", widget: "string" }
+      - name: "footer"
+        label: "Footer"
+        file: "src/content/settings/footer.md"
+        fields:
+          - { label: "Year", name: "year", widget: "string" }
+          - { label: "Tagline", name: "tagline", widget: "string" }
+      - name: "contact-info"
+        label: "Contact Info"
+        file: "src/content/settings/contact-info.md"
+        fields:
+          - { label: "Phone", name: "phone", widget: "string" }
+          - { label: "Email", name: "email", widget: "string" }
+          - { label: "Address", name: "address", widget: "string" }
