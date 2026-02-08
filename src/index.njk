@@ -1,20 +1,10 @@
 ---
-layout: layout.njk
-title: "{{ home.title }}"
-seo:
-  title: "{{ home.seo_title }}"
-  description: "{{ home.seo_description }}"
+layout: base.njk
+title: {{ home.title }}
 ---
 
-{% include "components/hero.njk" %}
-{% include "components/services.njk" %}
-{% include "components/service-area.njk" %}
-{% include "components/bio.njk" %}
-{% include "components/chattanooga.njk" %}
-{% include "components/brand-meaning.njk" %}
-{% include "components/hero-discount.njk" %}
-{% include "components/calendar.njk" %}
-{% include "components/quote-banner.njk" %}
-{% include "components/quote-form.njk" %}
-{% include "components/testimonial-form.njk" %}
-{% include "components/testimonials.njk" %}
+{% include "hero.njk" %}
+{% include "services.njk" %}
+{% include "bio.njk" %}
+{% include "testimonials.njk" %}
+{% include "contact.njk" %}
