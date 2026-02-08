@@ -8,6 +8,10 @@ media_folder: "images/uploads"
 public_folder: "/images/uploads"
 
 collections:
+
+  # -------------------------
+  # PAGES COLLECTION
+  # -------------------------
   - name: "pages"
     label: "Pages"
     files:
@@ -26,14 +30,17 @@ collections:
           - { label: "Hero Button Link", name: "hero_button_link", widget: "string" }
           - { label: "Hero Image", name: "hero_image", widget: "image" }
           - { label: "Service Area Text", name: "service_area_text", widget: "text" }
+
           - label: "Bio Paragraphs"
             name: "bio_paragraphs"
             widget: "list"
             field: { label: "Paragraph", name: "paragraph", widget: "text" }
+
           - label: "Brand Meaning Paragraphs"
             name: "brand_meaning_paragraphs"
             widget: "list"
             field: { label: "Paragraph", name: "paragraph", widget: "text" }
+
           - { label: "Hero Discount Title", name: "hero_discount_title", widget: "string" }
           - { label: "Hero Discount Body", name: "hero_discount_body", widget: "text" }
           - { label: "Hero Discount Note", name: "hero_discount_note", widget: "text" }
@@ -41,16 +48,22 @@ collections:
           - { label: "Quote Banner Title", name: "quote_banner_title", widget: "string" }
           - { label: "Quote Banner Subtitle", name: "quote_banner_subtitle", widget: "string" }
 
+  # -------------------------
+  # SITE SETTINGS
+  # -------------------------
   - name: "site"
-        label: "Site Settings"
-        file: "src/content/settings/site.md"
-        fields:
-          - { label: "Site Name", name: "site_name", widget: "string" }
-          - { label: "Tagline", name: "tagline", widget: "string" }
-          - { label: "Brand Color", name: "brand_color", widget: "color" }
-          - { label: "Logo", name: "logo", widget: "image" }
-          - { label: "Favicon", name: "favicon", widget: "image" }
+    label: "Site Settings"
+    file: "src/content/settings/site.md"
+    fields:
+      - { label: "Site Name", name: "site_name", widget: "string" }
+      - { label: "Tagline", name: "tagline", widget: "string" }
+      - { label: "Brand Color", name: "brand_color", widget: "color" }
+      - { label: "Logo", name: "logo", widget: "image" }
+      - { label: "Favicon", name: "favicon", widget: "image" }
 
+  # -------------------------
+  # SERVICES
+  # -------------------------
   - name: "services"
     label: "Services"
     folder: "src/content/services"
@@ -61,6 +74,9 @@ collections:
       - { label: "Description", name: "description", widget: "text" }
       - { label: "Image", name: "image", widget: "image" }
 
+  # -------------------------
+  # BLOG
+  # -------------------------
   - name: "blog"
     label: "Blog"
     folder: "src/content/blog"
@@ -72,6 +88,9 @@ collections:
       - { label: "Featured Image", name: "image", widget: "image", required: false }
       - { label: "Body", name: "body", widget: "markdown" }
 
+  # -------------------------
+  # TESTIMONIALS
+  # -------------------------
   - name: "testimonials"
     label: "Testimonials"
     folder: "src/content/testimonials"
@@ -81,43 +100,59 @@ collections:
       - { label: "Name", name: "name", widget: "string" }
       - { label: "Quote", name: "body", widget: "text" }
 
-  - name: "settings"
-    label: "Settings"
-    files:
-      - name: "navigation"
-        label: "Navigation"
-        file: "src/content/settings/navigation.md"
+  # -------------------------
+  # NAVIGATION
+  # -------------------------
+  - name: "navigation"
+    label: "Navigation"
+    file: "src/content/settings/navigation.md"
+    fields:
+      - label: "Links"
+        name: "links"
+        widget: "list"
         fields:
-          - label: "Links"
-            name: "links"
-            widget: "list"
-            fields:
-              - { label: "Label", name: "label", widget: "string" }
-              - { label: "URL", name: "url", widget: "string" }
-      - name: "footer"
-        label: "Footer"
-        file: "src/content/settings/footer.md"
-        fields:
-          - { label: "Year", name: "year", widget: "string" }
-          - { label: "Tagline", name: "tagline", widget: "string" }
-      - name: "contact-info"
-        label: "Contact Info"
-        file: "src/content/settings/contact-info.md"
-        fields:
-          - { label: "Phone", name: "phone", widget: "string" }
-          - { label: "Email", name: "email", widget: "string" }
-          - { label: "Address", name: "address", widget: "string" }
-      - name: "theme"
-        label: "Theme Settings"
-        file: "src/content/settings/theme.md"
-        fields:
-          - { label: "Primary Color", name: "primary_color", widget: "color" }
-          - { label: "Secondary Color", name: "secondary_color", widget: "color" }
-          - { label: "Background Color", name: "background_color", widget: "color" }
-          - { label: "Text Color", name: "text_color", widget: "color" }
-          - { label: "Button Color", name: "button_color", widget: "color" }
-          - { label: "Border Radius", name: "border_radius", widget: "string" }
-          - { label: "Spacing Scale", name: "spacing_scale", widget: "string" }
+          - { label: "Label", name: "label", widget: "string" }
+          - { label: "URL", name: "url", widget: "string" }
+
+  # -------------------------
+  # FOOTER
+  # -------------------------
+  - name: "footer"
+    label: "Footer"
+    file: "src/content/settings/footer.md"
+    fields:
+      - { label: "Year", name: "year", widget: "string" }
+      - { label: "Tagline", name: "tagline", widget: "string" }
+
+  # -------------------------
+  # CONTACT INFO
+  # -------------------------
+  - name: "contact-info"
+    label: "Contact Info"
+    file: "src/content/settings/contact-info.md"
+    fields:
+      - { label: "Phone", name: "phone", widget: "string" }
+      - { label: "Email", name: "email", widget: "string" }
+      - { label: "Address", name: "address", widget: "string" }
+
+  # -------------------------
+  # THEME SETTINGS
+  # -------------------------
+  - name: "theme"
+    label: "Theme Settings"
+    file: "src/content/settings/theme.md"
+    fields:
+      - { label: "Primary Color", name: "primary_color", widget: "color" }
+      - { label: "Secondary Color", name: "secondary_color", widget: "color" }
+      - { label: "Background Color", name: "background_color", widget: "color" }
+      - { label: "Text Color", name: "text_color", widget: "color" }
+      - { label: "Button Color", name: "button_color", widget: "color" }
+      - { label: "Border Radius", name: "border_radius", widget: "string" }
+      - { label: "Spacing Scale", name: "spacing_scale", widget: "string" }
+
+  # -------------------------
+  # GALLERY
+  # -------------------------
   - name: "gallery"
     label: "Gallery"
     folder: "src/content/gallery"
