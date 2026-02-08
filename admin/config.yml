@@ -1,3 +1,6 @@
+ignore:
+  - "README.md"
+
 backend:
   name: github
   repo: sammassengale82/valorwaveentertainment
