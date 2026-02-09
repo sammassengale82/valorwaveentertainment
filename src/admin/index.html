@@ -1,25 +1,32 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Valorwave CMS</title>
-  </head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Content Manager</title>
+</head>
 
-  <body>
-    <!-- Load the correct Static CMS UMD bundle -->
-    <script src="/admin/cms/cms-bundle.js"></script>
+<body>
+  <!-- React (required for Netlify CMS 2.x) -->
+  <script src="https://unpkg.com/react@16.14.0/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@16.14.0/umd/react-dom.production.min.js"></script>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        if (window.CMS) {
-          window.CMS.init({
-            load_config_file: true,
-            config_file: "/admin/config.yml"
-          });
-        } else {
-          console.error("CMS failed to load");
-        }
-      });
-    </script>
-  </body>
+  <!-- Your CMS bundle -->
+  <script src="/admin/cms/cms-bundle.js"></script>
+
+  <!-- Initialize CMS -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.CMS) {
+        window.CMS.init({
+          load_config_file: true,
+          config_file: "/admin/config.yml"
+        });
+      } else {
+        console.error("CMS failed to load");
+      }
+    });
+  </script>
+</body>
 </html>
