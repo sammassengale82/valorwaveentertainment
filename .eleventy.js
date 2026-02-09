@@ -1,4 +1,12 @@
+const { DateTime } = require("luxon");
+
 module.exports = function (eleventyConfig) {
+
+  // Restore date filter
+  eleventyConfig.addFilter("date", (value, format = "LLLL d, yyyy") => {
+    return DateTime.fromJSDate(value).toFormat(format);
+  });
+
   // Passthrough copy
   eleventyConfig.addPassthroughCopy({ "src/admin": "admin" });
   eleventyConfig.addPassthroughCopy("images");
