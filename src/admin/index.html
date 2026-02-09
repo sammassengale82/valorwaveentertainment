@@ -6,17 +6,18 @@
   </head>
 
   <body>
-    <!-- Tell Static CMS we will initialize manually -->
+    <!-- Load the UMD bundle (this exposes window.CMS) -->
+    <script src="/admin/cms/static-cms-app.js"></script>
+
     <script>
-      window.CMS_MANUAL_INIT = true;
-    </script>
-
-    <!-- Load Static CMS (ES module mode) -->
-    <script type="module">
-      import { initCMS } from "/admin/cms/static-cms-app.js";
-
-      initCMS({
-        config: "/admin/config.yml"
+      document.addEventListener("DOMContentLoaded", function () {
+        if (window.CMS) {
+          window.CMS.init({
+            config: "/admin/config.yml"
+          });
+        } else {
+          console.error("CMS failed to load");
+        }
       });
     </script>
   </body>
