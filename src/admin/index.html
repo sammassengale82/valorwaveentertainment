@@ -5,22 +5,18 @@
     <title>Valorwave CMS</title>
   </head>
 
-  
   <body>
-    <script src="/admin/cms/static-cms-app.js"></script>
-
+    <!-- Tell Static CMS we will initialize manually -->
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        if (window.CMS) {
-          window.CMS.init({
-            config: {
-              load_config_file: true,
-              config_file: "/admin/config.yml"
-            }
-          });
-        } else {
-          console.error("CMS failed to load");
-        }
+      window.CMS_MANUAL_INIT = true;
+    </script>
+
+    <!-- Load Static CMS (ES module mode) -->
+    <script type="module">
+      import { initCMS } from "/admin/cms/static-cms-app.js";
+
+      initCMS({
+        config: "/admin/config.yml"
       });
     </script>
   </body>
