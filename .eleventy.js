@@ -16,7 +16,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/admin");
   eleventyConfig.addPassthroughCopy("src/admin/config.yml");
   eleventyConfig.addPassthroughCopy("src/styles.css");
-  eleventyConfig.addPassthroughCopy("src/logo.png");
+  eleventyConfig.addPassthroughCopy("logo.png");
   eleventyConfig.addPassthroughCopy("images");
 
   // Watch CSS for live reload
