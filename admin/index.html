@@ -6,6 +6,17 @@
   </head>
 
   <body>
-    <script src="/admin/cms/static-cms-app.js" onload="window.CMS.init()"></script>
+    <!-- Load Static CMS -->
+    <script src="/admin/cms/static-cms-app.js"></script>
+
+    <!-- Load your CMS config -->
+    <script>
+      window.CMS.init({
+        config: {
+          load_config_file: true,
+          config_file: "/admin/config.yml"
+        }
+      });
+    </script>
   </body>
 </html>
