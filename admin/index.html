@@ -6,15 +6,19 @@
   </head>
 
   <body>
-    <!-- Load Static CMS -->
     <script src="/admin/cms/static-cms-app.js"></script>
 
-    <!-- Load your CMS config -->
     <script>
-      window.CMS.init({
-        config: {
-          load_config_file: true,
-          config_file: "/admin/config.yml"
+      document.addEventListener("DOMContentLoaded", function () {
+        if (window.CMS) {
+          window.CMS.init({
+            config: {
+              load_config_file: true,
+              config_file: "/admin/config.yml"
+            }
+          });
+        } else {
+          console.error("CMS failed to load");
         }
       });
     </script>
