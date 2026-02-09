@@ -6,13 +6,15 @@
   </head>
 
   <body>
+    <!-- Load the correct Static CMS UMD bundle -->
     <script src="/admin/cms/static-cms-app.js"></script>
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         if (window.CMS) {
           window.CMS.init({
-            config: "/admin/config.yml"
+            load_config_file: true,
+            config_file: "/admin/config.yml"
           });
         } else {
           console.error("CMS failed to load");
