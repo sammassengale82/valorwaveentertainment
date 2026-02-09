@@ -12,7 +12,7 @@ jobs:
 
       - name: Download Static CMS bundle from jsDelivr
         run: |
-          mkdir -p admin/cms
+          mkdir -p src/admin/cms
           curl -L "https://cdn.jsdelivr.net/npm/@staticcms/app/dist/static-cms-app.js" -o admin/cms/static-cms-app.js
 
       - name: Commit file
