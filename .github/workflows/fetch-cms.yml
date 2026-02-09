@@ -10,15 +10,15 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Download Static CMS bundle from jsDelivr
+      - name: Download Static CMS App UMD build
         run: |
           mkdir -p src/admin/cms
-          curl -L "https://cdn.jsdelivr.net/npm/@staticcms/app/dist/static-cms-app.js" -o src/admin/cms/static-cms-app.js
+          curl -L "https://unpkg.com/@staticcms/app@4.3.0/dist/static-cms-app.js" -o src/admin/cms/static-cms-app.js
 
       - name: Commit file
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add src/admin/cms/static-cms-app.js
-          git commit -m "Fetch Static CMS bundle" || echo "No changes to commit"
+          git commit -m "Fetch correct Static CMS App UMD build" || echo "No changes to commit"
           git push
