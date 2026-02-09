@@ -1,3 +1,6 @@
+!src/admin/
+!src/admin/cms/
+
 name: Fetch Static CMS
 
 on:
