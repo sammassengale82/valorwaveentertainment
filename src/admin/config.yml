@@ -5,7 +5,7 @@ backend:
   auth_type: implicit
   app_id: Valorwave CMS
 
-media_folder: "src/images"
+media_folder: "images"
 public_folder: "/images"
 
 collections:
