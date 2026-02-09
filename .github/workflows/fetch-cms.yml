@@ -13,7 +13,7 @@ jobs:
       - name: Download Static CMS App UMD build
         run: |
           mkdir -p src/admin/cms
-          curl -L "https://unpkg.com/@staticcms/app@4.3.0/dist/static-cms-app.js" -o src/admin/cms/static-cms-app.js
+          curl -L "https://unpkg.com/@staticcms/app@1.0.0/dist/static-cms-app.js" -o src/admin/cms/static-cms-app.js
 
       - name: Commit file
         run: |
