@@ -1,7 +1,9 @@
-
 backend:
-  name: git-gateway
+  name: github
+  repo: sammassengale82/valorwaveentertainment
   branch: main
+  auth_type: implicit
+  app_id: Valorwave CMS
 
 media_folder: "src/images"
 public_folder: "/images"
