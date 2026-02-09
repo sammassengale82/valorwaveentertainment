@@ -1,4 +1,4 @@
-src/admin/config.yml
+/admin/config.yml
   Content-Type: text/yaml; charset=utf-8
-/admin/*
+  Access-Control-Allow-Origin: *
   Cache-Control: no-cache
