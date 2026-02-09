@@ -10,16 +10,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Ensure admin/cms folder exists
-        run: |
-          mkdir -p src/admin/cms
-          echo "Folder structure after mkdir:"
-          ls -R src
-
       - name: Download Static CMS bundle from jsDelivr
         run: |
-          curl -L "https://cdn.jsdelivr.net/npm/@staticcms/app/dist/static-cms-app.js" \
-            -o src/admin/cms/static-cms-app.js
+          mkdir -p src/admin/cms
+          curl -L "https://cdn.jsdelivr.net/npm/@staticcms/app/dist/static-cms-app.js" -o src/admin/cms/static-cms-app.js
 
       - name: Commit file
         run: |
