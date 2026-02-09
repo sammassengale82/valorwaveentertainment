@@ -6,7 +6,6 @@ media_folder: "src/images"
 public_folder: "/images"
 
 collections:
-
   # -----------------------------------------
   # HOMEPAGE (home.md)
   # -----------------------------------------
