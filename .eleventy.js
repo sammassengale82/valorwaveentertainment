@@ -13,7 +13,7 @@ module.exports = function (eleventyConfig) {
   // Passthrough assets
   // -----------------------------
   eleventyConfig.addPassthroughCopy("src/admin");
-
+  eleventyConfig.addPassthroughCopy("src/admin/config.yml");
   eleventyConfig.addPassthroughCopy("src/styles.css");
   eleventyConfig.addPassthroughCopy("src/logo.png");
   eleventyConfig.addPassthroughCopy("src/images");
