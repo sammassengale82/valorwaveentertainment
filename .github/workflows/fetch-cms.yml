@@ -19,6 +19,6 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add src/admin/cms/static-cms-app.js
+          git add src/admin/cms/cms-bundle.js
           git commit -m "Fetch Netlify CMS UMD build (compatible)" || echo "No changes to commit"
           git push
