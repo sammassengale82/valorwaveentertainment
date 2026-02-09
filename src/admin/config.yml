@@ -118,3 +118,4 @@ collections:
           - { label: Primary Color, name: primary, widget: string }
           - { label: Secondary Color, name: secondary, widget: string }
           - { label: Accent Color, name: accent, widget: string }
+
