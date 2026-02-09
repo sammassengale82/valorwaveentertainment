@@ -1,2 +1,4 @@
 /admin/config.yml
   Content-Type: text/yaml; charset=utf-8
+/admin/*
+  Cache-Control: no-cache
