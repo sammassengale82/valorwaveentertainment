@@ -13,7 +13,7 @@ jobs:
       - name: Download Netlify CMS UMD build
         run: |
           mkdir -p src/admin/cms
-          curl -L "https://unpkg.com/netlify-cms-app@2.15.72/dist/netlify-cms-app.js" -o src/admin/cms/static-cms-app.js
+          curl -L "https://unpkg.com/netlify-cms-app@2.15.72/dist/netlify-cms-app.js" -o src/admin/cms/cms-bundle.js
 
       - name: Commit file
         run: |
