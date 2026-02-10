@@ -1,14 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Content Manager</title>
-
-  <link rel="stylesheet" href="https://cdn.staticcms.org/app/v2.5.1/static-cms-app.css" />
+  <meta charset="UTF-8">
+  <title>Valorwave Admin</title>
 </head>
-
 <body>
-  <script src="https://cdn.staticcms.org/app/v2.5.1/static-cms-app.js"></script>
+  <h1>Valorwave Admin</h1>
+
+  <p>
+    <button id="login">Login with GitHub</button>
+    <button id="load">Load Files</button>
+  </p>
+
+  <pre id="output"></pre>
+
+  <script>
+    const workerBase = ""; // "" if Worker is bound to same domain; otherwise set to "https://YOUR-WORKER.workers.dev"
+
+    document.getElementById("login").onclick = () => {
+      window.open(workerBase + "/oauth/login", "_blank");
+    };
+
+    document.getElementById("load").onclick = async () => {
+      const res = await fetch(workerBase + "/api/files", {
+        credentials: "include"
+      });
+      const json = await res.json();
+      document.getElementById("output").textContent = JSON.stringify(json, null, 2);
+    };
+  </script>
 </body>
 </html>
