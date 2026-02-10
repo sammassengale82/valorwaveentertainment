@@ -3,30 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <title>Valorwave CMS</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Roboto+Condensed:wght@300;700&display=swap" rel="stylesheet">
+
+  <!-- Markdown parser -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
   <style>
-    body {
+    /* THEMES */
+
+    body.original {
+      background: #1b1b1b;
+      color: #f5f5f5;
       font-family: Arial, sans-serif;
+    }
+
+    body.multicam {
+      background: #2b2b2b;
+      color: #f5f5f5;
+      font-family: "Roboto Condensed", sans-serif;
+    }
+
+    body.patriotic {
+      background: linear-gradient(180deg, #b22234 0%, #ffffff 50%, #3c3b6e 100%);
+      color: #ffffff;
+      font-family: "Merriweather", serif;
+    }
+
+    /* LAYOUT */
+
+    body {
       display: flex;
       gap: 20px;
       padding: 20px;
-      background: #1b1b1b;
-      color: #f5f5f5;
+      box-sizing: border-box;
     }
+
     #sidebar {
       width: 260px;
       border-right: 2px solid #3b3b3b;
       padding-right: 20px;
-      background: #202020;
       padding: 15px;
       box-shadow: 0 0 10px #0007;
+      background: rgba(0, 0, 0, 0.4);
     }
+
     #sidebar h3 {
       margin-top: 0;
-      color: #ffd700;
       text-transform: uppercase;
       letter-spacing: 1px;
+      color: #ffd700;
     }
+
     #files button {
       display: block;
       width: 100%;
@@ -38,57 +70,116 @@
       background: #2b2b2b;
       color: #f5f5f5;
     }
+
     #files button:hover {
       background: #3b3b3b;
     }
-    #editorContainer {
+
+    #mainArea {
       flex: 1;
       display: flex;
       flex-direction: column;
+      gap: 10px;
     }
+
+    #topRow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #currentFileName {
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #ff4c4c;
+    }
+
     #toolbar {
       display: flex;
       gap: 8px;
-      margin-bottom: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
     }
+
     .btn {
-      padding: 8px 10px;
+      padding: 6px 10px;
       cursor: pointer;
       font-size: 13px;
       border: 1px solid #555;
       background: #2b2b2b;
       color: #f5f5f5;
     }
+
     .btn:hover {
       background: #3b3b3b;
     }
+
+    #themeSelect {
+      min-width: 140px;
+    }
+
+    #autosaveIndicator {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-left: 10px;
+    }
+
+    #middleRow {
+      display: flex;
+      gap: 10px;
+      height: 65vh;
+    }
+
     #editorSplit {
+      width: 60%;
       display: flex;
       gap: 10px;
     }
+
     #editor {
       width: 50%;
-      height: 65vh;
+      height: 100%;
       font-family: monospace;
       font-size: 14px;
       padding: 10px;
       background: #111;
       color: #f5f5f5;
       border: 1px solid #444;
+      box-sizing: border-box;
     }
+
     #preview {
       width: 50%;
-      height: 65vh;
+      height: 100%;
       padding: 10px;
       background: #101820;
       border: 1px solid #444;
       overflow: auto;
+      box-sizing: border-box;
     }
+
+    #livePreviewContainer {
+      width: 40%;
+      height: 100%;
+      border: 2px solid #444;
+      background: #000;
+      box-shadow: 0 0 10px #0007;
+      box-sizing: border-box;
+    }
+
+    #livePreview {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
     #status {
-      margin-top: 10px;
+      margin-top: 5px;
       font-weight: bold;
       color: #00ff9d;
     }
+
     #newFileModal {
       display: none;
       position: fixed;
@@ -100,7 +191,9 @@
       box-shadow: 0 0 10px #000c;
       z-index: 1000;
       color: #f5f5f5;
+      width: 260px;
     }
+
     #newFileModal input {
       width: 100%;
       padding: 8px;
@@ -108,23 +201,25 @@
       background: #111;
       color: #f5f5f5;
       border: 1px solid #444;
+      box-sizing: border-box;
     }
-    #currentFileName {
-      margin-top: 0;
-      color: #ff4c4c;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
+
     #uploadInput {
       margin-top: 10px;
+      margin-bottom: 10px;
+      width: 100%;
     }
-    .folder {
-      font-weight: bold;
-      color: #87cefa;
+
+    .folder::before {
+      content: "📁 ";
+    }
+
+    .file::before {
+      content: "📄 ";
     }
   </style>
 </head>
-<body>
+<body class="original">
 
 <div id="sidebar">
   <h3>Valorwave CMS</h3>
@@ -134,20 +229,41 @@
   <div id="files"></div>
 </div>
 
-<div id="editorContainer">
-  <h3 id="currentFileName">No file selected</h3>
-
-  <div id="toolbar">
-    <button class="btn" onclick="insertMarkdown('**','**')">Bold</button>
-    <button class="btn" onclick="insertMarkdown('*','*')">Italic</button>
-    <button class="btn" onclick="insertHeading()">H1</button>
-    <button class="btn" onclick="saveFile()">Save</button>
-    <button class="btn" onclick="deleteFile()">Delete</button>
+<div id="mainArea">
+  <div id="topRow">
+    <div>
+      <h3 id="currentFileName">No file selected</h3>
+      <div id="toolbar">
+        <button class="btn" onclick="insertMarkdown('**','**')">Bold</button>
+        <button class="btn" onclick="insertMarkdown('*','*')">Italic</button>
+        <button class="btn" onclick="insertHeading()">H1</button>
+        <button class="btn" onclick="insertMarkdown('- ', '')">• List</button>
+        <button class="btn" onclick="insertMarkdown('1. ', '')">1. List</button>
+        <button class="btn" onclick="insertLink()">Link</button>
+        <button class="btn" onclick="insertImage()">Image</button>
+        <button class="btn" onclick="saveFile()">Save</button>
+        <button class="btn" onclick="deleteFile()">Delete</button>
+        <button class="btn" onclick="refreshLivePreview()">Refresh Preview</button>
+        <span id="autosaveIndicator">Autosave: Ready</span>
+      </div>
+    </div>
+    <div>
+      <select id="themeSelect" class="btn" onchange="changeTheme()">
+        <option value="original">Original</option>
+        <option value="multicam">Army Multicam</option>
+        <option value="patriotic">Patriotic</option>
+      </select>
+    </div>
   </div>
 
-  <div id="editorSplit">
-    <textarea id="editor" placeholder="Markdown editor..."></textarea>
-    <div id="preview"></div>
+  <div id="middleRow">
+    <div id="editorSplit">
+      <textarea id="editor" placeholder="Markdown editor..."></textarea>
+      <div id="preview"></div>
+    </div>
+    <div id="livePreviewContainer">
+      <iframe id="livePreview" src="/"></iframe>
+    </div>
   </div>
 
   <input type="hidden" id="currentPath">
@@ -174,6 +290,16 @@ function setStatus(msg, color) {
   el.style.color = color || "#00ff9d";
 }
 
+function changeTheme() {
+  const theme = document.getElementById("themeSelect").value;
+  document.body.className = theme;
+}
+
+function refreshLivePreview() {
+  const iframe = document.getElementById("livePreview");
+  iframe.src = iframe.src;
+}
+
 function loadFiles(path = "") {
   const params = path ? `?path=${encodeURIComponent(path)}` : "";
   fetch("/api/files" + params)
@@ -189,8 +315,9 @@ function loadFiles(path = "") {
         upBtn.onclick = () => {
           const parts = path.split("/").filter(Boolean);
           parts.pop();
-          loadFiles(parts.join("/"));
-          document.getElementById("currentFolder").value = parts.join("/");
+          const newPath = parts.join("/");
+          loadFiles(newPath);
+          document.getElementById("currentFolder").value = newPath;
         };
         container.appendChild(upBtn);
       }
@@ -207,6 +334,7 @@ function loadFiles(path = "") {
           };
         } else {
           btn.textContent = file.name;
+          btn.classList.add("file");
           btn.onclick = () => loadFile(file.path);
         }
         container.appendChild(btn);
@@ -254,8 +382,10 @@ function saveFile() {
         document.getElementById("currentSha").value = data.content.sha;
       }
       dirty = false;
+      document.getElementById("autosaveIndicator").textContent = "Autosave: Saved";
     } else {
       setStatus("Save failed", "#ff4c4c");
+      document.getElementById("autosaveIndicator").textContent = "Autosave: Error";
     }
   });
 }
@@ -339,6 +469,7 @@ function insertMarkdown(prefix, suffix) {
   textarea.selectionEnd = end + prefix.length;
   renderPreview();
   dirty = true;
+  document.getElementById("autosaveIndicator").textContent = "Autosave: Pending";
 }
 
 function insertHeading() {
@@ -354,6 +485,19 @@ function insertHeading() {
   textarea.selectionEnd = start + 2;
   renderPreview();
   dirty = true;
+  document.getElementById("autosaveIndicator").textContent = "Autosave: Pending";
+}
+
+function insertLink() {
+  const url = prompt("Enter URL:");
+  if (!url) return;
+  insertMarkdown("[", `](${url})`);
+}
+
+function insertImage() {
+  const url = prompt("Enter image URL:");
+  if (!url) return;
+  insertMarkdown("![](", `${url})`);
 }
 
 function renderPreview() {
@@ -364,16 +508,17 @@ function renderPreview() {
 document.getElementById("editor").addEventListener("input", () => {
   dirty = true;
   renderPreview();
+  document.getElementById("autosaveIndicator").textContent = "Autosave: Pending";
 });
 
 function startAutosave() {
   if (autosaveTimer) clearInterval(autosaveTimer);
   autosaveTimer = setInterval(() => {
     if (dirty) {
-      setStatus("Autosaving...");
+      document.getElementById("autosaveIndicator").textContent = "Autosaving...";
       saveFile();
     }
-  }, 10000);
+  }, 8000);
 }
 
 function uploadImage() {
