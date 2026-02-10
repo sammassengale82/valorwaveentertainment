@@ -9,6 +9,7 @@ module.exports = function (eleventyConfig) {
 
   // Passthrough copy
   eleventyConfig.addPassthroughCopy("src/admin");
+  eleventyConfig.addPassthroughCopy("src/admin/cms");
   eleventyConfig.addPassthroughCopy("images");
   eleventyConfig.addPassthroughCopy("src/styles.css");
   eleventyConfig.addPassthroughCopy("logo.png");
