@@ -8,7 +8,7 @@ module.exports = function (eleventyConfig) {
   });
 
   // Passthrough copy
-  eleventyConfig.addPassthroughCopy({ "src/admin": "admin" });
+  eleventyConfig.addPassthroughCopy("src/admin");
   eleventyConfig.addPassthroughCopy("images");
   eleventyConfig.addPassthroughCopy("src/styles.css");
   eleventyConfig.addPassthroughCopy("src/logo.png");
