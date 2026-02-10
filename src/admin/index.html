@@ -12,7 +12,12 @@
 
   <!-- Initialize CMS -->
   <script>
-    CMS.init();
+    CMS.init({
+    config: {
+      load_config_file: true,
+      config_url: "config.yaml"
+    }
+  });
   </script>
 </body>
 </html>
