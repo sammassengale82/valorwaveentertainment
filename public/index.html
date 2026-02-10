@@ -3,43 +3,118 @@
 <head>
   <meta charset="UTF-8">
   <title>Valor Wave Entertainment</title>
-  <link rel="stylesheet" href="/public/styles.css">
+  <link rel="stylesheet" href="/styles.css">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-
   <script>
   fetch('/theme.txt')
     .then(r => r.text())
-    .then(theme => document.body.classList.add(theme.trim()));
+    .then(theme => document.body.classList.add((theme || '').trim() || 'original'))
+    .catch(() => document.body.classList.add('original'));
   </script>
 </head>
 <body>
 
 <header>
-  <img src="/images/logo.png" class="logo" alt="Valor Wave Logo">
-  <nav>
-    <a href="/public/index.html">Home</a>
-    <a href="/public/services.html">Services</a>
-    <a href="/public/gallery.html">Gallery</a>
-    <a href="/public/contact.html">Contact</a>
-  </nav>
+  <div class="header-inner">
+    <img src="/images/logo.png" class="logo" alt="Valor Wave Logo">
+    <nav>
+      <a href="/">Home</a>
+      <a href="/services.html">Services</a>
+      <a href="/gallery.html">Gallery</a>
+      <a href="/contact.html">Contact</a>
+    </nav>
+  </div>
 </header>
 
-<section>
-  <h1>Faith‑Driven, Veteran‑Owned DJ Excellence</h1>
-  <p>
-    Valor Wave Entertainment delivers unforgettable experiences through music, lighting, and professional hosting.
-    Whether it's a wedding, corporate event, or celebration, we bring passion, precision, and purpose.
-  </p>
-</section>
+<main>
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-tagline">FAITH • HONOR • EXCELLENCE</div>
+      <h1 class="hero-title">Valor Wave Entertainment</h1>
+      <p class="hero-subtitle">
+        Veteran‑owned, faith‑driven DJ & MC services for weddings, corporate events, and celebrations that matter.
+      </p>
+      <a href="/contact.html" class="btn-primary">Book Your Event</a>
+    </div>
+  </section>
 
-<section>
-  <h2>Featured Services</h2>
-  <div class="gallery-grid">
-    <img src="/images/service-wedding.jpg" alt="Wedding DJ">
-    <img src="/images/service-corporate.jpg" alt="Corporate Event">
-    <img src="/images/service-dj-mc.jpg" alt="DJ & MC">
-  </div>
-</section>
+  <section>
+    <h2>Why Valor Wave?</h2>
+    <div class="pillars">
+      <div class="pillar">
+        <h3>Faith‑Driven</h3>
+        <p>
+          Every event is approached with integrity, purpose, and a heart to serve. Your story and values matter.
+        </p>
+      </div>
+      <div class="pillar">
+        <h3>Veteran‑Owned</h3>
+        <p>
+          Professionalism, discipline, and reliability are built into every detail—from timelines to sound checks.
+        </p>
+      </div>
+      <div class="pillar">
+        <h3>Event Excellence</h3>
+        <p>
+          High‑quality sound, lighting, and hosting that keeps your event flowing smoothly and your guests engaged.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Featured Services</h2>
+    <div class="cards">
+      <div class="card">
+        <img src="/images/service-wedding.jpg" alt="Wedding DJ">
+        <div class="card-body">
+          <h3>Wedding DJ & MC</h3>
+          <p>
+            Elegant, intentional, and tailored to your story—from ceremony audio to the last dance.
+          </p>
+          <a href="/services.html">Learn more →</a>
+        </div>
+      </div>
+      <div class="card">
+        <img src="/images/service-corporate.jpg" alt="Corporate Event">
+        <div class="card-body">
+          <h3>Corporate Events</h3>
+          <p>
+            Professional audio, clean hosting, and a polished atmosphere for your team and clients.
+          </p>
+          <a href="/services.html">Learn more →</a>
+        </div>
+      </div>
+      <div class="card">
+        <img src="/images/service-dj-mc.jpg" alt="DJ & MC">
+        <div class="card-body">
+          <h3>DJ & MC Services</h3>
+          <p>
+            From curated playlists to live crowd engagement, we keep the energy right where it should be.
+          </p>
+          <a href="/services.html">Learn more →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What Clients Are Saying</h2>
+    <div class="testimonial">
+      “Valor Wave made our wedding reception absolutely unforgettable. The music, the flow, the energy—everything
+      was perfect and stress‑free.”
+      <cite>— Happy Couple, Chattanooga</cite>
+    </div>
+  </section>
+
+  <section style="text-align:center;">
+    <h2>Ready to Elevate Your Event?</h2>
+    <p style="margin: 15px 0 20px;">
+      Let’s create a night your guests will talk about for years.
+    </p>
+    <a href="/contact.html" class="btn-primary">Contact Us</a>
+  </section>
+</main>
 
 <footer>
   © Valor Wave Entertainment — Faith • Honor • Excellence
