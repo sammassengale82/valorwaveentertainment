@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Services — Valor Wave Entertainment</title>
+  <link rel="stylesheet" href="/public/styles.css">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+  <script>
+  fetch('/theme.txt')
+    .then(r => r.text())
+    .then(theme => document.body.classList.add(theme.trim()));
+  </script>
+</head>
+<body>
+
+<header>
+  <img src="/images/logo.png" class="logo" alt="Valor Wave Logo">
+  <nav>
+    <a href="/public/index.html">Home</a>
+    <a href="/public/services.html">Services</a>
+    <a href="/public/gallery.html">Gallery</a>
+    <a href="/public/contact.html">Contact</a>
+  </nav>
+</header>
+
+<section>
+  <h1>Our Services</h1>
+
+  <h2>Wedding DJ & MC</h2>
+  <p>Elegant, professional, and tailored to your special day.</p>
+
+  <h2>Corporate Events</h2>
+  <p>Professional audio, lighting, and hosting for business gatherings.</p>
+
+  <h2>Sound & Lighting</h2>
+  <p>High‑quality equipment and setup for any venue or event size.</p>
+</section>
+
+<footer>
+  © Valor Wave Entertainment — Faith • Honor • Excellence
+</footer>
+
+</body>
+</html>
