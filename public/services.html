@@ -3,39 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <title>Services — Valor Wave Entertainment</title>
-  <link rel="stylesheet" href="/public/styles.css">
+  <link rel="stylesheet" href="/styles.css">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-
   <script>
   fetch('/theme.txt')
     .then(r => r.text())
-    .then(theme => document.body.classList.add(theme.trim()));
+    .then(theme => document.body.classList.add((theme || '').trim() || 'original'))
+    .catch(() => document.body.classList.add('original'));
   </script>
 </head>
 <body>
 
 <header>
-  <img src="/images/logo.png" class="logo" alt="Valor Wave Logo">
-  <nav>
-    <a href="/public/index.html">Home</a>
-    <a href="/public/services.html">Services</a>
-    <a href="/public/gallery.html">Gallery</a>
-    <a href="/public/contact.html">Contact</a>
-  </nav>
+  <div class="header-inner">
+    <img src="/images/logo.png" class="logo" alt="Valor Wave Logo">
+    <nav>
+      <a href="/">Home</a>
+      <a href="/services.html">Services</a>
+      <a href="/gallery.html">Gallery</a>
+      <a href="/contact.html">Contact</a>
+    </nav>
+  </div>
 </header>
 
-<section>
-  <h1>Our Services</h1>
+<main>
+  <section>
+    <h2>Our Services</h2>
 
-  <h2>Wedding DJ & MC</h2>
-  <p>Elegant, professional, and tailored to your special day.</p>
+    <div class="service-block">
+      <h3>Wedding DJ & MC</h3>
+      <p>
+        From ceremony to send‑off, we handle the soundtrack and flow of your day with care and precision.
+      </p>
+      <p>
+        • Ceremony audio and microphones<br>
+        • Reception DJ & MC<br>
+        • Custom playlists and do‑not‑play lists<br>
+        • Timeline coordination with your planner
+      </p>
+    </div>
 
-  <h2>Corporate Events</h2>
-  <p>Professional audio, lighting, and hosting for business gatherings.</p>
+    <div class="service-block">
+      <h3>Corporate Events</h3>
+      <p>
+        Professional, polished, and on‑brand audio/visual support for your meetings, banquets, and celebrations.
+      </p>
+      <p>
+        • Background music and walk‑up tracks<br>
+        • Microphones and announcements<br>
+        • Awards, banquets, and holiday parties<br>
+        • Clean, family‑friendly music options
+      </p>
+    </div>
 
-  <h2>Sound & Lighting</h2>
-  <p>High‑quality equipment and setup for any venue or event size.</p>
-</section>
+    <div class="service-block">
+      <h3>Sound & Lighting</h3>
+      <p>
+        High‑quality sound and lighting that transforms your venue and keeps your event looking and sounding its best.
+      </p>
+      <p>
+        • Professional speakers and subwoofers<br>
+        • Dance floor and ambient lighting<br>
+        • Uplighting and custom looks<br>
+        • Scalable setups for small or large venues
+      </p>
+    </div>
+  </section>
+
+  <section style="text-align:center;">
+    <h2>Let’s Talk About Your Event</h2>
+    <p style="margin: 15px 0 20px;">
+      Every event is unique. Share your vision, and we’ll build the perfect experience around it.
+    </p>
+    <a href="/contact.html" class="btn-primary">Contact Us</a>
+  </section>
+</main>
 
 <footer>
   © Valor Wave Entertainment — Faith • Honor • Excellence
