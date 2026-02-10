@@ -3,20 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <title>Valorwave CMS</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       display: flex;
       gap: 20px;
       padding: 20px;
+      background: #1b1b1b;
+      color: #f5f5f5;
     }
     #sidebar {
       width: 260px;
-      border-right: 1px solid #ccc;
+      border-right: 2px solid #3b3b3b;
       padding-right: 20px;
+      background: #202020;
+      padding: 15px;
+      box-shadow: 0 0 10px #0007;
     }
     #sidebar h3 {
       margin-top: 0;
+      color: #ffd700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     #files button {
       display: block;
@@ -25,88 +34,179 @@
       padding: 8px;
       text-align: left;
       cursor: pointer;
-      border: 1px solid #ddd;
-      background: #f9f9f9;
+      border: 1px solid #444;
+      background: #2b2b2b;
+      color: #f5f5f5;
+    }
+    #files button:hover {
+      background: #3b3b3b;
     }
     #editorContainer {
       flex: 1;
       display: flex;
       flex-direction: column;
     }
+    #toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .btn {
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 13px;
+      border: 1px solid #555;
+      background: #2b2b2b;
+      color: #f5f5f5;
+    }
+    .btn:hover {
+      background: #3b3b3b;
+    }
+    #editorSplit {
+      display: flex;
+      gap: 10px;
+    }
     #editor {
-      width: 100%;
-      height: 70vh;
+      width: 50%;
+      height: 65vh;
       font-family: monospace;
       font-size: 14px;
       padding: 10px;
+      background: #111;
+      color: #f5f5f5;
+      border: 1px solid #444;
     }
-    .btn {
+    #preview {
+      width: 50%;
+      height: 65vh;
       padding: 10px;
-      margin-top: 10px;
-      cursor: pointer;
-      font-size: 15px;
+      background: #101820;
+      border: 1px solid #444;
+      overflow: auto;
     }
     #status {
       margin-top: 10px;
       font-weight: bold;
+      color: #00ff9d;
     }
     #newFileModal {
       display: none;
       position: fixed;
       top: 20%;
       left: 40%;
-      background: white;
+      background: #202020;
       padding: 20px;
       border: 1px solid #aaa;
-      box-shadow: 0 0 10px #0003;
+      box-shadow: 0 0 10px #000c;
       z-index: 1000;
+      color: #f5f5f5;
+    }
+    #newFileModal input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      background: #111;
+      color: #f5f5f5;
+      border: 1px solid #444;
+    }
+    #currentFileName {
+      margin-top: 0;
+      color: #ff4c4c;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    #uploadInput {
+      margin-top: 10px;
+    }
+    .folder {
+      font-weight: bold;
+      color: #87cefa;
     }
   </style>
 </head>
 <body>
 
 <div id="sidebar">
-  <h3>Files</h3>
+  <h3>Valorwave CMS</h3>
   <button class="btn" onclick="loadFiles()">Reload Files</button>
   <button class="btn" onclick="showNewFileModal()">New File</button>
+  <input type="file" id="uploadInput" onchange="uploadImage()" />
   <div id="files"></div>
 </div>
 
 <div id="editorContainer">
   <h3 id="currentFileName">No file selected</h3>
-  <textarea id="editor" placeholder="Select a file..."></textarea>
+
+  <div id="toolbar">
+    <button class="btn" onclick="insertMarkdown('**','**')">Bold</button>
+    <button class="btn" onclick="insertMarkdown('*','*')">Italic</button>
+    <button class="btn" onclick="insertHeading()">H1</button>
+    <button class="btn" onclick="saveFile()">Save</button>
+    <button class="btn" onclick="deleteFile()">Delete</button>
+  </div>
+
+  <div id="editorSplit">
+    <textarea id="editor" placeholder="Markdown editor..."></textarea>
+    <div id="preview"></div>
+  </div>
+
   <input type="hidden" id="currentPath">
   <input type="hidden" id="currentSha">
-
-  <button class="btn" onclick="saveFile()">Save File</button>
-  <button class="btn" onclick="deleteFile()">Delete File</button>
+  <input type="hidden" id="currentFolder" value="">
 
   <div id="status"></div>
 </div>
 
 <div id="newFileModal">
   <h3>Create New File</h3>
-  <input id="newFilePath" placeholder="path/filename.md" style="width:100%;padding:8px;">
+  <input id="newFilePath" placeholder="path/filename.md">
   <button class="btn" onclick="createNewFile()">Create</button>
   <button class="btn" onclick="hideNewFileModal()">Cancel</button>
 </div>
 
 <script>
-function setStatus(msg) {
-  document.getElementById("status").textContent = msg;
+let autosaveTimer = null;
+let dirty = false;
+
+function setStatus(msg, color) {
+  const el = document.getElementById("status");
+  el.textContent = msg;
+  el.style.color = color || "#00ff9d";
 }
 
-function loadFiles() {
-  fetch("/api/files")
+function loadFiles(path = "") {
+  const params = path ? `?path=${encodeURIComponent(path)}` : "";
+  fetch("/api/files" + params)
     .then(res => res.json())
     .then(files => {
       const container = document.getElementById("files");
       container.innerHTML = "";
 
+      if (path) {
+        const upBtn = document.createElement("button");
+        upBtn.textContent = "../";
+        upBtn.classList.add("folder");
+        upBtn.onclick = () => {
+          const parts = path.split("/").filter(Boolean);
+          parts.pop();
+          loadFiles(parts.join("/"));
+          document.getElementById("currentFolder").value = parts.join("/");
+        };
+        container.appendChild(upBtn);
+      }
+
       files.forEach(file => {
         const btn = document.createElement("button");
-        btn.textContent = file.name + (file.type === "dir" ? "/" : "");
-        if (file.type === "file") {
+        if (file.type === "dir") {
+          btn.textContent = file.name + "/";
+          btn.classList.add("folder");
+          btn.onclick = () => {
+            const newPath = (path ? path + "/" : "") + file.name;
+            document.getElementById("currentFolder").value = newPath;
+            loadFiles(newPath);
+          };
+        } else {
+          btn.textContent = file.name;
           btn.onclick = () => loadFile(file.path);
         }
         container.appendChild(btn);
@@ -118,14 +218,16 @@ function loadFile(path) {
   fetch(`/api/file?path=${encodeURIComponent(path)}`)
     .then(res => res.json())
     .then(data => {
-      const decoded = atob(data.content);
+      const decoded = atob(data.content || "");
 
       document.getElementById("editor").value = decoded;
       document.getElementById("currentPath").value = data.path;
       document.getElementById("currentSha").value = data.sha;
-      document.getElementById("currentFileName").textContent = data.name;
+      document.getElementById("currentFileName").textContent = data.path;
 
-      setStatus("Loaded " + data.name);
+      renderPreview();
+      dirty = false;
+      setStatus("Loaded " + data.path);
     });
 }
 
@@ -147,12 +249,13 @@ function saveFile() {
   .then(res => res.json())
   .then(data => {
     if (data.commit) {
-      setStatus("Saved!");
+      setStatus("Saved " + path);
       if (data.content && data.content.sha) {
         document.getElementById("currentSha").value = data.content.sha;
       }
+      dirty = false;
     } else {
-      setStatus("Save failed");
+      setStatus("Save failed", "#ff4c4c");
     }
   });
 }
@@ -175,12 +278,14 @@ function deleteFile() {
   })
   .then(res => res.json())
   .then(data => {
-    setStatus("Deleted " + path);
-    loadFiles();
+    setStatus("Deleted " + path, "#ff4c4c");
+    const folder = document.getElementById("currentFolder").value;
+    loadFiles(folder);
     document.getElementById("editor").value = "";
     document.getElementById("currentFileName").textContent = "No file selected";
     document.getElementById("currentPath").value = "";
     document.getElementById("currentSha").value = "";
+    renderPreview();
   });
 }
 
@@ -193,11 +298,17 @@ function hideNewFileModal() {
 }
 
 function createNewFile() {
-  const path = document.getElementById("newFilePath").value;
+  const input = document.getElementById("newFilePath");
+  let path = input.value.trim();
+  const folder = document.getElementById("currentFolder").value;
 
   if (!path) {
     alert("Enter a file path");
     return;
+  }
+
+  if (folder) {
+    path = folder.replace(/\/$/, "") + "/" + path;
   }
 
   fetch("/api/new", {
@@ -208,13 +319,94 @@ function createNewFile() {
   .then(res => res.json())
   .then(data => {
     hideNewFileModal();
-    loadFiles();
+    input.value = "";
+    loadFiles(folder);
     setStatus("Created " + path);
+    loadFile(path);
   });
+}
+
+function insertMarkdown(prefix, suffix) {
+  const textarea = document.getElementById("editor");
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const value = textarea.value;
+  const selected = value.substring(start, end);
+  const newText = value.substring(0, start) + prefix + selected + suffix + value.substring(end);
+  textarea.value = newText;
+  textarea.focus();
+  textarea.selectionStart = start + prefix.length;
+  textarea.selectionEnd = end + prefix.length;
+  renderPreview();
+  dirty = true;
+}
+
+function insertHeading() {
+  const textarea = document.getElementById("editor");
+  const start = textarea.selectionStart;
+  const value = textarea.value;
+  const before = value.substring(0, start);
+  const lineStart = before.lastIndexOf("\n") + 1;
+  const newValue = value.substring(0, lineStart) + "# " + value.substring(lineStart);
+  textarea.value = newValue;
+  textarea.focus();
+  textarea.selectionStart = start + 2;
+  textarea.selectionEnd = start + 2;
+  renderPreview();
+  dirty = true;
+}
+
+function renderPreview() {
+  const md = document.getElementById("editor").value;
+  document.getElementById("preview").innerHTML = marked.parse(md || "");
+}
+
+document.getElementById("editor").addEventListener("input", () => {
+  dirty = true;
+  renderPreview();
+});
+
+function startAutosave() {
+  if (autosaveTimer) clearInterval(autosaveTimer);
+  autosaveTimer = setInterval(() => {
+    if (dirty) {
+      setStatus("Autosaving...");
+      saveFile();
+    }
+  }, 10000);
+}
+
+function uploadImage() {
+  const input = document.getElementById("uploadInput");
+  const file = input.files[0];
+  if (!file) return;
+
+  const folder = document.getElementById("currentFolder").value || "images";
+  const path = folder.replace(/\/$/, "") + "/" + file.name;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const dataUrl = e.target.result;
+    const base64 = dataUrl.split(",")[1];
+
+    fetch("/api/upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path, base64 })
+    })
+    .then(res => res.json())
+    .then(data => {
+      setStatus("Uploaded " + path);
+      loadFiles(folder);
+    });
+  };
+  reader.readAsDataURL(file);
 }
 
 // initial load
 loadFiles();
+renderPreview();
+startAutosave();
 </script>
 
 </body>
