@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Valorwave Admin</title>
+  <title>Valorwave CMS</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -10,18 +10,23 @@
       gap: 20px;
       padding: 20px;
     }
-    #fileList {
-      width: 250px;
+    #sidebar {
+      width: 260px;
       border-right: 1px solid #ccc;
       padding-right: 20px;
     }
-    #fileList button {
+    #sidebar h3 {
+      margin-top: 0;
+    }
+    #files button {
       display: block;
       width: 100%;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       padding: 8px;
       text-align: left;
       cursor: pointer;
+      border: 1px solid #ddd;
+      background: #f9f9f9;
     }
     #editorContainer {
       flex: 1;
@@ -35,31 +40,62 @@
       font-size: 14px;
       padding: 10px;
     }
-    #saveBtn {
-      margin-top: 10px;
+    .btn {
       padding: 10px;
-      font-size: 16px;
+      margin-top: 10px;
       cursor: pointer;
+      font-size: 15px;
+    }
+    #status {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    #newFileModal {
+      display: none;
+      position: fixed;
+      top: 20%;
+      left: 40%;
+      background: white;
+      padding: 20px;
+      border: 1px solid #aaa;
+      box-shadow: 0 0 10px #0003;
+      z-index: 1000;
     }
   </style>
 </head>
 <body>
 
-  <div id="fileList">
-    <h3>Files</h3>
-    <button onclick="loadFiles()">Load Files</button>
-    <div id="files"></div>
-  </div>
+<div id="sidebar">
+  <h3>Files</h3>
+  <button class="btn" onclick="loadFiles()">Reload Files</button>
+  <button class="btn" onclick="showNewFileModal()">New File</button>
+  <div id="files"></div>
+</div>
 
-  <div id="editorContainer">
-    <h3 id="currentFileName">No file selected</h3>
-    <textarea id="editor" placeholder="Select a file to load its contents..."></textarea>
-    <input type="hidden" id="currentPath">
-    <input type="hidden" id="currentSha">
-    <button id="saveBtn" onclick="saveFile()">Save File</button>
-  </div>
+<div id="editorContainer">
+  <h3 id="currentFileName">No file selected</h3>
+  <textarea id="editor" placeholder="Select a file..."></textarea>
+  <input type="hidden" id="currentPath">
+  <input type="hidden" id="currentSha">
+
+  <button class="btn" onclick="saveFile()">Save File</button>
+  <button class="btn" onclick="deleteFile()">Delete File</button>
+
+  <div id="status"></div>
+</div>
+
+<div id="newFileModal">
+  <h3>Create New File</h3>
+  <input id="newFilePath" placeholder="path/filename.md" style="width:100%;padding:8px;">
+  <button class="btn" onclick="createNewFile()">Create</button>
+  <button class="btn" onclick="hideNewFileModal()">Cancel</button>
+</div>
 
 <script>
+function setStatus(msg) {
+  document.getElementById("status").textContent = msg;
+}
+
 function loadFiles() {
   fetch("/api/files")
     .then(res => res.json())
@@ -68,12 +104,12 @@ function loadFiles() {
       container.innerHTML = "";
 
       files.forEach(file => {
+        const btn = document.createElement("button");
+        btn.textContent = file.name + (file.type === "dir" ? "/" : "");
         if (file.type === "file") {
-          const btn = document.createElement("button");
-          btn.textContent = file.name;
           btn.onclick = () => loadFile(file.path);
-          container.appendChild(btn);
         }
+        container.appendChild(btn);
       });
     });
 }
@@ -88,6 +124,8 @@ function loadFile(path) {
       document.getElementById("currentPath").value = data.path;
       document.getElementById("currentSha").value = data.sha;
       document.getElementById("currentFileName").textContent = data.name;
+
+      setStatus("Loaded " + data.name);
     });
 }
 
@@ -109,15 +147,74 @@ function saveFile() {
   .then(res => res.json())
   .then(data => {
     if (data.commit) {
-      alert("File saved successfully!");
+      setStatus("Saved!");
       if (data.content && data.content.sha) {
         document.getElementById("currentSha").value = data.content.sha;
       }
     } else {
-      alert("Save failed: " + JSON.stringify(data));
+      setStatus("Save failed");
     }
   });
 }
+
+function deleteFile() {
+  const path = document.getElementById("currentPath").value;
+  const sha = document.getElementById("currentSha").value;
+
+  if (!path) {
+    alert("No file selected");
+    return;
+  }
+
+  if (!confirm("Delete " + path + "?")) return;
+
+  fetch("/api/delete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ path, sha })
+  })
+  .then(res => res.json())
+  .then(data => {
+    setStatus("Deleted " + path);
+    loadFiles();
+    document.getElementById("editor").value = "";
+    document.getElementById("currentFileName").textContent = "No file selected";
+    document.getElementById("currentPath").value = "";
+    document.getElementById("currentSha").value = "";
+  });
+}
+
+function showNewFileModal() {
+  document.getElementById("newFileModal").style.display = "block";
+}
+
+function hideNewFileModal() {
+  document.getElementById("newFileModal").style.display = "none";
+}
+
+function createNewFile() {
+  const path = document.getElementById("newFilePath").value;
+
+  if (!path) {
+    alert("Enter a file path");
+    return;
+  }
+
+  fetch("/api/new", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ path, content: "" })
+  })
+  .then(res => res.json())
+  .then(data => {
+    hideNewFileModal();
+    loadFiles();
+    setStatus("Created " + path);
+  });
+}
+
+// initial load
+loadFiles();
 </script>
 
 </body>
