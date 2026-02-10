@@ -60,9 +60,6 @@
   </div>
 
 <script>
-//
-// Load file list
-//
 function loadFiles() {
   fetch("/api/files")
     .then(res => res.json())
@@ -81,9 +78,6 @@ function loadFiles() {
     });
 }
 
-//
-// Load a single file
-//
 function loadFile(path) {
   fetch(`/api/file?path=${encodeURIComponent(path)}`)
     .then(res => res.json())
@@ -97,11 +91,32 @@ function loadFile(path) {
     });
 }
 
-//
-// Save file (Phase 3 — backend not implemented yet)
-//
 function saveFile() {
-  alert("Save API not implemented yet — that's Phase 3!");
+  const path = document.getElementById("currentPath").value;
+  const sha = document.getElementById("currentSha").value;
+  const content = document.getElementById("editor").value;
+
+  if (!path || !sha) {
+    alert("No file loaded.");
+    return;
+  }
+
+  fetch("/api/save", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ path, content, sha })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.commit) {
+      alert("File saved successfully!");
+      if (data.content && data.content.sha) {
+        document.getElementById("currentSha").value = data.content.sha;
+      }
+    } else {
+      alert("Save failed: " + JSON.stringify(data));
+    }
+  });
 }
 </script>
 
