@@ -1,0 +1,82 @@
+/* GLOBAL RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* THEME CLASSES */
+body.original {
+  background: #1b1b1b;
+  color: #f5f5f5;
+  font-family: Arial, sans-serif;
+}
+
+body.multicam {
+  background: #2b2b2b;
+  color: #f5f5f5;
+  font-family: "Roboto Condensed", sans-serif;
+}
+
+body.patriotic {
+  background: linear-gradient(180deg, #b22234 0%, #ffffff 50%, #3c3b6e 100%);
+  color: #ffffff;
+  font-family: "Merriweather", serif;
+}
+
+/* LAYOUT */
+header {
+  padding: 20px;
+  text-align: center;
+  border-bottom: 2px solid #444;
+}
+
+header img.logo {
+  height: 80px;
+}
+
+nav {
+  margin-top: 15px;
+}
+
+nav a {
+  margin: 0 15px;
+  text-decoration: none;
+  color: inherit;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+nav a:hover {
+  opacity: 0.7;
+}
+
+section {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+h1, h2, h3 {
+  margin-bottom: 20px;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.gallery-grid img {
+  width: 100%;
+  border-radius: 8px;
+  border: 2px solid #444;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  margin-top: 40px;
+  border-top: 2px solid #444;
+  opacity: 0.8;
+}
