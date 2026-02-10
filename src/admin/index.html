@@ -3,31 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <title>Valorwave Admin</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+    }
+    #fileList {
+      width: 250px;
+      border-right: 1px solid #ccc;
+      padding-right: 20px;
+    }
+    #fileList button {
+      display: block;
+      width: 100%;
+      margin-bottom: 8px;
+      padding: 8px;
+      text-align: left;
+      cursor: pointer;
+    }
+    #editorContainer {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    #editor {
+      width: 100%;
+      height: 70vh;
+      font-family: monospace;
+      font-size: 14px;
+      padding: 10px;
+    }
+    #saveBtn {
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <h1>Valorwave Admin</h1>
 
-  <p>
-    <button id="login">Login with GitHub</button>
-    <button id="load">Load Files</button>
-  </p>
+  <div id="fileList">
+    <h3>Files</h3>
+    <button onclick="loadFiles()">Load Files</button>
+    <div id="files"></div>
+  </div>
 
-  <pre id="output"></pre>
+  <div id="editorContainer">
+    <h3 id="currentFileName">No file selected</h3>
+    <textarea id="editor" placeholder="Select a file to load its contents..."></textarea>
+    <input type="hidden" id="currentPath">
+    <input type="hidden" id="currentSha">
+    <button id="saveBtn" onclick="saveFile()">Save File</button>
+  </div>
 
-  <script>
-    const workerBase = ""; // "" if Worker is bound to same domain; otherwise set to "https://YOUR-WORKER.workers.dev"
+<script>
+//
+// Load file list
+//
+function loadFiles() {
+  fetch("/api/files")
+    .then(res => res.json())
+    .then(files => {
+      const container = document.getElementById("files");
+      container.innerHTML = "";
 
-    document.getElementById("login").onclick = () => {
-      window.open(workerBase + "/oauth/login", "_blank");
-    };
-
-    document.getElementById("load").onclick = async () => {
-      const res = await fetch(workerBase + "/api/files", {
-        credentials: "include"
+      files.forEach(file => {
+        if (file.type === "file") {
+          const btn = document.createElement("button");
+          btn.textContent = file.name;
+          btn.onclick = () => loadFile(file.path);
+          container.appendChild(btn);
+        }
       });
-      const json = await res.json();
-      document.getElementById("output").textContent = JSON.stringify(json, null, 2);
-    };
-  </script>
+    });
+}
+
+//
+// Load a single file
+//
+function loadFile(path) {
+  fetch(`/api/file?path=${encodeURIComponent(path)}`)
+    .then(res => res.json())
+    .then(data => {
+      const decoded = atob(data.content);
+
+      document.getElementById("editor").value = decoded;
+      document.getElementById("currentPath").value = data.path;
+      document.getElementById("currentSha").value = data.sha;
+      document.getElementById("currentFileName").textContent = data.name;
+    });
+}
+
+//
+// Save file (Phase 3 — backend not implemented yet)
+//
+function saveFile() {
+  alert("Save API not implemented yet — that's Phase 3!");
+}
+</script>
+
 </body>
 </html>
