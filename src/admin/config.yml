@@ -11,23 +11,26 @@ public_folder: "/images"
 collections:
   - name: "home"
     label: "Homepage"
-    file: "src/content/pages/home.md"
-    fields:
-      - { label: "Page Title", name: "title", widget: "string" }
-      - { label: "Hero Kicker", name: "hero_kicker", widget: "string" }
-      - { label: "Hero Tagline", name: "hero_tagline", widget: "string" }
-      - { label: "Hero Subline", name: "hero_subline", widget: "string" }
-      - { label: "Hero Button Text", name: "hero_button", widget: "string" }
-      - { label: "Services Title", name: "services_title", widget: "string" }
-      - { label: "Services Footer Text", name: "services_footer", widget: "text" }
-      - { label: "Bio Title", name: "bio_title", widget: "string" }
-      - { label: "Bio Name", name: "bio_name", widget: "string" }
-      - { label: "Bio Image", name: "bio_image", widget: "image" }
-      - { label: "Bio Text", name: "bio_text", widget: "markdown" }
-      - { label: "Testimonials Title", name: "testimonials_title", widget: "string" }
-      - { label: "Contact Title", name: "contact_title", widget: "string" }
-      - { label: "Form Action URL", name: "contact_form_action", widget: "string" }
-      - { label: "Contact Button Text", name: "contact_button", widget: "string" }
+    files:
+      - name: "home"
+        label: "Homepage Content"
+        file: "src/content/pages/home.md"
+        fields:
+          - { label: "Page Title", name: "title", widget: "string" }
+          - { label: "Hero Kicker", name: "hero_kicker", widget: "string" }
+          - { label: "Hero Tagline", name: "hero_tagline", widget: "string" }
+          - { label: "Hero Subline", name: "hero_subline", widget: "string" }
+          - { label: "Hero Button Text", name: "hero_button", widget: "string" }
+          - { label: "Services Title", name: "services_title", widget: "string" }
+          - { label: "Services Footer Text", name: "services_footer", widget: "text" }
+          - { label: "Bio Title", name: "bio_title", widget: "string" }
+          - { label: "Bio Name", name: "bio_name", widget: "string" }
+          - { label: "Bio Image", name: "bio_image", widget: "image" }
+          - { label: "Bio Text", name: "bio_text", widget: "markdown" }
+          - { label: "Testimonials Title", name: "testimonials_title", widget: "string" }
+          - { label: "Contact Title", name: "contact_title", widget: "string" }
+          - { label: "Form Action URL", name: "contact_form_action", widget: "string" }
+          - { label: "Contact Button Text", name: "contact_button", widget: "string" }
 
   - name: "services"
     label: "Services"
