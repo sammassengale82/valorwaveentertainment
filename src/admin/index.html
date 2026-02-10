@@ -7,17 +7,9 @@
 </head>
 
 <body>
-  <!-- Static CMS UMD bundle -->
-  <script src="https://unpkg.com/@staticcms/app@^2.0.0/dist/static-cms-app.js"></script>
-
-  <!-- Initialize CMS -->
-  <script>
-    StaticCmsApp.init({
-      config: {
-        load_config_file: true,
-        config_url: "config.yaml"
-      }
-    });
-  </script>
+  <script
+    src="https://unpkg.com/@staticcms/app@^2.0.0/dist/static-cms-app.js"
+    data-cms-config="config.yaml"
+  ></script>
 </body>
 </html>
