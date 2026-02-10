@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Contact — Valor Wave Entertainment</title>
+  <link rel="stylesheet" href="/public/styles.css">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+  <script>
+  fetch('/theme.txt')
+    .then(r => r.text())
+    .then(theme => document.body.classList.add(theme.trim()));
+  </script>
+</head>
+<body>
+
+<header>
+  <img src="/images/logo.png" class="logo" alt="Valor Wave Logo">
+  <nav>
+    <a href="/public/index.html">Home</a>
+    <a href="/public/services.html">Services</a>
+    <a href="/public/gallery.html">Gallery</a>
+    <a href="/public/contact.html">Contact</a>
+  </nav>
+</header>
+
+<section>
+  <h1>Contact Us</h1>
+
+  <p>Email: <strong>sam@valorwaveentertainment.com</strong></p>
+  <p>Phone: <strong>(423) 555‑1234</strong></p>
+
+  <p>We look forward to serving you with excellence.</p>
+</section>
+
+<footer>
+  © Valor Wave Entertainment — Faith • Honor • Excellence
+</footer>
+
+</body>
+</html>
