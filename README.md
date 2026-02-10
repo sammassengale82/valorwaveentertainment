@@ -1,2 +1,2 @@
-# valorwaveentertainment
+# Valorwaveentertainment
 Valor Wave Entertainment
