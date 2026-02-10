@@ -8,10 +8,10 @@ module.exports = function (eleventyConfig) {
   });
 
   // Passthrough copy
-  eleventyConfig.addPassthroughCopy("src/admin");
+  eleventyConfig.addPassthroughCopy("src/admin2");
   eleventyConfig.addPassthroughCopy("images");
   eleventyConfig.addPassthroughCopy("src/styles.css");
-  eleventyConfig.addPassthroughCopy("src/logo.png");
+  eleventyConfig.addPassthroughCopy("logo.png");
 
   // Layout alias
   eleventyConfig.addLayoutAlias("base", "base.njk");
