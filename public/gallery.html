@@ -3,37 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <title>Gallery — Valor Wave Entertainment</title>
-  <link rel="stylesheet" href="/public/styles.css">
+  <link rel="stylesheet" href="/styles.css">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-
   <script>
   fetch('/theme.txt')
     .then(r => r.text())
-    .then(theme => document.body.classList.add(theme.trim()));
+    .then(theme => document.body.classList.add((theme || '').trim() || 'original'))
+    .catch(() => document.body.classList.add('original'));
   </script>
 </head>
 <body>
 
 <header>
-  <img src="/images/logo.png" class="logo" alt="Valor Wave Logo">
-  <nav>
-    <a href="/public/index.html">Home</a>
-    <a href="/public/services.html">Services</a>
-    <a href="/public/gallery.html">Gallery</a>
-    <a href="/public/contact.html">Contact</a>
-  </nav>
+  <div class="header-inner">
+    <img src="/images/logo.png" class="logo" alt="Valor Wave Logo">
+    <nav>
+      <a href="/">Home</a>
+      <a href="/services.html">Services</a>
+      <a href="/gallery.html">Gallery</a>
+      <a href="/contact.html">Contact</a>
+    </nav>
+  </div>
 </header>
 
-<section>
-  <h1>Event Gallery</h1>
+<main>
+  <section>
+    <h2>Event Gallery</h2>
+    <p style="margin: 10px 0 25px;">
+      A glimpse into the moments we’ve been honored to be part of.
+    </p>
 
-  <div class="gallery-grid">
-    <img src="/images/hero-wedding.jpg" alt="Wedding">
-    <img src="/images/service-sound-lighting.jpg" alt="Lighting">
-    <img src="/images/service-dj-mc.jpg" alt="DJ Booth">
-    <img src="/images/service-corporate.jpg" alt="Corporate Event">
-  </div>
-</section>
+    <div class="gallery-grid">
+      <img src="/images/hero-wedding.jpg" alt="Wedding celebration">
+      <img src="/images/service-sound-lighting.jpg" alt="Lighting setup">
+      <img src="/images/service-dj-mc.jpg" alt="DJ booth">
+      <img src="/images/service-corporate.jpg" alt="Corporate event">
+      <img src="/images/dj-portrait-sam.jpg" alt="DJ Sam">
+    </div>
+  </section>
+</main>
 
 <footer>
   © Valor Wave Entertainment — Faith • Honor • Excellence
