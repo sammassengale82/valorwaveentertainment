@@ -36,17 +36,20 @@
 
     /* LAYOUT */
 
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       display: flex;
       gap: 20px;
       padding: 20px;
-      box-sizing: border-box;
+      margin: 0;
     }
 
     #sidebar {
       width: 260px;
       border-right: 2px solid #3b3b3b;
-      padding-right: 20px;
       padding: 15px;
       box-shadow: 0 0 10px #0007;
       background: rgba(0, 0, 0, 0.4);
@@ -80,6 +83,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      min-height: 0;
     }
 
     #topRow {
@@ -125,53 +129,54 @@
       margin-left: 10px;
     }
 
-    #middleRow {
+    #stackContainer {
+      flex: 1;
       display: flex;
-      gap: 10px;
-      height: 65vh;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 0;
     }
 
-    #editorSplit {
-      width: 60%;
-      display: flex;
-      gap: 10px;
+    .pane {
+      border: 1px solid #444;
+      background: #101820;
+      padding: 0;
+      min-height: 80px;
+      position: relative;
+      overflow: hidden;
     }
 
-    #editor {
-      width: 50%;
+    #editorPane textarea {
+      width: 100%;
       height: 100%;
-      font-family: monospace;
-      font-size: 14px;
+      border: none;
+      outline: none;
+      resize: none;
       padding: 10px;
       background: #111;
       color: #f5f5f5;
-      border: 1px solid #444;
-      box-sizing: border-box;
+      font-family: monospace;
+      font-size: 14px;
     }
 
-    #preview {
-      width: 50%;
+    #previewPaneInner {
+      width: 100%;
       height: 100%;
       padding: 10px;
-      background: #101820;
-      border: 1px solid #444;
       overflow: auto;
-      box-sizing: border-box;
-    }
-
-    #livePreviewContainer {
-      width: 40%;
-      height: 100%;
-      border: 2px solid #444;
-      background: #000;
-      box-shadow: 0 0 10px #0007;
-      box-sizing: border-box;
     }
 
     #livePreview {
       width: 100%;
       height: 100%;
       border: 0;
+      background: #000;
+    }
+
+    .resizer {
+      height: 6px;
+      cursor: row-resize;
+      background: #444;
     }
 
     #status {
@@ -217,15 +222,31 @@
     .file::before {
       content: "📄 ";
     }
+
+    /* Drag overlay hint */
+    #dragOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      z-index: 2000;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body class="original">
+
+<div id="dragOverlay">Drop files to upload…</div>
 
 <div id="sidebar">
   <h3>Valorwave CMS</h3>
   <button class="btn" onclick="loadFiles()">Reload Files</button>
   <button class="btn" onclick="showNewFileModal()">New File</button>
-  <input type="file" id="uploadInput" onchange="uploadImage()" />
+  <input type="file" id="uploadInput" onchange="uploadImage()" multiple />
   <div id="files"></div>
 </div>
 
@@ -256,12 +277,18 @@
     </div>
   </div>
 
-  <div id="middleRow">
-    <div id="editorSplit">
+  <div id="stackContainer">
+    <div id="editorPane" class="pane">
       <textarea id="editor" placeholder="Markdown editor..."></textarea>
-      <div id="preview"></div>
     </div>
-    <div id="livePreviewContainer">
+    <div id="resizer1" class="resizer"></div>
+    <div id="previewPane" class="pane">
+      <div id="previewPaneInner">
+        <div id="preview"></div>
+      </div>
+    </div>
+    <div id="resizer2" class="resizer"></div>
+    <div id="livePane" class="pane">
       <iframe id="livePreview" src="/"></iframe>
     </div>
   </div>
@@ -293,6 +320,33 @@ function setStatus(msg, color) {
 function changeTheme() {
   const theme = document.getElementById("themeSelect").value;
   document.body.className = theme;
+
+  fetch("/api/theme", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ theme })
+  })
+  .then(res => res.json())
+  .then(() => {
+    setStatus("Theme set to " + theme);
+  })
+  .catch(() => {
+    setStatus("Failed to set theme", "#ff4c4c");
+  });
+}
+
+function loadTheme() {
+  fetch("/api/theme")
+    .then(res => res.json())
+    .then(data => {
+      const theme = data.theme || "original";
+      document.body.className = theme;
+      const select = document.getElementById("themeSelect");
+      select.value = theme;
+    })
+    .catch(() => {
+      // default stays
+    });
 }
 
 function refreshLivePreview() {
@@ -407,7 +461,7 @@ function deleteFile() {
     body: JSON.stringify({ path, sha })
   })
   .then(res => res.json())
-  .then(data => {
+  .then(() => {
     setStatus("Deleted " + path, "#ff4c4c");
     const folder = document.getElementById("currentFolder").value;
     loadFiles(folder);
@@ -447,7 +501,7 @@ function createNewFile() {
     body: JSON.stringify({ path, content: "" })
   })
   .then(res => res.json())
-  .then(data => {
+  .then(() => {
     hideNewFileModal();
     input.value = "";
     loadFiles(folder);
@@ -523,10 +577,17 @@ function startAutosave() {
 
 function uploadImage() {
   const input = document.getElementById("uploadInput");
-  const file = input.files[0];
-  if (!file) return;
+  const files = input.files;
+  if (!files || !files.length) return;
 
   const folder = document.getElementById("currentFolder").value || "images";
+
+  Array.from(files).forEach(file => {
+    uploadImageFile(file, folder);
+  });
+}
+
+function uploadImageFile(file, folder) {
   const path = folder.replace(/\/$/, "") + "/" + file.name;
 
   const reader = new FileReader();
@@ -540,7 +601,7 @@ function uploadImage() {
       body: JSON.stringify({ path, base64 })
     })
     .then(res => res.json())
-    .then(data => {
+    .then(() => {
       setStatus("Uploaded " + path);
       loadFiles(folder);
     });
@@ -548,10 +609,108 @@ function uploadImage() {
   reader.readAsDataURL(file);
 }
 
+/* Drag-and-drop uploads */
+
+let dragCounter = 0;
+
+document.addEventListener("dragenter", (e) => {
+  e.preventDefault();
+  dragCounter++;
+  document.getElementById("dragOverlay").style.display = "flex";
+});
+
+document.addEventListener("dragleave", (e) => {
+  e.preventDefault();
+  dragCounter--;
+  if (dragCounter <= 0) {
+    document.getElementById("dragOverlay").style.display = "none";
+  }
+});
+
+document.addEventListener("dragover", (e) => {
+  e.preventDefault();
+});
+
+document.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dragCounter = 0;
+  document.getElementById("dragOverlay").style.display = "none";
+
+  const files = e.dataTransfer.files;
+  if (!files || !files.length) return;
+
+  const folder = document.getElementById("currentFolder").value || "uploads";
+
+  Array.from(files).forEach(file => {
+    if (file.type.startsWith("image/")) {
+      uploadImageFile(file, folder);
+    } else if (file.type === "text/markdown" || file.type === "text/plain" || file.name.endsWith(".md")) {
+      const path = folder.replace(/\/$/, "") + "/" + file.name;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const content = ev.target.result;
+        fetch("/api/new", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path, content })
+        })
+        .then(res => res.json())
+        .then(() => {
+          setStatus("Uploaded " + path);
+          loadFiles(folder);
+          loadFile(path);
+        });
+      };
+      reader.readAsText(file);
+    }
+  });
+});
+
+/* Resizable stacked panes */
+
+function setupResizer(resizerId, upperPaneId, lowerPaneId) {
+  const resizer = document.getElementById(resizerId);
+  const upper = document.getElementById(upperPaneId);
+  const lower = document.getElementById(lowerPaneId);
+
+  let isDragging = false;
+  let startY = 0;
+  let startUpperHeight = 0;
+  let startLowerHeight = 0;
+
+  resizer.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    isDragging = true;
+    startY = e.clientY;
+    startUpperHeight = upper.getBoundingClientRect().height;
+    startLowerHeight = lower.getBoundingClientRect().height;
+    document.body.style.userSelect = "none";
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+    const dy = e.clientY - startY;
+    const newUpper = startUpperHeight + dy;
+    const newLower = startLowerHeight - dy;
+    if (newUpper < 80 || newLower < 80) return;
+    upper.style.height = newUpper + "px";
+    lower.style.height = newLower + "px";
+  });
+
+  document.addEventListener("mouseup", () => {
+    if (!isDragging) return;
+    isDragging = false;
+    document.body.style.userSelect = "";
+  });
+}
+
 // initial load
+loadTheme();
 loadFiles();
 renderPreview();
 startAutosave();
+setupResizer("resizer1", "editorPane", "previewPane");
+setupResizer("resizer2", "previewPane", "livePane");
 </script>
 
 </body>
