@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Gallery — Valor Wave Entertainment</title>
+  <link rel="stylesheet" href="/public/styles.css">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+  <script>
+  fetch('/theme.txt')
+    .then(r => r.text())
+    .then(theme => document.body.classList.add(theme.trim()));
+  </script>
+</head>
+<body>
+
+<header>
+  <img src="/images/logo.png" class="logo" alt="Valor Wave Logo">
+  <nav>
+    <a href="/public/index.html">Home</a>
+    <a href="/public/services.html">Services</a>
+    <a href="/public/gallery.html">Gallery</a>
+    <a href="/public/contact.html">Contact</a>
+  </nav>
+</header>
+
+<section>
+  <h1>Event Gallery</h1>
+
+  <div class="gallery-grid">
+    <img src="/images/hero-wedding.jpg" alt="Wedding">
+    <img src="/images/service-sound-lighting.jpg" alt="Lighting">
+    <img src="/images/service-dj-mc.jpg" alt="DJ Booth">
+    <img src="/images/service-corporate.jpg" alt="Corporate Event">
+  </div>
+</section>
+
+<footer>
+  © Valor Wave Entertainment — Faith • Honor • Excellence
+</footer>
+
+</body>
+</html>
