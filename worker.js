@@ -111,7 +111,8 @@ async function gh(env, token, endpoint, method = "GET", body = null) {
       headers: {
         Authorization: `token ${token}`,
         "Content-Type": "application/json",
-        Accept: "application/vnd.github.v3+json"
+        Accept: "application/vnd.github.v3+json",
+        "User-Agent": "ValorwaveCMS"
       },
       body: body ? JSON.stringify(body) : null
     }
