@@ -1,3 +1,6 @@
+---
+visible: true
+---
 # The Meaning Behind Valor Wave Entertainment
 
 Valor Wave Entertainment represents the powerful blend of honor, service, and celebration.
