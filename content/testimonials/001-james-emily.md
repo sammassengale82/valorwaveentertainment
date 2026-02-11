@@ -1,2 +1,5 @@
-“Sam was incredible. From ceremony to reception, everything was smooth and stress‑free.”  
-— James & Emily
+---
+approved: false
+name: "James & Emily"
+---
+Valor Wave made our wedding unforgettable. The music, the flow, and the energy were perfect from start to finish.
