@@ -1,3 +1,6 @@
+---
+visible: true
+---
 # Meet the DJ
 
 Hello! My name is **Sam Massengale**, and I’ve proudly called Chattanooga home my entire life.  
