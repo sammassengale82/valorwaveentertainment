@@ -7,40 +7,54 @@
   <link rel="stylesheet" href="admin.css" />
 </head>
 <body>
+
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="login-screen hidden">
+    <div class="login-card">
+      <img src="logo.png" class="login-logo" alt="Valor Wave Logo" />
+      <h1>Valor Wave CMS</h1>
+      <p>Secure GitHub Login</p>
+      <button id="loginBtn" class="login-btn">Login with GitHub</button>
+    </div>
+  </div>
+
+  <!-- APP -->
   <div id="app" class="app hidden">
-    <!-- Top Navigation -->
+
+    <!-- TOP NAV -->
     <header class="top-nav">
       <div class="brand">
-        <img src="logo.png" alt="Valor Wave Logo" class="brand-logo" />
+        <img src="logo.png" class="brand-logo" alt="Valor Wave Logo" />
         <div class="brand-text">
           <span class="brand-title">Valor Wave CMS</span>
           <span class="brand-subtitle">Patriotic Edition</span>
         </div>
       </div>
+
       <nav class="nav-actions">
-        <button id="filesBtn" class="nav-btn">Files</button>
         <button id="newFileBtn" class="nav-btn">New File</button>
-        <label for="fileUpload" class="nav-btn upload-label">Upload
+
+        <label class="nav-btn upload-label">
+          Upload
           <input type="file" id="fileUpload" class="hidden" accept=".md,.markdown,.txt" />
         </label>
-        <button id="themeBtn" class="nav-btn">Theme</button>
+
         <button id="logoutBtn" class="nav-btn nav-btn-danger">Logout</button>
       </nav>
     </header>
 
-    <!-- Main Workspace -->
+    <!-- WORKSPACE -->
     <main class="workspace">
-      <!-- Left: File List -->
+
+      <!-- LEFT: FOLDER TREE -->
       <section class="panel panel-files">
         <div class="panel-header">
           <h2>Files</h2>
         </div>
-        <div id="fileList" class="file-list">
-          <!-- Populated by JS -->
-        </div>
+        <div id="folderTree" class="folder-tree"></div>
       </section>
 
-      <!-- Middle: Editor -->
+      <!-- MIDDLE: EDITOR -->
       <section class="panel panel-editor">
         <div class="panel-header">
           <h2 id="currentFileName">No file selected</h2>
@@ -49,34 +63,20 @@
             <button id="deleteBtn" class="panel-btn panel-btn-danger">Delete</button>
           </div>
         </div>
-        <textarea id="editor" class="editor" placeholder="Select or create a file to start editing..."></textarea>
+        <textarea id="editor" class="editor" placeholder="Select a file to begin editing..."></textarea>
       </section>
 
-      <!-- Right: Preview -->
+      <!-- RIGHT: PREVIEW -->
       <section class="panel panel-preview">
         <div class="panel-header">
           <h2>Preview</h2>
         </div>
         <div id="preview" class="preview">
-          <p class="preview-placeholder">
-            Live preview will appear here as you type.
-          </p>
+          <p class="preview-placeholder">Live preview will appear here.</p>
         </div>
       </section>
-    </main>
-  </div>
 
-  <!-- Login Screen -->
-  <div id="loginScreen" class="login-screen hidden">
-    <div class="login-card">
-      <img src="logo.png" alt="Valor Wave Logo" class="login-logo" />
-      <h1>Valor Wave CMS</h1>
-      <p>Secure access via GitHub</p>
-      <button id="loginBtn" class="login-btn">Login with GitHub</button>
-      <p class="login-note">
-        Veteran-owned. Faith-driven. Mission-focused.
-      </p>
-    </div>
+    </main>
   </div>
 
   <script src="admin.js"></script>
