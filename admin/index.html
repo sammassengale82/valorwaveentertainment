@@ -2,42 +2,291 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Valor Wave Admin</title>
-</head>
-<body>
-  <h1>Valor Wave Admin</h1>
+  <title>Valor Wave Admin Dashboard</title>
 
-  <button id="login">Login with GitHub</button>
-  <button id="load" disabled>Load content files</button>
+  <!-- CodeMirror -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/markdown/markdown.min.js"></script>
 
-  <pre id="output"></pre>
-
-  <script>
-    const WORKER_BASE_URL = "https://jolly-voice-2fd4.sammassengale82.workers.dev";
-
-    const loginBtn = document.getElementById("login");
-    const loadBtn = document.getElementById("load");
-    const output = document.getElementById("output");
-
-    loginBtn.onclick = () => {
-      window.location.href = `${WORKER_BASE_URL}/login`;
-    };
-
-    loadBtn.onclick = async () => {
-      const res = await fetch(`${WORKER_BASE_URL}/api/files`, {
-        credentials: "include",
-      });
-      if (!res.ok) {
-        output.textContent = `Error: ${res.status}`;
-        return;
-      }
-      const data = await res.json();
-      output.textContent = JSON.stringify(data, null, 2);
-    };
-
-    if (document.cookie.includes("gh_token=")) {
-      loadBtn.disabled = false;
+  <style>
+    :root {
+      --accent: #d4af37;
+      --bg-light: #ffffff;
+      --bg-dark: #1e1e1e;
+      --panel-light: #f4f4f4;
+      --panel-dark: #2a2a2a;
+      --text-light: #000000;
+      --text-dark: #ffffff;
     }
-  </script>
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, sans-serif;
+      display: grid;
+      grid-template-columns: 260px 260px 1fr;
+      grid-template-rows: auto 1fr auto;
+      height: 100vh;
+      background: var(--bg-light);
+      color: var(--text-light);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: var(--bg-dark);
+        color: var(--text-dark);
+      }
+    }
+
+    header {
+      grid-column: 1 / 4;
+      padding: 12px 20px;
+      font-size: 20px;
+      font-weight: bold;
+      border-bottom: 1px solid #444;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #sidebar {
+      border-right: 1px solid #444;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    #metadata {
+      border-right: 1px solid #444;
+      padding: 10px;
+      overflow-y: auto;
+    }
+
+    #editor {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    #fileList button {
+      width: 100%;
+      text-align: left;
+      padding: 8px;
+      margin-bottom: 4px;
+      background: transparent;
+      border: 1px solid #555;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    #fileList button:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .meta-group {
+      margin-bottom: 20px;
+    }
+
+    .meta-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    .meta-group input,
+    .meta-group select {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #555;
+      background: transparent;
+      color: inherit;
+    }
+
+    #statusBar {
+      grid-column: 1 / 4;
+      padding: 8px 20px;
+      border-top: 1px solid #444;
+      font-size: 14px;
+    }
+
+    .btn {
+      padding: 8px 12px;
+      background: var(--accent);
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    .btn:hover {
+      opacity: 0.8;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  Valor Wave Admin Dashboard
+  <div>
+    <button class="btn" id="newFileBtn">New File</button>
+    <button class="btn" id="deleteFileBtn">Delete File</button>
+    <button class="btn" id="saveBtn">Save Changes</button>
+  </div>
+</header>
+
+<!-- LEFT: FILE TREE -->
+<div id="sidebar">
+  <h3>Files</h3>
+  <div id="fileList"></div>
+</div>
+
+<!-- MIDDLE: METADATA PANEL -->
+<div id="metadata">
+  <h3>Metadata</h3>
+
+  <div class="meta-group">
+    <label>Visibility</label>
+    <select id="visibilitySelect">
+      <option value="true">Visible</option>
+      <option value="false">Hidden</option>
+    </select>
+  </div>
+
+  <div class="meta-group">
+    <label>Testimonial Approved</label>
+    <select id="approvedSelect">
+      <option value="true">Approved</option>
+      <option value="false">Not Approved</option>
+    </select>
+  </div>
+
+  <div class="meta-group">
+    <label>Theme</label>
+    <select id="themeSelect">
+      <option value="original">Original</option>
+      <option value="patriotic">Patriotic</option>
+      <option value="army">Army</option>
+    </select>
+  </div>
+
+</div>
+
+<!-- RIGHT: EDITOR -->
+<div id="editor">
+  <textarea id="editorArea"></textarea>
+</div>
+
+<footer id="statusBar">Ready.</footer>
+
+<script>
+  const WORKER = "https://jolly-voice-2fd4.sammassengale82.workers.dev";
+
+  let currentFile = null;
+  let editor = CodeMirror.fromTextArea(document.getElementById("editorArea"), {
+    mode: "markdown",
+    lineNumbers: true,
+    theme: window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "material-darker"
+      : "default"
+  });
+
+  async function loadFiles() {
+    const res = await fetch(`${WORKER}/api/files`, { credentials: "include" });
+    const files = await res.json();
+
+    const list = document.getElementById("fileList");
+    list.innerHTML = "";
+
+    files.forEach(path => {
+      const btn = document.createElement("button");
+      btn.textContent = path;
+      btn.onclick = () => loadFile(path);
+      list.appendChild(btn);
+    });
+  }
+
+  async function loadFile(path) {
+    currentFile = path;
+    const res = await fetch(`${WORKER}/api/file?path=${encodeURIComponent(path)}`, {
+      credentials: "include"
+    });
+    const data = await res.json();
+
+    editor.setValue(data.content || "");
+
+    // Metadata
+    document.getElementById("visibilitySelect").value = data.visible ? "true" : "false";
+    document.getElementById("approvedSelect").value = data.approved ? "true" : "false";
+
+    document.getElementById("statusBar").textContent = `Loaded ${path}`;
+  }
+
+  async function saveFile() {
+    if (!currentFile) return;
+
+    const body = {
+      path: currentFile,
+      content: editor.getValue(),
+      visible: document.getElementById("visibilitySelect").value === "true",
+      approved: document.getElementById("approvedSelect").value === "true"
+    };
+
+    const res = await fetch(`${WORKER}/api/save`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    document.getElementById("statusBar").textContent =
+      res.ok ? "Saved successfully." : "Save failed.";
+  }
+
+  async function newFile() {
+    const name = prompt("Enter new file name (e.g., new-section.md):");
+    if (!name) return;
+
+    await fetch(`${WORKER}/api/new`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: name })
+    });
+
+    loadFiles();
+  }
+
+  async function deleteFile() {
+    if (!currentFile) return;
+
+    if (!confirm(`Delete ${currentFile}?`)) return;
+
+    await fetch(`${WORKER}/api/delete`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: currentFile })
+    });
+
+    currentFile = null;
+    editor.setValue("");
+    loadFiles();
+  }
+
+  // Button bindings
+  document.getElementById("saveBtn").onclick = saveFile;
+  document.getElementById("newFileBtn").onclick = newFile;
+  document.getElementById("deleteFileBtn").onclick = deleteFile;
+
+  // Auto-load if logged in
+  if (document.cookie.includes("gh_token=")) {
+    loadFiles();
+  } else {
+    window.location.href = `${WORKER}/login`;
+  }
+</script>
+
 </body>
 </html>
