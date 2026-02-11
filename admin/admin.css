@@ -1,0 +1,305 @@
+/* -------------------------------------------------------
+   VALOR WAVE CMS — DARK MODE + PATRIOTIC HYBRID THEME
+   ------------------------------------------------------- */
+
+:root {
+  --navy: #0a0f1a;
+  --navy-light: #111827;
+  --gold: #d4af37;
+  --gold-soft: #c9a53a;
+  --white: #f5f5f5;
+  --gray: #9ca3af;
+  --red: #b91c1c;
+  --blue: #1e3a8a;
+
+  --sidebar-width: 260px;
+  --topnav-height: 64px;
+
+  font-family: "Inter", sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--navy);
+  color: var(--white);
+  overflow: hidden;
+}
+
+/* -------------------------------------------------------
+   LOGIN SCREEN
+   ------------------------------------------------------- */
+
+.login-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.login-box {
+  background: var(--navy-light);
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+  border: 1px solid var(--gold);
+  width: 320px;
+}
+
+.login-logo {
+  width: 90px;
+  margin-bottom: 20px;
+}
+
+.login-btn {
+  background: var(--gold);
+  color: var(--navy);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  width: 100%;
+  font-weight: 600;
+}
+
+.login-btn:hover {
+  background: var(--gold-soft);
+}
+
+/* -------------------------------------------------------
+   TOP NAVIGATION
+   ------------------------------------------------------- */
+
+.topnav {
+  height: var(--topnav-height);
+  background: var(--navy-light);
+  border-bottom: 2px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.topnav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-logo {
+  height: 40px;
+}
+
+.nav-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.topnav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.theme-select {
+  background: var(--navy);
+  color: var(--white);
+  border: 1px solid var(--gold);
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.logout-btn {
+  background: var(--red);
+  color: var(--white);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.logout-btn:hover {
+  background: #991b1b;
+}
+
+/* -------------------------------------------------------
+   MAIN LAYOUT
+   ------------------------------------------------------- */
+
+.layout {
+  display: flex;
+  height: calc(100vh - var(--topnav-height));
+}
+
+/* -------------------------------------------------------
+   SIDEBAR (FILE TREE)
+   ------------------------------------------------------- */
+
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--navy-light);
+  border-right: 2px solid var(--gold);
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.sidebar-title {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 18px;
+  border-bottom: 1px solid var(--gold);
+  padding-bottom: 6px;
+}
+
+.file-tree {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.file-item {
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.file-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.file-item.active {
+  background: var(--gold);
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.sidebar-btn {
+  margin-top: 20px;
+  width: 100%;
+  background: var(--gold);
+  color: var(--navy);
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.sidebar-btn:hover {
+  background: var(--gold-soft);
+}
+
+/* -------------------------------------------------------
+   EDITOR PANEL
+   ------------------------------------------------------- */
+
+.editor-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--navy);
+}
+
+.editor-toolbar {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border-bottom: 1px solid var(--gold);
+  background: var(--navy-light);
+}
+
+.toolbar-btn {
+  background: var(--gold);
+  color: var(--navy);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.toolbar-btn:hover {
+  background: var(--gold-soft);
+}
+
+.toolbar-btn.danger {
+  background: var(--red);
+  color: var(--white);
+}
+
+.toolbar-btn.danger:hover {
+  background: #991b1b;
+}
+
+.editor-meta {
+  display: flex;
+  gap: 20px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--gold);
+  background: var(--navy-light);
+  font-size: 14px;
+}
+
+.editor {
+  flex: 1;
+  width: 100%;
+  background: var(--navy);
+  color: var(--white);
+  border: none;
+  padding: 20px;
+  font-size: 15px;
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+}
+
+/* -------------------------------------------------------
+   MODAL (IMAGE UPLOAD)
+   ------------------------------------------------------- */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: var(--navy-light);
+  padding: 30px;
+  border-radius: 10px;
+  border: 1px solid var(--gold);
+  width: 320px;
+  text-align: center;
+}
+
+.modal-btn {
+  background: var(--gold);
+  color: var(--navy);
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 20px;
+  width: 100%;
+  font-weight: 600;
+}
+
+.modal-btn.cancel {
+  background: var(--gray);
+  color: var(--navy);
+}
+
+.modal-btn:hover {
+  background: var(--gold-soft);
+}
