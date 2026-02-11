@@ -1,3 +1,6 @@
+---
+visible: true
+---
 # Veteran‑Owned • Faith‑Based  
 ## Premium DJ & MC Services in Chattanooga
 
