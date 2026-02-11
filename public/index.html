@@ -17,6 +17,9 @@
 
 <body>
 
+<!-- BACK TO TOP BUTTON -->
+<button id="back-to-top">↑</button>
+
 <!-- HEADER -->
 <header id="header">
   <div class="header-inner">
@@ -26,6 +29,7 @@
     <nav class="desktop-nav">
       <a class="scroll" href="#home">Home</a>
       <a class="scroll" href="#services">Services</a>
+      <a class="scroll" href="#why-us">Why Choose Us</a>
       <a class="scroll" href="#hero-discount">Hero Discount</a>
       <a href="https://portal.valorwaveentertainment.com/request_information.asp?djidnumber=28542" target="_blank">Request a Quote</a>
       <a href="https://portal.valorwaveentertainment.com/clientlogon.asp?djidnumber=28542" target="_blank">Client Portal</a>
@@ -37,9 +41,7 @@
     </nav>
 
     <!-- Mobile Menu Button -->
-    <button id="menu-button" aria-label="Open Menu">
-      ☰
-    </button>
+    <button id="menu-button" aria-label="Open Menu">☰</button>
   </div>
 </header>
 
@@ -50,6 +52,7 @@
   <nav class="mobile-nav">
     <a class="scroll" href="#home">Home</a>
     <a class="scroll" href="#services">Services</a>
+    <a class="scroll" href="#why-us">Why Choose Us</a>
     <a class="scroll" href="#hero-discount">Hero Discount</a>
     <a href="https://portal.valorwaveentertainment.com/request_information.asp?djidnumber=28542" target="_blank">Request a Quote</a>
     <a href="https://portal.valorwaveentertainment.com/clientlogon.asp?djidnumber=28542" target="_blank">Client Portal</a>
@@ -64,49 +67,97 @@
 
 <main>
 
-<!-- HERO -->
-<section id="home" class="section fade-up"></section>
+<!-- HERO (Wave Motion + Spotlight) -->
+<section id="home" class="section hero-section fade-up">
+  <div class="hero-overlay"></div>
+  <div class="hero-waves"></div>
+  <div class="hero-content">
+    <!-- Loaded dynamically from home.md -->
+  </div>
+</section>
+
+<!-- DIVIDER -->
+<div class="divider divider-wave"></div>
 
 <!-- SERVICES -->
 <section id="services" class="section fade-up"></section>
 
+<!-- DIVIDER -->
+<div class="divider divider-wave"></div>
+
+<!-- WHY CHOOSE US -->
+<section id="why-us" class="section fade-up"></section>
+
+<!-- DIVIDER -->
+<div class="divider divider-wave"></div>
+
 <!-- WEDDINGS -->
 <section id="weddings" class="section fade-up"></section>
+
+<!-- DIVIDER -->
+<div class="divider divider-wave"></div>
 
 <!-- MEET THE DJ -->
 <section id="meet-the-dj" class="section fade-up"></section>
 
+<!-- DIVIDER -->
+<div class="divider divider-wave"></div>
+
 <!-- MEANING -->
 <section id="meaning" class="section fade-up"></section>
+
+<!-- DIVIDER -->
+<div class="divider divider-wave"></div>
 
 <!-- SERVICE AREA -->
 <section id="service-area" class="section fade-up"></section>
 
+<!-- DIVIDER -->
+<div class="divider divider-wave"></div>
+
 <!-- HERO DISCOUNT -->
 <section id="hero-discount" class="section fade-up"></section>
+
+<!-- DIVIDER -->
+<div class="divider divider-wave"></div>
 
 <!-- TESTIMONIALS -->
 <section id="testimonials" class="section fade-up">
   <h2>What Our Clients Say</h2>
   <div id="testimonial-track" class="testimonial-track"></div>
+
+  <!-- CTA BUTTON -->
+  <div class="testimonial-cta">
+    <a href="/testimonials.html" class="btn-primary">Share Your Experience</a>
+  </div>
 </section>
 
-<!-- SUBMIT TESTIMONIAL -->
-<section id="submit-testimonial" class="section fade-up"></section>
+<!-- DIVIDER -->
+<div class="divider divider-wave"></div>
 
 <!-- CONTACT -->
 <section id="contact" class="section fade-up"></section>
 
-<!-- CLIENT PORTAL PLACEHOLDER -->
-<section id="client-portal" class="section fade-up">
-  <h2>Client Portal</h2>
-  <p>Client Portal Coming Soon</p>
-</section>
+<!-- DIVIDER -->
+<div class="divider divider-wave"></div>
+
+<!-- CUSTOM SECTIONS (Loaded Dynamically) -->
+<div id="custom-sections"></div>
+
+<!-- DIVIDER -->
+<div class="divider divider-wave"></div>
 
 </main>
 
 <!-- FOOTER -->
 <footer>
+  <div class="footer-badges">
+    <span>🇺🇸 Veteran‑Owned</span>
+    <span>✝ Faith‑Based</span>
+    <span>🎵 Clean Music Available</span>
+    <span>🛡 Fully Insured</span>
+  </div>
+
   <p>© 2026 Valor Wave Entertainment — Faith • Honor • Excellence</p>
 
   <div class="footer-social">
@@ -115,6 +166,11 @@
     <a href="#">Twitter</a>
   </div>
 </footer>
+
+<!-- LIGHTBOX OVERLAY -->
+<div id="lightbox-overlay">
+  <img id="lightbox-image" src="" alt="Expanded view" />
+</div>
 
 <!-- MAIN SCRIPT -->
 <script src="/scripts.js"></script>
