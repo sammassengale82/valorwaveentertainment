@@ -1,3 +1,6 @@
+---
+visible: true
+---
 # Services
 
 ### Weddings  
