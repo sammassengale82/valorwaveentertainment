@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Valor Wave Entertainment</title>
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
   <!-- Theme Loader -->
   <script>
@@ -13,270 +13,92 @@
       .then(theme => document.body.classList.add((theme || '').trim() || 'original'))
       .catch(() => document.body.classList.add('original'));
   </script>
-
-  <!-- Smooth Scroll -->
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll("a.scroll").forEach(a => {
-        a.addEventListener("click", e => {
-          const target = document.querySelector(a.getAttribute("href"));
-          if (target) {
-            e.preventDefault();
-            target.scrollIntoView({ behavior: "smooth" });
-          }
-        });
-      });
-    });
-  </script>
-
-  <!-- Header Scroll Behavior -->
-  <script>
-    document.addEventListener("scroll", () => {
-      const header = document.querySelector("header");
-      if (window.scrollY > 50) header.classList.add("solid");
-      else header.classList.remove("solid");
-    });
-  </script>
 </head>
 
 <body>
 
 <!-- HEADER -->
-<header>
+<header id="header">
   <div class="header-inner">
-    <img src="/images/logo.png" class="logo" alt="Valor Wave Logo">
+    <img src="/images/logo.png" class="logo" alt="Valor Wave Logo" />
 
-    <nav>
+    <!-- Desktop Nav -->
+    <nav class="desktop-nav">
       <a class="scroll" href="#home">Home</a>
       <a class="scroll" href="#services">Services</a>
       <a class="scroll" href="#hero-discount">Hero Discount</a>
-      <a href="https://placeholder-form-link.com" target="_blank">Request a Quote</a>
-      <a class="scroll" href="#client-portal">Client Portal</a>
+      <a href="https://portal.valorwaveentertainment.com/request_information.asp?djidnumber=28542" target="_blank">Request a Quote</a>
+      <a href="https://portal.valorwaveentertainment.com/clientlogon.asp?djidnumber=28542" target="_blank">Client Portal</a>
 
-      <!-- Social Icons (placeholders) -->
+      <!-- Social Icons -->
       <a href="#" class="social">FB</a>
       <a href="#" class="social">IG</a>
       <a href="#" class="social">X</a>
     </nav>
+
+    <!-- Mobile Menu Button -->
+    <button id="menu-button" aria-label="Open Menu">
+      ☰
+    </button>
   </div>
 </header>
+
+<!-- MOBILE SLIDE-IN MENU -->
+<div id="mobile-menu">
+  <button id="menu-close">×</button>
+
+  <nav class="mobile-nav">
+    <a class="scroll" href="#home">Home</a>
+    <a class="scroll" href="#services">Services</a>
+    <a class="scroll" href="#hero-discount">Hero Discount</a>
+    <a href="https://portal.valorwaveentertainment.com/request_information.asp?djidnumber=28542" target="_blank">Request a Quote</a>
+    <a href="https://portal.valorwaveentertainment.com/clientlogon.asp?djidnumber=28542" target="_blank">Client Portal</a>
+
+    <div class="mobile-social">
+      <a href="#">Facebook</a>
+      <a href="#">Instagram</a>
+      <a href="#">Twitter</a>
+    </div>
+  </nav>
+</div>
 
 <main>
 
 <!-- HERO -->
-<section id="home" class="hero">
-  <div class="hero-inner">
-    <div class="hero-tagline">Veteran‑Owned • Faith‑Based</div>
-    <h1 class="hero-title">Premium DJ & MC Services in Chattanooga</h1>
-    <p class="hero-subtitle">
-      Clean music • Professional sound • Confident MC<br>
-      Serving Southeast TN & Northwest GA
-    </p>
-    <a href="https://placeholder-form-link.com" target="_blank" class="btn-primary">Request a Quote</a>
-  </div>
-</section>
+<section id="home" class="section fade-up"></section>
 
 <!-- SERVICES -->
-<section id="services">
-  <h2>Services</h2>
+<section id="services" class="section fade-up"></section>
 
-  <div class="cards">
-    <div class="card">
-      <img src="/images/service-wedding.jpg" alt="Weddings">
-      <div class="card-body">
-        <h3>Weddings</h3>
-        <p>Ceremony + reception DJ/MC, timeline coordination, and clean mixes.</p>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="/images/service-dj-mc.jpg" alt="DJ + MC">
-      <div class="card-body">
-        <h3>DJ + MC</h3>
-        <p>Confident mic work, announcements, and energy without cringe.</p>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="/images/service-sound-lighting.jpg" alt="Sound + Lighting">
-      <div class="card-body">
-        <h3>Sound + Lighting</h3>
-        <p>Pro audio, wireless mics, uplighting, and dance floor lighting.</p>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="/images/service-corporate.jpg" alt="Corporate + Schools">
-      <div class="card-body">
-        <h3>Corporate + Schools</h3>
-        <p>Corporate events, school dances, and community events.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- WEDDING DJ SECTION -->
-<section id="weddings">
-  <h2>Wedding DJ Chattanooga</h2>
-  <p>
-    Looking for a wedding DJ in Chattanooga who brings modern energy with faith-based values?
-    Valor Wave Entertainment provides DJ + MC services, sound, and lighting for weddings and events across
-    Southeast Tennessee and Northwest Georgia. We focus on clear communication, clean music options, and a
-    smooth, stress-free experience from ceremony to last dance.
-  </p>
-
-  <div class="pillars">
-    <div class="pillar">
-      <h3>What You Get</h3>
-      <p>Professional planning, timeline support, reliable equipment, and a confident MC—so your day stays on track.</p>
-    </div>
-
-    <div class="pillar">
-      <h3>Where We Serve</h3>
-      <p>Chattanooga, Cleveland, Hixson, Ringgold, Fort Oglethorpe, Dalton, and more.</p>
-    </div>
-
-    <div class="pillar">
-      <h3>Faith‑Based Option</h3>
-      <p>We tailor music to your preferences and venue guidelines while keeping the atmosphere fun and welcoming.</p>
-    </div>
-  </div>
-
-  <h3 style="margin-top:30px;">FAQ</h3>
-  <p><strong>Do you provide clean music?</strong><br>Yes — we keep the vibe fun and event‑appropriate with clean versions when needed.</p>
-  <p><strong>How far do you travel?</strong><br>Chattanooga‑based; travel available with notice.</p>
-  <p><strong>What’s included?</strong><br>DJ/MC, pro sound, planning support, and optional lighting.</p>
-</section>
+<!-- WEDDINGS -->
+<section id="weddings" class="section fade-up"></section>
 
 <!-- MEET THE DJ -->
-<section id="meet-the-dj">
-  <h2>Meet the DJ</h2>
+<section id="meet-the-dj" class="section fade-up"></section>
 
-  <div class="service-block">
-    <p>
-      Hello! My name is <strong>Sam Massengale</strong>, and I’ve proudly called Chattanooga home my entire life.
-      I served over 12 years in the United States Army and hold a Master’s Degree from Belhaven University.
-      I am blessed with a wonderful wife and four amazing boys.
-    </p>
-    <p>
-      Alongside my wife, I decided it was time to turn our passion for music and singing into something special —
-      and that’s how Valor Wave Entertainment was born. With over 12 years of DJ experience across weddings,
-      corporate events, and community celebrations, I bring professionalism, creativity, and heart to every event.
-    </p>
-    <p>
-      Guided by our loving Father and Jesus Christ, our mission is simple: to provide a worry-free, faith-based,
-      unforgettable experience. We look forward to honoring every moment — and all heroes — while creating memories
-      that last a lifetime.
-    </p>
-  </div>
-</section>
-
-<!-- MEANING BEHIND VALOR WAVE -->
-<section id="meaning">
-  <h2>The Meaning Behind Valor Wave Entertainment</h2>
-
-  <div class="service-block">
-    <p>
-      Valor Wave Entertainment represents the powerful blend of honor, service, and celebration. Valor reflects
-      courage, sacrifice, and respect for those who serve — our military, veterans, first responders, healthcare
-      workers, educators, and everyday heroes in our communities.
-    </p>
-    <p>
-      The word Wave symbolizes movement, energy, and the moments that bring people together. Just like a wave,
-      music carries emotion, creates connection, and leaves a lasting impact long after the event ends.
-    </p>
-    <p>
-      Together, Valor Wave Entertainment stands for honoring what matters most while creating unforgettable,
-      joy-filled experiences — all delivered with professionalism, integrity, and faith-based values.
-    </p>
-  </div>
-</section>
+<!-- MEANING -->
+<section id="meaning" class="section fade-up"></section>
 
 <!-- SERVICE AREA -->
-<section id="service-area">
-  <h2>Serving Your Area</h2>
-
-  <div class="service-block">
-    <p>
-      Valor Wave Entertainment proudly serves weddings and events throughout Southeast Tennessee, including
-      Chattanooga and Cleveland, as well as Northwest Georgia communities such as Dalton, Ringgold, and
-      Fort Oglethorpe. Travel outside these areas may be available upon request.
-    </p>
-  </div>
-</section>
+<section id="service-area" class="section fade-up"></section>
 
 <!-- HERO DISCOUNT -->
-<section id="hero-discount">
-  <h2>American Heroes</h2>
-
-  <div class="service-block">
-    <p><strong>We Honor All Heroes</strong></p>
-    <p>
-      We proudly offer a Hero Discount for active-duty military, veterans, first responders, healthcare workers,
-      and teachers. Mention it in your quote request and we’ll apply it to qualifying events.
-    </p>
-    <p><em>Proof of service may be requested. Discount amount varies by package and date availability.</em></p>
-  </div>
-</section>
+<section id="hero-discount" class="section fade-up"></section>
 
 <!-- TESTIMONIALS -->
-<section id="testimonials">
+<section id="testimonials" class="section fade-up">
   <h2>What Our Clients Say</h2>
-
-  <div class="testimonial">
-    “Sam was incredible. From ceremony to reception, everything was smooth and stress-free.”
-    <cite>— James & Emily</cite>
-  </div>
-
-  <div class="testimonial">
-    “Valor Wave Entertainment made our wedding absolutely perfect. Professional, faith-centered, and fun!”
-    <cite>— Sarah M.</cite>
-  </div>
-
-  <div class="testimonial">
-    “Highly recommend for church and community events. Clean music and great energy.”
-    <cite>— Pastor David R.</cite>
-  </div>
+  <div id="testimonial-track" class="testimonial-track"></div>
 </section>
 
 <!-- SUBMIT TESTIMONIAL -->
-<section id="submit-testimonial">
-  <h2>Submit a Testimonial</h2>
-
-  <form class="testimonial-form">
-    <input type="text" placeholder="Your Name">
-    <input type="email" placeholder="Your Email (optional)">
-    <input type="text" placeholder="Event Type (Wedding, Corporate, etc.)">
-    <input type="date">
-    <select>
-      <option>Rating</option>
-      <option>5 Stars</option>
-      <option>4 Stars</option>
-      <option>3 Stars</option>
-    </select>
-    <textarea placeholder="Write your testimonial here..."></textarea>
-
-    <label>
-      <input type="checkbox"> I give Valor Wave Entertainment permission to use my testimonial on the website.
-    </label>
-
-    <button class="btn-primary" type="submit">Submit Testimonial</button>
-  </form>
-</section>
+<section id="submit-testimonial" class="section fade-up"></section>
 
 <!-- CONTACT -->
-<section id="contact">
-  <h2>Request a Quote</h2>
+<section id="contact" class="section fade-up"></section>
 
-  <p>Email: <strong>valorwaveentertainment@gmail.com</strong></p>
-  <p>Phone: <strong>(423) 680‑2700</strong></p>
-  <p>Address: 5424 School Dr, Hixson, TN 37343</p>
-
-  <a href="https://placeholder-form-link.com" target="_blank" class="btn-primary">Open Quote Form</a>
-</section>
-
-<!-- CLIENT PORTAL -->
-<section id="client-portal">
+<!-- CLIENT PORTAL PLACEHOLDER -->
+<section id="client-portal" class="section fade-up">
   <h2>Client Portal</h2>
   <p>Client Portal Coming Soon</p>
 </section>
@@ -293,6 +115,9 @@
     <a href="#">Twitter</a>
   </div>
 </footer>
+
+<!-- MAIN SCRIPT -->
+<script src="/scripts.js"></script>
 
 </body>
 </html>
