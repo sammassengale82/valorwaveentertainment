@@ -1,2 +1,5 @@
-“Highly recommend for church and community events. Clean music and great energy.”  
-— Pastor David R.
+---
+approved: false
+name: "Pastor David"
+---
+The atmosphere was uplifting and family-friendly. We will absolutely be booking Valor Wave again.
