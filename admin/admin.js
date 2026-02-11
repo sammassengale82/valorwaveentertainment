@@ -1,277 +1,327 @@
-/* -------------------------------------------------------
-   VALOR WAVE CMS — ADMIN LOGIC
-   ------------------------------------------------------- */
+// Simple markdown-to-HTML (very minimal, enough for preview)
+function simpleMarkdownToHtml(md) {
+  if (!md) return "";
 
-const loginScreen = document.getElementById("login-screen");
-const dashboard = document.getElementById("dashboard");
+  let html = md;
 
-const fileTree = document.getElementById("file-tree");
-const editor = document.getElementById("editor");
-const saveBtn = document.getElementById("save-btn");
-const deleteBtn = document.getElementById("delete-btn");
-const newFileBtn = document.getElementById("new-file-btn");
+  // Escape basic HTML
+  html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-const visibleToggle = document.getElementById("visible-toggle");
-const approvedToggle = document.getElementById("approved-toggle");
+  // Headings
+  html = html.replace(/^###### (.*)$/gm, "<h6>$1</h6>");
+  html = html.replace(/^##### (.*)$/gm, "<h5>$1</h5>");
+  html = html.replace(/^#### (.*)$/gm, "<h4>$1</h4>");
+  html = html.replace(/^### (.*)$/gm, "<h3>$1</h3>");
+  html = html.replace(/^## (.*)$/gm, "<h2>$1</h2>");
+  html = html.replace(/^# (.*)$/gm, "<h1>$1</h1>");
 
-const uploadModal = document.getElementById("upload-modal");
-const uploadInput = document.getElementById("upload-input");
-const uploadConfirmBtn = document.getElementById("upload-confirm-btn");
-const uploadCancelBtn = document.getElementById("upload-cancel-btn");
+  // Bold and italic
+  html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
 
-const uploadImageBtn = document.getElementById("upload-image-btn");
-const themeSelect = document.getElementById("theme-select");
-const logoutBtn = document.getElementById("logout-btn");
+  // Inline code
+  html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
 
-let currentPath = null;
-let currentSHA = null;
+  // Links [text](url)
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
 
-/* -------------------------------------------------------
-   COOKIE CHECK
-   ------------------------------------------------------- */
+  // Paragraphs
+  html = html.replace(/^(?!<h\d>|<ul>|<ol>|<li>|<pre>|<code>)(.+)$/gm, "<p>$1</p>");
 
-function hasToken() {
-  return document.cookie.includes("gh_token=");
+  return html;
 }
 
-async function init() {
-  if (!hasToken()) {
-    loginScreen.classList.remove("hidden");
-    dashboard.classList.add("hidden");
-    return;
-  }
+const appEl = document.getElementById("app");
+const loginScreenEl = document.getElementById("loginScreen");
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const fileListEl = document.getElementById("fileList");
+const editorEl = document.getElementById("editor");
+const previewEl = document.getElementById("preview");
+const currentFileNameEl = document.getElementById("currentFileName");
+const newFileBtn = document.getElementById("newFileBtn");
+const saveBtn = document.getElementById("saveBtn");
+const deleteBtn = document.getElementById("deleteBtn");
+const fileUploadInput = document.getElementById("fileUpload");
 
-  loginScreen.classList.add("hidden");
-  dashboard.classList.remove("hidden");
+let currentFilePath = null;
+let filesCache = [];
 
-  await loadTheme();
-  await loadFileTree();
-}
+// --- Auth / Init ---
 
-/* -------------------------------------------------------
-   LOGIN FLOW (POPUP)
-   ------------------------------------------------------- */
-
-document.getElementById("login-btn").addEventListener("click", () => {
-  const popup = window.open("/login", "oauth", "width=600,height=700");
-
-  const timer = setInterval(() => {
-    if (popup.closed) {
-      clearInterval(timer);
-      window.location = "/admin/";
+async function checkAuthAndInit() {
+  try {
+    const res = await fetch("/api/files", { method: "GET" });
+    if (res.status === 401) {
+      showLogin();
+      return;
     }
-  }, 500);
-});
+    if (!res.ok) {
+      console.error("Failed to load files:", res.status);
+      showLogin();
+      return;
+    }
+    const data = await res.json();
+    filesCache = data.files || data || [];
+    renderFileList();
+    showApp();
+  } catch (err) {
+    console.error("Error checking auth:", err);
+    showLogin();
+  }
+}
 
-/* -------------------------------------------------------
-   LOGOUT
-   ------------------------------------------------------- */
+function showLogin() {
+  appEl.classList.add("hidden");
+  loginScreenEl.classList.remove("hidden");
+}
 
-logoutBtn.addEventListener("click", () => {
-  document.cookie = "gh_token=; Max-Age=0; Path=/;";
-  window.location.reload();
-});
+function showApp() {
+  loginScreenEl.classList.add("hidden");
+  appEl.classList.remove("hidden");
+}
 
-/* -------------------------------------------------------
-   FILE TREE
-   ------------------------------------------------------- */
+// --- UI Rendering ---
 
-async function loadFileTree() {
-  fileTree.innerHTML = "Loading...";
-
-  const res = await fetch("/api/files");
-  if (!res.ok) {
-    fileTree.innerHTML = "Failed to load files.";
+function renderFileList() {
+  fileListEl.innerHTML = "";
+  if (!filesCache || filesCache.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "file-item";
+    empty.innerHTML = `<span class="file-name">No files yet</span>`;
+    fileListEl.appendChild(empty);
     return;
   }
 
-  const files = await res.json();
-  fileTree.innerHTML = "";
-
-  files.forEach(path => {
+  filesCache.forEach((file) => {
     const item = document.createElement("div");
     item.className = "file-item";
-    item.textContent = path.replace("content/", "");
-    item.addEventListener("click", () => openFile(path, item));
-    fileTree.appendChild(item);
+    if (file.path === currentFilePath) {
+      item.classList.add("active");
+    }
+
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "file-name";
+    nameSpan.textContent = file.name || file.path || "Untitled";
+
+    const metaSpan = document.createElement("span");
+    metaSpan.className = "file-meta";
+    metaSpan.textContent = file.path || "";
+
+    item.appendChild(nameSpan);
+    item.appendChild(metaSpan);
+
+    item.addEventListener("click", () => {
+      loadFile(file.path || file.name);
+    });
+
+    fileListEl.appendChild(item);
   });
 }
 
-/* -------------------------------------------------------
-   OPEN FILE
-   ------------------------------------------------------- */
-
-async function openFile(path, element) {
-  currentPath = path;
-
-  document.querySelectorAll(".file-item").forEach(i => i.classList.remove("active"));
-  element.classList.add("active");
-
-  const res = await fetch(`/api/file?path=${encodeURIComponent(path)}`);
-  if (!res.ok) {
-    alert("Failed to load file.");
-    return;
-  }
-
-  const data = await res.json();
-  editor.value = data.content;
-  currentSHA = data.sha;
-
-  visibleToggle.checked = data.visible;
-  approvedToggle.checked = data.approved;
+function updatePreview() {
+  const md = editorEl.value;
+  const html = simpleMarkdownToHtml(md);
+  previewEl.innerHTML = html || '<p class="preview-placeholder">Live preview will appear here as you type.</p>';
 }
 
-/* -------------------------------------------------------
-   SAVE FILE
-   ------------------------------------------------------- */
+// --- File Operations ---
 
-saveBtn.addEventListener("click", async () => {
-  if (!currentPath) return alert("No file selected.");
+async function loadFile(path) {
+  if (!path) return;
+  try {
+    const res = await fetch(`/api/file?path=${encodeURIComponent(path)}`);
+    if (res.status === 401) {
+      showLogin();
+      return;
+    }
+    if (!res.ok) {
+      console.error("Failed to load file:", res.status);
+      return;
+    }
+    const data = await res.json();
+    currentFilePath = path;
+    currentFileNameEl.textContent = path;
+    editorEl.value = data.content || "";
+    updatePreview();
+    renderFileList();
+  } catch (err) {
+    console.error("Error loading file:", err);
+  }
+}
 
-  const body = {
-    path: currentPath,
-    content: editor.value,
-    visible: visibleToggle.checked,
-    approved: approvedToggle.checked
-  };
-
-  const res = await fetch("/api/save", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-
-  if (!res.ok) {
-    alert("Failed to save file.");
+async function saveCurrentFile() {
+  if (!currentFilePath) {
+    alert("No file selected.");
     return;
   }
+  try {
+    const res = await fetch("/api/file", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        path: currentFilePath,
+        content: editorEl.value || "",
+      }),
+    });
+    if (res.status === 401) {
+      showLogin();
+      return;
+    }
+    if (!res.ok) {
+      console.error("Failed to save file:", res.status);
+      alert("Failed to save file.");
+      return;
+    }
+    const updated = await res.json();
+    filesCache = updated.files || filesCache;
+    renderFileList();
+  } catch (err) {
+    console.error("Error saving file:", err);
+    alert("Error saving file.");
+  }
+}
 
-  alert("Saved!");
-});
-
-/* -------------------------------------------------------
-   DELETE FILE
-   ------------------------------------------------------- */
-
-deleteBtn.addEventListener("click", async () => {
-  if (!currentPath) return alert("No file selected.");
-
-  if (!confirm("Delete this file?")) return;
-
-  const res = await fetch("/api/delete", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ path: currentPath })
-  });
-
-  if (!res.ok) {
-    alert("Failed to delete file.");
+async function deleteCurrentFile() {
+  if (!currentFilePath) {
+    alert("No file selected.");
     return;
   }
+  if (!confirm(`Delete file "${currentFilePath}"?`)) return;
 
-  currentPath = null;
-  editor.value = "";
-  await loadFileTree();
-});
+  try {
+    const res = await fetch(`/api/file?path=${encodeURIComponent(currentFilePath)}`, {
+      method: "DELETE",
+    });
+    if (res.status === 401) {
+      showLogin();
+      return;
+    }
+    if (!res.ok) {
+      console.error("Failed to delete file:", res.status);
+      alert("Failed to delete file.");
+      return;
+    }
+    const updated = await res.json();
+    filesCache = updated.files || filesCache;
+    currentFilePath = null;
+    currentFileNameEl.textContent = "No file selected";
+    editorEl.value = "";
+    updatePreview();
+    renderFileList();
+  } catch (err) {
+    console.error("Error deleting file:", err);
+    alert("Error deleting file.");
+  }
+}
 
-/* -------------------------------------------------------
-   NEW FILE
-   ------------------------------------------------------- */
-
-newFileBtn.addEventListener("click", async () => {
-  const name = prompt("Enter new filename (e.g. newfile.md):");
+async function createNewFile() {
+  const name = prompt("New file name (e.g., content/new-page.md):");
   if (!name) return;
 
-  const res = await fetch("/api/new", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ path: name })
-  });
-
-  if (!res.ok) {
-    alert("Failed to create file.");
-    return;
-  }
-
-  await loadFileTree();
-});
-
-/* -------------------------------------------------------
-   IMAGE UPLOAD
-   ------------------------------------------------------- */
-
-uploadImageBtn.addEventListener("click", () => {
-  uploadModal.classList.remove("hidden");
-});
-
-uploadCancelBtn.addEventListener("click", () => {
-  uploadModal.classList.add("hidden");
-  uploadInput.value = "";
-});
-
-uploadConfirmBtn.addEventListener("click", async () => {
-  const file = uploadInput.files[0];
-  if (!file) return alert("No file selected.");
-
-  const reader = new FileReader();
-  reader.onload = async () => {
-    const base64 = reader.result.split(",")[1];
-
-    const uploadPath = `uploads/${file.name}`;
-
-    const res = await fetch("/api/upload", {
+  try {
+    const res = await fetch("/api/file", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        path: uploadPath,
-        base64
-      })
+        path: name,
+        content: "# New Page\n\nStart writing...",
+      }),
     });
-
-    if (!res.ok) {
-      alert("Upload failed.");
+    if (res.status === 401) {
+      showLogin();
       return;
     }
-
-    alert("Uploaded!");
-    uploadModal.classList.add("hidden");
-    uploadInput.value = "";
-  };
-
-  reader.readAsDataURL(file);
-});
-
-/* -------------------------------------------------------
-   THEME
-   ------------------------------------------------------- */
-
-async function loadTheme() {
-  const res = await fetch("/api/theme");
-  if (!res.ok) return;
-
-  const data = await res.json();
-  themeSelect.value = data.theme || "original";
+    if (!res.ok) {
+      console.error("Failed to create file:", res.status);
+      alert("Failed to create file.");
+      return;
+    }
+    const updated = await res.json();
+    filesCache = updated.files || filesCache;
+    await loadFile(name);
+  } catch (err) {
+    console.error("Error creating file:", err);
+    alert("Error creating file.");
+  }
 }
 
-themeSelect.addEventListener("change", async () => {
-  const theme = themeSelect.value;
+async function uploadFile(file) {
+  const text = await file.text();
+  const name = file.name.endsWith(".md") ? file.name : `${file.name}.md`;
+  const path = `uploads/${name}`;
 
-  const res = await fetch("/api/theme", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ theme })
-  });
-
-  if (!res.ok) {
-    alert("Failed to save theme.");
-    return;
+  try {
+    const res = await fetch("/api/file", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        path,
+        content: text,
+      }),
+    });
+    if (res.status === 401) {
+      showLogin();
+      return;
+    }
+    if (!res.ok) {
+      console.error("Failed to upload file:", res.status);
+      alert("Failed to upload file.");
+      return;
+    }
+    const updated = await res.json();
+    filesCache = updated.files || filesCache;
+    await loadFile(path);
+  } catch (err) {
+    console.error("Error uploading file:", err);
+    alert("Error uploading file.");
   }
+}
 
-  alert("Theme updated.");
+// --- Auth actions ---
+
+loginBtn.addEventListener("click", () => {
+  window.location.href = "/login";
 });
 
-/* -------------------------------------------------------
-   INIT
-   ------------------------------------------------------- */
+logoutBtn.addEventListener("click", () => {
+  // If you have a /logout route in the Worker, use it.
+  // Otherwise, just clear cookie client-side by expiring it and reload.
+  document.cookie = "gh_token=; Max-Age=0; path=/; Secure; SameSite=Lax";
+  window.location.href = "/admin";
+});
 
-init();
+// --- UI events ---
+
+editorEl.addEventListener("input", () => {
+  updatePreview();
+});
+
+saveBtn.addEventListener("click", () => {
+  saveCurrentFile();
+});
+
+deleteBtn.addEventListener("click", () => {
+  deleteCurrentFile();
+});
+
+newFileBtn.addEventListener("click", () => {
+  createNewFile();
+});
+
+fileUploadInput.addEventListener("change", (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  uploadFile(file);
+  fileUploadInput.value = "";
+});
+
+// Theme button (placeholder for now)
+const themeBtn = document.getElementById("themeBtn");
+themeBtn.addEventListener("click", () => {
+  alert("Theme switching is wired to your backend THEME setting. We can hook this to /api/theme if you’d like.");
+});
+
+// --- Init ---
+
+checkAuthAndInit();
