@@ -1,327 +1,224 @@
-// Simple markdown-to-HTML (very minimal, enough for preview)
-function simpleMarkdownToHtml(md) {
+// --- SIMPLE MARKDOWN PARSER ---
+function mdToHtml(md) {
   if (!md) return "";
-
   let html = md;
 
-  // Escape basic HTML
-  html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-  // Headings
-  html = html.replace(/^###### (.*)$/gm, "<h6>$1</h6>");
-  html = html.replace(/^##### (.*)$/gm, "<h5>$1</h5>");
-  html = html.replace(/^#### (.*)$/gm, "<h4>$1</h4>");
-  html = html.replace(/^### (.*)$/gm, "<h3>$1</h3>");
-  html = html.replace(/^## (.*)$/gm, "<h2>$1</h2>");
   html = html.replace(/^# (.*)$/gm, "<h1>$1</h1>");
-
-  // Bold and italic
-  html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-  html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
-
-  // Inline code
+  html = html.replace(/^## (.*)$/gm, "<h2>$1</h2>");
+  html = html.replace(/^### (.*)$/gm, "<h3>$1</h3>");
+  html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+  html = html.replace(/\*(.*?)\*/g, "<em>$1</em>");
   html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
-
-  // Links [text](url)
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-
-  // Paragraphs
-  html = html.replace(/^(?!<h\d>|<ul>|<ol>|<li>|<pre>|<code>)(.+)$/gm, "<p>$1</p>");
+  html = html.replace(/\n/g, "<br>");
 
   return html;
 }
 
-const appEl = document.getElementById("app");
-const loginScreenEl = document.getElementById("loginScreen");
+// --- ELEMENTS ---
+const app = document.getElementById("app");
+const loginScreen = document.getElementById("loginScreen");
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
-const fileListEl = document.getElementById("fileList");
+
+const folderTreeEl = document.getElementById("folderTree");
 const editorEl = document.getElementById("editor");
 const previewEl = document.getElementById("preview");
 const currentFileNameEl = document.getElementById("currentFileName");
+
 const newFileBtn = document.getElementById("newFileBtn");
 const saveBtn = document.getElementById("saveBtn");
 const deleteBtn = document.getElementById("deleteBtn");
 const fileUploadInput = document.getElementById("fileUpload");
 
-let currentFilePath = null;
-let filesCache = [];
+let files = [];
+let currentPath = null;
 
-// --- Auth / Init ---
-
-async function checkAuthAndInit() {
+// --- AUTH CHECK ---
+async function init() {
   try {
-    const res = await fetch("/api/files", { method: "GET" });
-    if (res.status === 401) {
-      showLogin();
-      return;
-    }
-    if (!res.ok) {
-      console.error("Failed to load files:", res.status);
-      showLogin();
-      return;
-    }
-    const data = await res.json();
-    filesCache = data.files || data || [];
-    renderFileList();
+    const res = await fetch("/api/files");
+    if (res.status === 401) return showLogin();
+
+    files = await res.json();
     showApp();
+    buildFolderTree();
   } catch (err) {
-    console.error("Error checking auth:", err);
     showLogin();
   }
 }
 
 function showLogin() {
-  appEl.classList.add("hidden");
-  loginScreenEl.classList.remove("hidden");
+  loginScreen.classList.remove("hidden");
+  app.classList.add("hidden");
 }
 
 function showApp() {
-  loginScreenEl.classList.add("hidden");
-  appEl.classList.remove("hidden");
+  loginScreen.classList.add("hidden");
+  app.classList.remove("hidden");
 }
 
-// --- UI Rendering ---
+// --- FOLDER TREE ---
+function buildFolderTree() {
+  const tree = {};
 
-function renderFileList() {
-  fileListEl.innerHTML = "";
-  if (!filesCache || filesCache.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "file-item";
-    empty.innerHTML = `<span class="file-name">No files yet</span>`;
-    fileListEl.appendChild(empty);
-    return;
-  }
+  files.forEach(f => {
+    const parts = f.path.split("/");
+    let node = tree;
 
-  filesCache.forEach((file) => {
-    const item = document.createElement("div");
-    item.className = "file-item";
-    if (file.path === currentFilePath) {
-      item.classList.add("active");
-    }
-
-    const nameSpan = document.createElement("span");
-    nameSpan.className = "file-name";
-    nameSpan.textContent = file.name || file.path || "Untitled";
-
-    const metaSpan = document.createElement("span");
-    metaSpan.className = "file-meta";
-    metaSpan.textContent = file.path || "";
-
-    item.appendChild(nameSpan);
-    item.appendChild(metaSpan);
-
-    item.addEventListener("click", () => {
-      loadFile(file.path || file.name);
+    parts.forEach((part, i) => {
+      if (!node[part]) {
+        node[part] = { __files: [], __folders: {} };
+      }
+      if (i === parts.length - 1) {
+        node[part].__files.push(f.path);
+      } else {
+        node = node[part].__folders;
+      }
     });
+  });
 
-    fileListEl.appendChild(item);
+  folderTreeEl.innerHTML = "";
+  renderTree(tree, folderTreeEl);
+}
+
+function renderTree(node, container) {
+  Object.keys(node).forEach(key => {
+    const item = node[key];
+
+    // FOLDER
+    if (Object.keys(item.__folders).length || item.__files.length > 1) {
+      const folder = document.createElement("div");
+      folder.className = "folder";
+
+      const name = document.createElement("div");
+      name.className = "folder-name";
+      name.textContent = key;
+
+      const children = document.createElement("div");
+      children.className = "folder-children";
+
+      name.addEventListener("click", () => {
+        children.style.display = children.style.display === "block" ? "none" : "block";
+      });
+
+      folder.appendChild(name);
+      folder.appendChild(children);
+      container.appendChild(folder);
+
+      // Render children
+      Object.keys(item.__folders).forEach(sub => {
+        renderTree({ [sub]: item.__folders[sub] }, children);
+      });
+
+      item.__files.forEach(path => {
+        const file = document.createElement("div");
+        file.className = "file";
+        file.textContent = path.split("/").pop();
+        file.addEventListener("click", () => loadFile(path));
+        children.appendChild(file);
+      });
+
+    } else {
+      // SINGLE FILE
+      const file = document.createElement("div");
+      file.className = "file";
+      file.textContent = key;
+      file.addEventListener("click", () => loadFile(key));
+      container.appendChild(file);
+    }
   });
 }
 
-function updatePreview() {
-  const md = editorEl.value;
-  const html = simpleMarkdownToHtml(md);
-  previewEl.innerHTML = html || '<p class="preview-placeholder">Live preview will appear here as you type.</p>';
-}
-
-// --- File Operations ---
-
+// --- LOAD FILE ---
 async function loadFile(path) {
-  if (!path) return;
-  try {
-    const res = await fetch(`/api/file?path=${encodeURIComponent(path)}`);
-    if (res.status === 401) {
-      showLogin();
-      return;
-    }
-    if (!res.ok) {
-      console.error("Failed to load file:", res.status);
-      return;
-    }
-    const data = await res.json();
-    currentFilePath = path;
-    currentFileNameEl.textContent = path;
-    editorEl.value = data.content || "";
-    updatePreview();
-    renderFileList();
-  } catch (err) {
-    console.error("Error loading file:", err);
-  }
+  const res = await fetch(`/api/file?path=${encodeURIComponent(path)}`);
+  if (res.status === 401) return showLogin();
+
+  const data = await res.json();
+  currentPath = path;
+  currentFileNameEl.textContent = path;
+  editorEl.value = data.content;
+  previewEl.innerHTML = mdToHtml(data.content);
 }
 
-async function saveCurrentFile() {
-  if (!currentFilePath) {
-    alert("No file selected.");
-    return;
-  }
-  try {
-    const res = await fetch("/api/file", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        path: currentFilePath,
-        content: editorEl.value || "",
-      }),
-    });
-    if (res.status === 401) {
-      showLogin();
-      return;
-    }
-    if (!res.ok) {
-      console.error("Failed to save file:", res.status);
-      alert("Failed to save file.");
-      return;
-    }
-    const updated = await res.json();
-    filesCache = updated.files || filesCache;
-    renderFileList();
-  } catch (err) {
-    console.error("Error saving file:", err);
-    alert("Error saving file.");
-  }
+// --- SAVE FILE ---
+async function saveFile() {
+  if (!currentPath) return alert("No file selected.");
+
+  await fetch("/api/file", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ path: currentPath, content: editorEl.value })
+  });
+
+  previewEl.innerHTML = mdToHtml(editorEl.value);
 }
 
-async function deleteCurrentFile() {
-  if (!currentFilePath) {
-    alert("No file selected.");
-    return;
-  }
-  if (!confirm(`Delete file "${currentFilePath}"?`)) return;
+// --- DELETE FILE ---
+async function deleteFile() {
+  if (!currentPath) return alert("No file selected.");
+  if (!confirm(`Delete ${currentPath}?`)) return;
 
-  try {
-    const res = await fetch(`/api/file?path=${encodeURIComponent(currentFilePath)}`, {
-      method: "DELETE",
-    });
-    if (res.status === 401) {
-      showLogin();
-      return;
-    }
-    if (!res.ok) {
-      console.error("Failed to delete file:", res.status);
-      alert("Failed to delete file.");
-      return;
-    }
-    const updated = await res.json();
-    filesCache = updated.files || filesCache;
-    currentFilePath = null;
-    currentFileNameEl.textContent = "No file selected";
-    editorEl.value = "";
-    updatePreview();
-    renderFileList();
-  } catch (err) {
-    console.error("Error deleting file:", err);
-    alert("Error deleting file.");
-  }
+  await fetch(`/api/file?path=${encodeURIComponent(currentPath)}`, {
+    method: "DELETE"
+  });
+
+  currentPath = null;
+  editorEl.value = "";
+  previewEl.innerHTML = "";
+  currentFileNameEl.textContent = "No file selected";
+
+  init();
 }
 
-async function createNewFile() {
-  const name = prompt("New file name (e.g., content/new-page.md):");
+// --- NEW FILE ---
+async function newFile() {
+  const name = prompt("Enter new file path (e.g., content/new.md):");
   if (!name) return;
 
-  try {
-    const res = await fetch("/api/file", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        path: name,
-        content: "# New Page\n\nStart writing...",
-      }),
-    });
-    if (res.status === 401) {
-      showLogin();
-      return;
-    }
-    if (!res.ok) {
-      console.error("Failed to create file:", res.status);
-      alert("Failed to create file.");
-      return;
-    }
-    const updated = await res.json();
-    filesCache = updated.files || filesCache;
-    await loadFile(name);
-  } catch (err) {
-    console.error("Error creating file:", err);
-    alert("Error creating file.");
-  }
+  await fetch("/api/file", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ path: name, content: "# New File" })
+  });
+
+  init();
+  loadFile(name);
 }
 
-async function uploadFile(file) {
-  const text = await file.text();
-  const name = file.name.endsWith(".md") ? file.name : `${file.name}.md`;
-  const path = `uploads/${name}`;
-
-  try {
-    const res = await fetch("/api/file", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        path,
-        content: text,
-      }),
-    });
-    if (res.status === 401) {
-      showLogin();
-      return;
-    }
-    if (!res.ok) {
-      console.error("Failed to upload file:", res.status);
-      alert("Failed to upload file.");
-      return;
-    }
-    const updated = await res.json();
-    filesCache = updated.files || filesCache;
-    await loadFile(path);
-  } catch (err) {
-    console.error("Error uploading file:", err);
-    alert("Error uploading file.");
-  }
-}
-
-// --- Auth actions ---
-
-loginBtn.addEventListener("click", () => {
-  window.location.href = "/login";
-});
-
-logoutBtn.addEventListener("click", () => {
-  // If you have a /logout route in the Worker, use it.
-  // Otherwise, just clear cookie client-side by expiring it and reload.
-  document.cookie = "gh_token=; Max-Age=0; path=/; Secure; SameSite=Lax";
-  window.location.href = "/admin";
-});
-
-// --- UI events ---
-
-editorEl.addEventListener("input", () => {
-  updatePreview();
-});
-
-saveBtn.addEventListener("click", () => {
-  saveCurrentFile();
-});
-
-deleteBtn.addEventListener("click", () => {
-  deleteCurrentFile();
-});
-
-newFileBtn.addEventListener("click", () => {
-  createNewFile();
-});
-
-fileUploadInput.addEventListener("change", (e) => {
-  const file = e.target.files && e.target.files[0];
+// --- UPLOAD ---
+fileUploadInput.addEventListener("change", async e => {
+  const file = e.target.files[0];
   if (!file) return;
-  uploadFile(file);
-  fileUploadInput.value = "";
+
+  const text = await file.text();
+  const path = `content/${file.name}`;
+
+  await fetch("/api/file", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ path, content: text })
+  });
+
+  init();
+  loadFile(path);
 });
 
-// Theme button (placeholder for now)
-const themeBtn = document.getElementById("themeBtn");
-themeBtn.addEventListener("click", () => {
-  alert("Theme switching is wired to your backend THEME setting. We can hook this to /api/theme if you’d like.");
+// --- EDITOR LIVE PREVIEW ---
+editorEl.addEventListener("input", () => {
+  previewEl.innerHTML = mdToHtml(editorEl.value);
 });
 
-// --- Init ---
+// --- BUTTONS ---
+loginBtn.onclick = () => (window.location.href = "/login");
+logoutBtn.onclick = () => {
+  document.cookie = "gh_token=; Max-Age=0; path=/;";
+  window.location.reload();
+};
 
-checkAuthAndInit();
+saveBtn.onclick = saveFile;
+deleteBtn.onclick = deleteFile;
+newFileBtn.onclick = newFile;
+
+// --- INIT ---
+init();
