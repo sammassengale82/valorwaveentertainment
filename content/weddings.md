@@ -1,3 +1,6 @@
+---
+visible: true
+---
 # Wedding DJ Chattanooga
 
 Looking for a wedding DJ in Chattanooga who brings modern energy with faith‑based values?  
