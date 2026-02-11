@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: YOUR_GITHUB_USERNAME/YOUR_REPO_NAME
+  repo: sammassengale82/valorwaveentertainment
   branch: main
 
 media_folder: "public/images"
@@ -8,7 +8,9 @@ public_folder: "/images"
 
 collections:
 
-  # MAIN CONTENT SECTIONS
+  ############################################
+  # MAIN SITE SECTIONS (each with visibility)
+  ############################################
   - name: "sections"
     label: "Site Sections"
     files:
@@ -17,66 +19,98 @@ collections:
         label: "Home"
         file: "content/home.md"
         fields:
+          - { label: "Show Section", name: "visible", widget: "boolean", default: true }
           - { label: "Content", name: "body", widget: "markdown" }
 
       - name: "services"
         label: "Services"
         file: "content/services.md"
         fields:
+          - { label: "Show Section", name: "visible", widget: "boolean", default: true }
+          - { label: "Content", name: "body", widget: "markdown" }
+
+      - name: "why-us"
+        label: "Why Choose Us"
+        file: "content/why-us.md"
+        fields:
+          - { label: "Show Section", name: "visible", widget: "boolean", default: true }
           - { label: "Content", name: "body", widget: "markdown" }
 
       - name: "weddings"
         label: "Weddings"
         file: "content/weddings.md"
         fields:
+          - { label: "Show Section", name: "visible", widget: "boolean", default: true }
           - { label: "Content", name: "body", widget: "markdown" }
 
       - name: "meet-the-dj"
         label: "Meet the DJ"
         file: "content/meet-the-dj.md"
         fields:
+          - { label: "Show Section", name: "visible", widget: "boolean", default: true }
           - { label: "Content", name: "body", widget: "markdown" }
 
       - name: "meaning"
         label: "Meaning Behind Valor Wave"
         file: "content/meaning.md"
         fields:
+          - { label: "Show Section", name: "visible", widget: "boolean", default: true }
           - { label: "Content", name: "body", widget: "markdown" }
 
       - name: "service-area"
         label: "Service Area"
         file: "content/service-area.md"
         fields:
+          - { label: "Show Section", name: "visible", widget: "boolean", default: true }
           - { label: "Content", name: "body", widget: "markdown" }
 
       - name: "hero-discount"
         label: "Hero Discount"
         file: "content/hero-discount.md"
         fields:
+          - { label: "Show Section", name: "visible", widget: "boolean", default: true }
           - { label: "Content", name: "body", widget: "markdown" }
 
       - name: "contact"
         label: "Contact"
         file: "content/contact.md"
         fields:
+          - { label: "Show Section", name: "visible", widget: "boolean", default: true }
           - { label: "Content", name: "body", widget: "markdown" }
 
-      - name: "submit-testimonial"
-        label: "Submit Testimonial"
-        file: "content/submit-testimonial.md"
-        fields:
-          - { label: "Content", name: "body", widget: "markdown" }
 
-  # TESTIMONIALS COLLECTION
+  ############################################
+  # TESTIMONIALS (approval + deletion)
+  ############################################
   - name: "testimonials"
     label: "Testimonials"
     folder: "content/testimonials"
     create: true
     slug: "{{slug}}"
     fields:
+      - { label: "Approved", name: "approved", widget: "boolean", default: false }
+      - { label: "Name (optional)", name: "name", widget: "string", required: false }
       - { label: "Testimonial Content", name: "body", widget: "markdown" }
 
-  # THEME FILE
+
+  ############################################
+  # CUSTOM SECTIONS (add, hide, reorder)
+  ############################################
+  - name: "custom-sections"
+    label: "Custom Sections"
+    folder: "content/custom-sections"
+    create: true
+    slug: "{{order}}-{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Show Section", name: "visible", widget: "boolean", default: true }
+      - { label: "Order", name: "order", widget: "number", default: 999, value_type: "int" }
+      - { label: "Content", name: "body", widget: "markdown" }
+
+
+  ############################################
+  # THEME MODE
+  ############################################
   - name: "theme"
     label: "Theme Mode"
     file: "public/theme.txt"
@@ -89,7 +123,10 @@ collections:
           - { label: "Multicam", value: "multicam" }
           - { label: "Patriotic", value: "patriotic" }
 
+
+  ############################################
   # IMAGE UPLOADS
+  ############################################
   - name: "images"
     label: "Images"
     folder: "public/images"
