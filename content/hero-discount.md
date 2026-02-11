@@ -1,3 +1,6 @@
+---
+visible: true
+---
 # American Heroes
 
 ## We Honor All Heroes
