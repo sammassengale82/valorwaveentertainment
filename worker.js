@@ -1,5 +1,5 @@
 // ------------------------------------------------------------
-// Valor Wave CMS - Cloudflare Pages Worker
+// Valor Wave CMS - Cloudflare Pages Worker (FIXED VERSION)
 // ------------------------------------------------------------
 
 export default {
@@ -23,13 +23,14 @@ export default {
       if (path === "/api/delete") return deleteFile(env, token, request);
       if (path === "/api/new") return newFile(env, token, request);
       if (path === "/api/upload") return uploadFile(env, token, request);
+
       if (path === "/api/theme") {
         if (request.method === "GET") return getTheme(env);
         if (request.method === "POST") return saveTheme(env, request);
       }
     }
 
-    // Let static assets through
+    // Static assets
     return env.ASSETS.fetch(request);
   }
 };
@@ -61,7 +62,6 @@ function json(data, status = 200) {
 
 function handleLogin(url, env) {
   const redirect = `https://github.com/login/oauth/authorize?client_id=${env.GITHUB_CLIENT_ID}&redirect_uri=${env.CALLBACK_URL}&scope=repo`;
-
   return Response.redirect(redirect, 302);
 }
 
@@ -73,7 +73,6 @@ async function handleCallback(url, env) {
   const code = url.searchParams.get("code");
   if (!code) return new Response("Missing code", { status: 400 });
 
-  // Exchange code for token
   const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
     method: "POST",
     headers: { Accept: "application/json" },
@@ -89,7 +88,6 @@ async function handleCallback(url, env) {
 
   if (!token) return new Response("OAuth failed", { status: 400 });
 
-  // Set cookie
   const cookie = `gh_token=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`;
 
   return new Response(null, {
@@ -102,27 +100,40 @@ async function handleCallback(url, env) {
 }
 
 // ------------------------------------------------------------
-// GITHUB API HELPERS
+// GITHUB API HELPER (FIXED)
 // ------------------------------------------------------------
 
 async function gh(env, token, endpoint, method = "GET", body = null) {
-  return fetch(`https://api.github.com/repos/${env.GITHUB_REPO}/${endpoint}`, {
-    method,
-    headers: {
-      Authorization: `token ${token}`,
-      "Content-Type": "application/json"
-    },
-    body: body ? JSON.stringify(body) : null
-  });
+  return fetch(
+    `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/${endpoint}`,
+    {
+      method,
+      headers: {
+        Authorization: `token ${token}`,
+        "Content-Type": "application/json",
+        Accept: "application/vnd.github.v3+json"
+      },
+      body: body ? JSON.stringify(body) : null
+    }
+  );
 }
 
 // ------------------------------------------------------------
-// API: LIST FILES
+// API: LIST FILES (FIXED)
 // ------------------------------------------------------------
 
 async function listFiles(env, token) {
   const res = await gh(env, token, "contents/content");
+
+  if (!res.ok) {
+    return json({ error: "GitHub API error", status: res.status }, 500);
+  }
+
   const files = await res.json();
+
+  if (!Array.isArray(files)) {
+    return json({ error: "Unexpected GitHub response", data: files }, 500);
+  }
 
   return json(files.map(f => f.path));
 }
@@ -134,8 +145,12 @@ async function listFiles(env, token) {
 async function getFile(env, token, url) {
   const path = url.searchParams.get("path");
   const res = await gh(env, token, `contents/${path}`);
-  const data = await res.json();
 
+  if (!res.ok) {
+    return json({ error: "GitHub API error", status: res.status }, 500);
+  }
+
+  const data = await res.json();
   const content = atob(data.content);
 
   return json({
@@ -152,7 +167,6 @@ async function getFile(env, token, url) {
 
 async function saveFile(env, token, request) {
   const body = await request.json();
-
   const content = btoa(body.content);
 
   const res = await gh(env, token, `contents/${body.path}`, "PUT", {
@@ -160,6 +174,10 @@ async function saveFile(env, token, request) {
     content,
     sha: body.sha
   });
+
+  if (!res.ok) {
+    return json({ error: "GitHub save failed", status: res.status }, 500);
+  }
 
   return json({ ok: true });
 }
@@ -176,6 +194,10 @@ async function deleteFile(env, token, request) {
     sha: body.sha
   });
 
+  if (!res.ok) {
+    return json({ error: "GitHub delete failed", status: res.status }, 500);
+  }
+
   return json({ ok: true });
 }
 
@@ -191,6 +213,10 @@ async function newFile(env, token, request) {
     content: btoa("# New file")
   });
 
+  if (!res.ok) {
+    return json({ error: "GitHub create failed", status: res.status }, 500);
+  }
+
   return json({ ok: true });
 }
 
@@ -205,6 +231,10 @@ async function uploadFile(env, token, request) {
     message: `Upload ${body.path}`,
     content: body.base64
   });
+
+  if (!res.ok) {
+    return json({ error: "GitHub upload failed", status: res.status }, 500);
+  }
 
   return json({ ok: true });
 }
