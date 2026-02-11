@@ -1,7 +1,12 @@
 export async function onRequest(context) {
   const url = new URL(context.request.url);
 
-  // Forward OAuth routes to the Worker
+  // Forward login routes to the Worker
+  if (url.pathname === "/login" || url.pathname === "/callback") {
+    return context.env.jolly_voice_2fd4.fetch(context.request);
+  }
+
+  // Forward OAuth routes to the Worker (legacy)
   if (url.pathname.startsWith("/oauth/")) {
     return context.env.jolly_voice_2fd4.fetch(context.request);
   }
