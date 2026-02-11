@@ -1,2 +1,5 @@
-“Valor Wave Entertainment made our wedding absolutely perfect. Professional, faith‑centered, and fun!”  
-— Sarah M.
+---
+approved: false
+name: "Sarah M."
+---
+Professional, friendly, and incredibly easy to work with. Our church event was a huge success thanks to Valor Wave.
