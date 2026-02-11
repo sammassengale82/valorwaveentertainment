@@ -208,7 +208,7 @@ async function deleteFile(env, token, request) {
 async function newFile(env, token, request) {
   const body = await request.json();
 
-  const res = await gh(env, token, `contents/content/${body.path}`, "PUT", {
+  const res = await gh(env, token, `contents/${body.path}`, "PUT", {
     message: `Create ${body.path}`,
     content: btoa("# New file")
   });
