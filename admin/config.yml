@@ -1,123 +1,98 @@
 backend:
   name: github
-  repo: sammassengale82/valorwaveentertainment
+  repo: YOUR_GITHUB_USERNAME/YOUR_REPO_NAME
   branch: main
-  base_url: "https://jolly-voice-2fd4.sammassengale82.workers.dev"
-  auth_endpoint: "callback"
 
-media_folder: "images"
+media_folder: "public/images"
 public_folder: "/images"
 
 collections:
-  - name: "home"
-    label: "Homepage"
+
+  # MAIN CONTENT SECTIONS
+  - name: "sections"
+    label: "Site Sections"
     files:
+
       - name: "home"
-        label: "Homepage Content"
-        file: "src/content/pages/home.md"
+        label: "Home"
+        file: "content/home.md"
         fields:
-          - { label: "Page Title", name: "title", widget: "string" }
-          - { label: "Hero Kicker", name: "hero_kicker", widget: "string" }
-          - { label: "Hero Tagline", name: "hero_tagline", widget: "string" }
-          - { label: "Hero Subline", name: "hero_subline", widget: "string" }
-          - { label: "Hero Button Text", name: "hero_button", widget: "string" }
-          - { label: "Services Title", name: "services_title", widget: "string" }
-          - { label: "Services Footer Text", name: "services_footer", widget: "text" }
-          - { label: "Bio Title", name: "bio_title", widget: "string" }
-          - { label: "Bio Name", name: "bio_name", widget: "string" }
-          - { label: "Bio Image", name: "bio_image", widget: "image" }
-          - { label: "Bio Text", name: "bio_text", widget: "markdown" }
-          - { label: "Testimonials Title", name: "testimonials_title", widget: "string" }
-          - { label: "Contact Title", name: "contact_title", widget: "string" }
-          - { label: "Form Action URL", name: "contact_form_action", widget: "string" }
-          - { label: "Contact Button Text", name: "contact_button", widget: "string" }
+          - { label: "Content", name: "body", widget: "markdown" }
 
-  - name: "services"
-    label: "Services"
-    folder: "src/content/services"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Image", name: "image", widget: "image" }
-      - { label: "Description", name: "description", widget: "markdown" }
-
-  - name: "testimonials"
-    label: "Testimonials"
-    folder: "src/content/testimonials"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Name", name: "name", widget: "string" }
-      - { label: "Quote", name: "quote", widget: "text" }
-
-  - name: "gallery"
-    label: "Gallery"
-    folder: "src/content/gallery"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Image", name: "image", widget: "image" }
-      - { label: "Caption", name: "caption", widget: "string", required: false }
-
-  - name: "blog"
-    label: "Blog Posts"
-    folder: "src/content/blog"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Publish Date", name: "date", widget: "datetime" }
-      - { label: "Featured Image", name: "image", widget: "image", required: false }
-      - { label: "Body", name: "body", widget: "markdown" }
-
-  - name: "settings"
-    label: "Site Settings"
-    files:
-      - name: "site"
-        label: "Site Info"
-        file: "src/content/settings/site.md"
+      - name: "services"
+        label: "Services"
+        file: "content/services.md"
         fields:
-          - { label: "Site Title", name: "title", widget: "string" }
-          - { label: "Tagline", name: "tagline", widget: "string" }
-          - { label: "Logo", name: "logo", widget: "image" }
+          - { label: "Content", name: "body", widget: "markdown" }
 
-      - name: "navigation"
-        label: "Navigation"
-        file: "src/content/settings/navigation.md"
+      - name: "weddings"
+        label: "Weddings"
+        file: "content/weddings.md"
         fields:
-          - label: "Navigation Links"
-            name: "links"
-            widget: "list"
-            fields:
-              - { label: "Label", name: "label", widget: "string" }
-              - { label: "URL", name: "url", widget: "string" }
+          - { label: "Content", name: "body", widget: "markdown" }
 
-      - name: "footer"
-        label: "Footer"
-        file: "src/content/settings/footer.md"
+      - name: "meet-the-dj"
+        label: "Meet the DJ"
+        file: "content/meet-the-dj.md"
         fields:
-          - { label: "Footer Text", name: "text", widget: "markdown" }
+          - { label: "Content", name: "body", widget: "markdown" }
+
+      - name: "meaning"
+        label: "Meaning Behind Valor Wave"
+        file: "content/meaning.md"
+        fields:
+          - { label: "Content", name: "body", widget: "markdown" }
+
+      - name: "service-area"
+        label: "Service Area"
+        file: "content/service-area.md"
+        fields:
+          - { label: "Content", name: "body", widget: "markdown" }
+
+      - name: "hero-discount"
+        label: "Hero Discount"
+        file: "content/hero-discount.md"
+        fields:
+          - { label: "Content", name: "body", widget: "markdown" }
 
       - name: "contact"
-        label: "Contact Info"
-        file: "src/content/settings/contact-info.md"
+        label: "Contact"
+        file: "content/contact.md"
         fields:
-          - { label: "Phone", name: "phone", widget: "string" }
-          - { label: "Email", name: "email", widget: "string" }
-          - { label: "Address", name: "address", widget: "string" }
+          - { label: "Content", name: "body", widget: "markdown" }
 
-      - name: "seo"
-        label: "SEO Settings"
-        file: "src/content/settings/seo.md"
+      - name: "submit-testimonial"
+        label: "Submit Testimonial"
+        file: "content/submit-testimonial.md"
         fields:
-          - { label: "Meta Title", name: "meta_title", widget: "string" }
-          - { label: "Meta Description", name: "meta_description", widget: "text" }
+          - { label: "Content", name: "body", widget: "markdown" }
 
-      - name: "theme"
-        label: "Theme Settings"
-        file: "src/content/settings/theme.md"
-        fields:
-          - { label: "Primary Color", name: "primary", widget: "string" }
-          - { label: "Secondary Color", name: "secondary", widget: "string" }
-          - { label: "Accent Color", name: "accent", widget: "string" }
+  # TESTIMONIALS COLLECTION
+  - name: "testimonials"
+    label: "Testimonials"
+    folder: "content/testimonials"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Testimonial Content", name: "body", widget: "markdown" }
+
+  # THEME FILE
+  - name: "theme"
+    label: "Theme Mode"
+    file: "public/theme.txt"
+    fields:
+      - label: "Theme"
+        name: "body"
+        widget: "select"
+        options:
+          - { label: "Original", value: "original" }
+          - { label: "Multicam", value: "multicam" }
+          - { label: "Patriotic", value: "patriotic" }
+
+  # IMAGE UPLOADS
+  - name: "images"
+    label: "Images"
+    folder: "public/images"
+    create: true
+    fields:
+      - { label: "Image", name: "image", widget: "image" }
