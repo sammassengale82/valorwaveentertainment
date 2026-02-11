@@ -58,7 +58,7 @@ document.getElementById("login-btn").addEventListener("click", () => {
   const timer = setInterval(() => {
     if (popup.closed) {
       clearInterval(timer);
-      window.location.reload();
+      window.location = "/admin/";
     }
   }, 500);
 });
