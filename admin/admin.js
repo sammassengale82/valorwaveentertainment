@@ -1,120 +1,388 @@
 // ---------------------------------------------------------
-// Valor Wave CMS 2.0 - Admin Dashboard Script
+// Valor Wave CMS - Admin Engine (W1 + T3 + L3 + B1)
 // ---------------------------------------------------------
 
-// DOM references
+// =============== DOM REFERENCES ===============
+
 const loginBtn = document.getElementById("login-btn");
+const logoutBtn = document.getElementById("logout-btn");
 const userDisplay = document.getElementById("user-display");
-const fileList = document.getElementById("file-list");
-const editor = document.getElementById("editor");
-const saveBtn = document.getElementById("save-btn");
+
+const fileListEl = document.getElementById("file-list");
+const searchInput = document.getElementById("search-input");
 const newFileBtn = document.getElementById("new-file-btn");
 const newFolderBtn = document.getElementById("new-folder-btn");
+const uploadImageBtn = document.getElementById("upload-image-btn");
 const uploadImageInput = document.getElementById("upload-image");
+
+const editorTextarea = document.getElementById("editor");
+const wysiwygEl = document.getElementById("wysiwyg");
+const modeToggleBtn = document.getElementById("mode-toggle");
+const insertImageBtn = document.getElementById("insert-image-btn");
+const saveBtn = document.getElementById("save-btn");
+const currentPathEl = document.getElementById("current-path");
+
+const previewEl = document.getElementById("preview");
+const dropOverlay = document.getElementById("drop-overlay");
+
+const newFileModal = document.getElementById("new-file-modal");
+const newFileNameInput = document.getElementById("new-file-name");
+const newFileFolderInput = document.getElementById("new-file-folder");
+const createFileConfirmBtn = document.getElementById("create-file-confirm");
+const createFileCancelBtn = document.getElementById("create-file-cancel");
+
+const newFolderModal = document.getElementById("new-folder-modal");
+const newFolderNameInput = document.getElementById("new-folder-name");
+const createFolderConfirmBtn = document.getElementById("create-folder-confirm");
+const createFolderCancelBtn = document.getElementById("create-folder-cancel");
+
+const imageModal = document.getElementById("image-modal");
+const imageUrlInput = document.getElementById("image-url-input");
+const insertImageConfirmBtn = document.getElementById("insert-image-confirm");
+const insertImageCancelBtn = document.getElementById("insert-image-cancel");
+
 const themeSelect = document.getElementById("theme-select");
+const applyThemeBtn = document.getElementById("apply-theme-btn");
+const darkModeToggle = document.getElementById("dark-mode-toggle");
+
+const toolbarEl = document.getElementById("toolbar");
+const toolbarMoreBtn = document.getElementById("toolbar-more-btn");
+const toolbarMoreRow = document.getElementById("toolbar-more");
+
+const statusMessageEl = document.getElementById("status-message");
+const statusAutosaveEl = document.getElementById("status-autosave");
+
+const toastContainer = document.getElementById("toast-container");
+
+// =============== STATE ===============
 
 let currentPath = null;
+let currentSha = null;
+let isWysiwygMode = false;
+let autosaveTimer = null;
+let isSaving = false;
+let fileTreeData = [];
+let lastContent = "";
+let isDragging = false;
 
-// ---------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------
+// =============== HELPERS ===============
 
 async function api(path, options = {}) {
   const res = await fetch(`/api/${path}`, {
     credentials: "include",
     ...options,
   });
-  return res.json();
+
+  if (res.status === 401) {
+    showToast("Session expired. Please log in again.", "error");
+    setStatus("Unauthorized", true);
+    return { error: "Unauthorized" };
+  }
+
+  try {
+    return await res.json();
+  } catch {
+    return { error: "Invalid JSON" };
+  }
 }
 
-function showMessage(msg) {
-  alert(msg);
+function showToast(message, type = "info") {
+  if (!toastContainer) return;
+  const div = document.createElement("div");
+  div.className = `toast toast-${type}`;
+  div.textContent = message;
+  toastContainer.appendChild(div);
+  setTimeout(() => {
+    div.classList.add("visible");
+  }, 10);
+  setTimeout(() => {
+    div.classList.remove("visible");
+    setTimeout(() => div.remove(), 300);
+  }, 3000);
 }
 
-// ---------------------------------------------------------
-// Login
-// ---------------------------------------------------------
-
-if (loginBtn) {
-  loginBtn.addEventListener("click", () => {
-    window.location.href = "/login";
-  });
+function setStatus(message, isError = false) {
+  if (!statusMessageEl) return;
+  statusMessageEl.textContent = message;
+  statusMessageEl.classList.toggle("status-error", isError);
 }
 
-// ---------------------------------------------------------
-// Load user
-// ---------------------------------------------------------
+function setAutosaveStatus(text) {
+  if (!statusAutosaveEl) return;
+  statusAutosaveEl.textContent = `Autosave: ${text}`;
+}
+
+function debounceAutosave() {
+  if (autosaveTimer) clearTimeout(autosaveTimer);
+  setAutosaveStatus("pending…");
+  autosaveTimer = setTimeout(() => {
+    autosaveTimer = null;
+    if (currentPath) {
+      saveContent(true);
+    }
+  }, 2000);
+}
+
+function getEditorContent() {
+  return isWysiwygMode ? wysiwygEl.innerHTML : editorTextarea.value;
+}
+
+function setEditorContent(markdown) {
+  editorTextarea.value = markdown;
+  wysiwygEl.innerHTML = markdownToHtml(markdown);
+  lastContent = markdown;
+  updatePreview(markdown);
+}
+
+function markdownToHtml(md) {
+  if (!md) return "";
+  let html = md;
+
+  html = html.replace(/^###### (.*)$/gm, "<h6>$1</h6>");
+  html = html.replace(/^##### (.*)$/gm, "<h5>$1</h5>");
+  html = html.replace(/^#### (.*)$/gm, "<h4>$1</h4>");
+  html = html.replace(/^### (.*)$/gm, "<h3>$1</h3>");
+  html = html.replace(/^## (.*)$/gm, "<h2>$1</h2>");
+  html = html.replace(/^# (.*)$/gm, "<h1>$1</h1>");
+
+  html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
+  html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+
+  html = html.replace(/
+
+\[([^\]
+
+]+)\]
+
+\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+  html = html.replace(/^\s*[-*] (.*)$/gm, "<ul><li>$1</li></ul>");
+  html = html.replace(/^\s*\d+\. (.*)$/gm, "<ol><li>$1</li></ol>");
+
+  html = html.replace(/\n{2,}/g, "</p><p>");
+  html = `<p>${html}</p>`;
+  html = html.replace(/<p><\/p>/g, "");
+
+  return html;
+}
+
+function htmlToMarkdown(html) {
+  if (!html) return "";
+  let md = html;
+
+  md = md.replace(/<h1>(.*?)<\/h1>/gi, "# $1\n\n");
+  md = md.replace(/<h2>(.*?)<\/h2>/gi, "## $1\n\n");
+  md = md.replace(/<h3>(.*?)<\/h3>/gi, "### $1\n\n");
+  md = md.replace(/<h4>(.*?)<\/h4>/gi, "#### $1\n\n");
+  md = md.replace(/<h5>(.*?)<\/h5>/gi, "##### $1\n\n");
+  md = md.replace(/<h6>(.*?)<\/h6>/gi, "###### $1\n\n");
+
+  md = md.replace(/<strong>(.*?)<\/strong>/gi, "**$1**");
+  md = md.replace(/<b>(.*?)<\/b>/gi, "**$1**");
+  md = md.replace(/<em>(.*?)<\/em>/gi, "*$1*");
+  md = md.replace(/<i>(.*?)<\/i>/gi, "*$1*");
+  md = md.replace(/<u>(.*?)<\/u>/gi, "$1");
+  md = md.replace(/<s>(.*?)<\/s>/gi, "~~$1~~");
+
+  md = md.replace(/<code>(.*?)<\/code>/gi, "`$1`");
+
+  md = md.replace(/<a [^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/gi, "[$2]($1)");
+
+  md = md.replace(/<ul>\s*<li>(.*?)<\/li>\s*<\/ul>/gis, "- $1\n");
+  md = md.replace(/<ol>\s*<li>(.*?)<\/li>\s*<\/ol>/gis, "1. $1\n");
+
+  md = md.replace(/<br\s*\/?>/gi, "\n");
+  md = md.replace(/<\/p>\s*<p>/gi, "\n\n");
+  md = md.replace(/<\/?p>/gi, "");
+
+  md = md.replace(/&nbsp;/g, " ");
+  md = md.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+
+  return md.trim();
+}
+
+function updatePreview(markdown) {
+  if (!previewEl) return;
+  previewEl.innerHTML = markdownToHtml(markdown);
+}
+
+// =============== AUTH / USER ===============
 
 async function loadUser() {
   const me = await api("me");
-  if (me.error) return;
-
-  userDisplay.textContent = `Logged in as ${me.login}`;
+  if (me && !me.error && me.login) {
+    userDisplay.textContent = `Logged in as ${me.login}`;
+    document.body.classList.remove("logged-out");
+    document.body.classList.add("logged-in");
+  } else {
+    userDisplay.textContent = "";
+    document.body.classList.remove("logged-in");
+    document.body.classList.add("logged-out");
+  }
 }
 
-loadUser();
+// =============== FILE TREE ===============
 
-// ---------------------------------------------------------
-// File Browser
-// ---------------------------------------------------------
+function buildTree(files) {
+  const root = {};
+  files.forEach((f) => {
+    const rel = f.path.replace(/^content\//, "");
+    const parts = rel.split("/");
+    let node = root;
+    parts.forEach((part, idx) => {
+      const isFile = idx === parts.length - 1;
+      if (!node[part]) {
+        node[part] = {
+          __isFile: isFile,
+          __path: isFile ? f.path : null,
+          __children: isFile ? null : {},
+        };
+      }
+      if (!isFile) {
+        node = node[part].__children;
+      }
+    });
+  });
+  return root;
+}
+
+function renderTree(node, container) {
+  container.innerHTML = "";
+  const ul = document.createElement("ul");
+
+  const entries = Object.entries(node).sort(([aName, aVal], [bName, bVal]) => {
+    const aIsFile = aVal.__isFile;
+    const bIsFile = bVal.__isFile;
+    if (aIsFile === bIsFile) return aName.localeCompare(bName);
+    return aIsFile ? 1 : -1;
+  });
+
+  for (const [name, info] of entries) {
+    const li = document.createElement("li");
+    if (info.__isFile) {
+      li.className = "file-node";
+      li.textContent = name;
+      li.addEventListener("click", () => openFile(info.__path));
+    } else {
+      li.className = "folder-node";
+      const header = document.createElement("div");
+      header.className = "folder-header";
+
+      const icon = document.createElement("span");
+      icon.className = "folder-icon";
+      icon.textContent = "▸";
+
+      const label = document.createElement("span");
+      label.className = "folder-label";
+      label.textContent = name;
+
+      const childrenContainer = document.createElement("div");
+      childrenContainer.className = "folder-children hidden";
+
+      header.addEventListener("click", () => {
+        const isHidden = childrenContainer.classList.toggle("hidden");
+        icon.textContent = isHidden ? "▸" : "▾";
+      });
+
+      li.appendChild(header);
+      header.appendChild(icon);
+      header.appendChild(label);
+
+      renderTree(info.__children, childrenContainer);
+      li.appendChild(childrenContainer);
+    }
+    ul.appendChild(li);
+  }
+
+  container.appendChild(ul);
+}
 
 async function loadFiles() {
   const files = await api("files");
-  fileList.innerHTML = "";
-
-  files.forEach((f) => {
-    const li = document.createElement("li");
-    li.textContent = f.path.replace("content/", "");
-    li.addEventListener("click", () => openFile(f.path));
-    fileList.appendChild(li);
-  });
+  if (!files || files.error) {
+    setStatus("Failed to load files", true);
+    return;
+  }
+  fileTreeData = files;
+  const tree = buildTree(files);
+  renderTree(tree, fileListEl);
+  setStatus("Files loaded");
 }
 
-loadFiles();
-
-// ---------------------------------------------------------
-// Open File
-// ---------------------------------------------------------
+// =============== FILE OPERATIONS ===============
 
 async function openFile(path) {
   const data = await api(`content?path=${encodeURIComponent(path)}`);
-  if (data.error) return showMessage("Error loading file");
-
-  currentPath = path;
-  editor.value = data.content;
+  if (!data || data.error) {
+    showToast("Error loading file", "error");
+    setStatus("Error loading file", true);
+    return;
+  }
+  currentPath = data.path;
+  currentSha = data.sha || null;
+  currentPathEl.textContent = data.path;
+  setEditorContent(data.content || "");
+  setStatus(`Opened ${data.path}`);
+  setAutosaveStatus("on");
 }
 
-// ---------------------------------------------------------
-// Save File
-// ---------------------------------------------------------
+async function saveContent(isAutosave = false) {
+  if (!currentPath) return;
+  const content = isWysiwygMode
+    ? htmlToMarkdown(wysiwygEl.innerHTML)
+    : editorTextarea.value;
 
-saveBtn.addEventListener("click", async () => {
-  if (!currentPath) return showMessage("No file open");
+  if (content === lastContent && isAutosave) {
+    setAutosaveStatus("idle");
+    return;
+  }
 
-  const content = editor.value;
+  isSaving = true;
+  setStatus(isAutosave ? "Autosaving…" : "Saving…");
+  setAutosaveStatus("saving…");
 
   const res = await api(`content?path=${encodeURIComponent(currentPath)}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       content,
-      message: `Update ${currentPath} via CMS`,
+      message: `${isAutosave ? "Autosave" : "Update"} ${currentPath} via CMS`,
     }),
   });
 
-  if (res.error) return showMessage("Save failed");
-  showMessage("Saved!");
-});
+  isSaving = false;
 
-// ---------------------------------------------------------
-// New File
-// ---------------------------------------------------------
+  if (!res || res.error) {
+    showToast("Save failed", "error");
+    setStatus("Save failed", true);
+    setAutosaveStatus("error");
+    return;
+  }
 
-newFileBtn.addEventListener("click", async () => {
-  const name = prompt("Enter new file name (example: new.md):");
-  if (!name) return;
+  lastContent = content;
+  setStatus(isAutosave ? "Autosaved" : "Saved");
+  setAutosaveStatus("idle");
+  showToast(isAutosave ? "Autosaved" : "Saved", "success");
+}
 
-  const path = `content/${name}`;
+async function createNewFile() {
+  newFileNameInput.value = "";
+  newFileFolderInput.value = "";
+  newFileModal.classList.remove("hidden");
+  newFileNameInput.focus();
+}
+
+async function confirmNewFile() {
+  const name = newFileNameInput.value.trim();
+  const folder = newFileFolderInput.value.trim();
+  if (!name) {
+    showToast("File name required", "error");
+    return;
+  }
+  const path = folder
+    ? `content/${folder.replace(/\/+$/,"")}/${name}`
+    : `content/${name}`;
 
   const res = await api("new-file", {
     method: "POST",
@@ -126,45 +394,64 @@ newFileBtn.addEventListener("click", async () => {
     }),
   });
 
-  if (res.error) return showMessage("Failed to create file");
+  if (!res || res.error) {
+    showToast("Failed to create file", "error");
+    return;
+  }
 
-  loadFiles();
-  openFile(path);
-});
+  newFileModal.classList.add("hidden");
+  await loadFiles();
+  await openFile(path);
+}
 
-// ---------------------------------------------------------
-// New Folder
-// ---------------------------------------------------------
+function cancelNewFile() {
+  newFileModal.classList.add("hidden");
+}
 
-newFolderBtn.addEventListener("click", async () => {
-  const name = prompt("Enter new folder name:");
-  if (!name) return;
+async function createNewFolder() {
+  newFolderNameInput.value = "";
+  newFolderModal.classList.remove("hidden");
+  newFolderNameInput.focus();
+}
 
-  const path = `content/${name}/placeholder.txt`;
+async function confirmNewFolder() {
+  const name = newFolderNameInput.value.trim();
+  if (!name) {
+    showToast("Folder name required", "error");
+    return;
+  }
+  const path = `content/${name.replace(/\/+$/,"")}/.keep`;
 
   const res = await api("new-folder", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       path,
-      content: "placeholder",
+      content: "",
       message: `Create folder ${name} via CMS`,
     }),
   });
 
-  if (res.error) return showMessage("Failed to create folder");
+  if (!res || res.error) {
+    showToast("Failed to create folder", "error");
+    return;
+  }
 
-  loadFiles();
-});
+  newFolderModal.classList.add("hidden");
+  await loadFiles();
+}
 
-// ---------------------------------------------------------
-// Image Upload
-// ---------------------------------------------------------
+function cancelNewFolder() {
+  newFolderModal.classList.add("hidden");
+}
 
-uploadImageInput.addEventListener("change", async () => {
-  const file = uploadImageInput.files[0];
-  if (!file) return;
+// =============== UPLOADS ===============
 
+function triggerUpload() {
+  uploadImageInput.click();
+}
+
+async function handleUploadFile(file) {
   const form = new FormData();
   form.append("file", file);
 
@@ -174,32 +461,371 @@ uploadImageInput.addEventListener("change", async () => {
     credentials: "include",
   });
 
-  const json = await res.json();
-  if (json.error) return showMessage("Upload failed");
+  let json;
+  try {
+    json = await res.json();
+  } catch {
+    showToast("Upload failed", "error");
+    return;
+  }
 
-  showMessage(`Uploaded: ${json.path}`);
+  if (!json || json.error) {
+    showToast("Upload failed", "error");
+    return;
+  }
+
+  showToast(`Uploaded: ${json.path}`, "success");
+
+  const url = json.path;
+  insertImageAtCursor(url);
+}
+
+function insertImageAtCursor(url) {
+  if (isWysiwygMode) {
+    const img = document.createElement("img");
+    img.src = url;
+    img.alt = "";
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0);
+      range.insertNode(img);
+      range.collapse(false);
+    } else {
+      wysiwygEl.appendChild(img);
+    }
+  } else {
+    const md = editorTextarea.value;
+    const insert = `\n\n![image](${url})\n\n`;
+    const start = editorTextarea.selectionStart || md.length;
+    const end = editorTextarea.selectionEnd || md.length;
+    editorTextarea.value = md.slice(0, start) + insert + md.slice(end);
+    updatePreview(editorTextarea.value);
+  }
+}
+
+uploadImageInput.addEventListener("change", async () => {
+  const file = uploadImageInput.files[0];
+  if (!file) return;
+  await handleUploadFile(file);
+  uploadImageInput.value = "";
 });
 
-// ---------------------------------------------------------
-// Theme Switcher
-// ---------------------------------------------------------
-
-themeSelect.addEventListener("change", async () => {
-  const theme = themeSelect.value;
-
-  const res = await api("theme", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      theme,
-      message: `Set theme to ${theme}`,
-    }),
+// Drag & drop
+["dragenter", "dragover"].forEach((evt) => {
+  window.addEventListener(evt, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isDragging = true;
+    dropOverlay.classList.add("visible");
   });
+});
 
-  if (res.error) return showMessage("Theme update failed");
+["dragleave", "drop"].forEach((evt) => {
+  window.addEventListener(evt, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (evt === "drop") {
+      const files = e.dataTransfer.files;
+      if (files && files.length) {
+        Array.from(files).forEach((f) => handleUploadFile(f));
+      }
+    }
+    isDragging = false;
+    dropOverlay.classList.remove("visible");
+  });
+});
 
+// =============== IMAGE MODAL ===============
+
+function openImageModal() {
+  imageUrlInput.value = "";
+  imageModal.classList.remove("hidden");
+  imageUrlInput.focus();
+}
+
+function closeImageModal() {
+  imageModal.classList.add("hidden");
+}
+
+function confirmInsertImage() {
+  const url = imageUrlInput.value.trim();
+  if (!url) {
+    showToast("Image URL required", "error");
+    return;
+  }
+  insertImageAtCursor(url);
+  closeImageModal();
+}
+
+// =============== MODE TOGGLE ===============
+
+function setMode(wysiwyg) {
+  isWysiwygMode = wysiwyg;
+  if (wysiwyg) {
+    wysiwygEl.innerHTML = markdownToHtml(editorTextarea.value);
+    wysiwygEl.style.display = "block";
+    editorTextarea.style.display = "none";
+    modeToggleBtn.textContent = "Markdown";
+  } else {
+    const md = htmlToMarkdown(wysiwygEl.innerHTML);
+    editorTextarea.value = md;
+    wysiwygEl.style.display = "none";
+    editorTextarea.style.display = "block";
+    modeToggleBtn.textContent = "WYSIWYG";
+  }
+  updatePreview(getEditorContent());
+}
+
+// =============== TOOLBAR COMMANDS ===============
+
+function execCommand(cmd) {
+  wysiwygEl.focus();
+
+  switch (cmd) {
+    case "bold":
+      document.execCommand("bold");
+      break;
+    case "italic":
+      document.execCommand("italic");
+      break;
+    case "underline":
+      document.execCommand("underline");
+      break;
+    case "strike":
+      document.execCommand("strikeThrough");
+      break;
+    case "h1":
+      document.execCommand("formatBlock", false, "h1");
+      break;
+    case "h2":
+      document.execCommand("formatBlock", false, "h2");
+      break;
+    case "h3":
+      document.execCommand("formatBlock", false, "h3");
+      break;
+    case "ul":
+      document.execCommand("insertUnorderedList");
+      break;
+    case "ol":
+      document.execCommand("insertOrderedList");
+      break;
+    case "quote":
+      document.execCommand("formatBlock", false, "blockquote");
+      break;
+    case "code":
+      document.execCommand("formatBlock", false, "pre");
+      break;
+    case "hr":
+      document.execCommand("insertHorizontalRule");
+      break;
+    case "align-left":
+      document.execCommand("justifyLeft");
+      break;
+    case "align-center":
+      document.execCommand("justifyCenter");
+      break;
+    case "align-right":
+      document.execCommand("justifyRight");
+      break;
+    case "indent":
+      document.execCommand("indent");
+      break;
+    case "outdent":
+      document.execCommand("outdent");
+      break;
+    case "remove-format":
+      document.execCommand("removeFormat");
+      break;
+    case "color": {
+      const color = prompt("Text color (CSS value):", "#ffffff");
+      if (color) document.execCommand("foreColor", false, color);
+      break;
+    }
+    case "bgcolor": {
+      const color = prompt("Background color (CSS value):", "#000000");
+      if (color) document.execCommand("backColor", false, color);
+      break;
+    }
+    case "table": {
+      const rows = parseInt(prompt("Rows:", "2") || "2", 10);
+      const cols = parseInt(prompt("Columns:", "2") || "2", 10);
+      if (!rows || !cols) break;
+      let html = "<table>";
+      for (let r = 0; r < rows; r++) {
+        html += "<tr>";
+        for (let c = 0; c < cols; c++) {
+          html += "<td>&nbsp;</td>";
+        }
+        html += "</tr>";
+      }
+      html += "</table>";
+      document.execCommand("insertHTML", false, html);
+      break;
+    }
+    default:
+      break;
+  }
+
+  const md = htmlToMarkdown(wysiwygEl.innerHTML);
+  editorTextarea.value = md;
+  updatePreview(md);
+  debounceAutosave();
+}
+
+// Toolbar buttons
+toolbarEl.addEventListener("click", (e) => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+  const cmd = btn.getAttribute("data-cmd");
+  if (!cmd) return;
+  if (!isWysiwygMode) {
+    setMode(true);
+  }
+  execCommand(cmd);
+});
+
+toolbarMoreBtn.addEventListener("click", () => {
+  toolbarMoreRow.classList.toggle("hidden");
+});
+
+// =============== THEME & DARK MODE ===============
+
+function applyTheme(theme) {
   document.body.classList.remove("theme-original", "theme-multicam", "theme-patriotic");
   document.body.classList.add(`theme-${theme}`);
+  localStorage.setItem("vw-theme", theme);
+}
 
-  showMessage("Theme updated!");
+function applyDarkMode(enabled) {
+  document.body.classList.toggle("dark", enabled);
+  localStorage.setItem("vw-dark", enabled ? "1" : "0");
+}
+
+function initThemeFromStorage() {
+  const theme = localStorage.getItem("vw-theme") || "original";
+  themeSelect.value = theme;
+  applyTheme(theme);
+
+  const dark = localStorage.getItem("vw-dark") === "1";
+  applyDarkMode(dark);
+}
+
+// =============== KEYBOARD SHORTCUTS ===============
+
+window.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+    e.preventDefault();
+    saveContent(false);
+  }
+
+  if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+    if (e.key === "N" || e.key === "n") {
+      if (e.shiftKey) {
+        e.preventDefault();
+        createNewFolder();
+      } else {
+        e.preventDefault();
+        createNewFile();
+      }
+    }
+    if (e.key === "D" || e.key === "d") {
+      e.preventDefault();
+      const isDark = !document.body.classList.contains("dark");
+      applyDarkMode(isDark);
+    }
+    if (e.key === "T" || e.key === "t") {
+      if (e.shiftKey) {
+        e.preventDefault();
+        applyTheme(themeSelect.value);
+      }
+    }
+    if (e.key === "I" || e.key === "i") {
+      e.preventDefault();
+      openImageModal();
+    }
+    if (e.key === "M" || e.key === "m") {
+      e.preventDefault();
+      setMode(!isWysiwygMode);
+    }
+    if (e.key === "U" || e.key === "u") {
+      e.preventDefault();
+      triggerUpload();
+    }
+  }
 });
+
+// =============== EVENT WIRING ===============
+
+// Auth
+if (loginBtn) {
+  loginBtn.addEventListener("click", () => {
+    window.location.href = "/login";
+  });
+}
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    document.cookie = "session=; Path=/; Max-Age=0";
+    window.location.reload();
+  });
+}
+
+// Files
+newFileBtn.addEventListener("click", createNewFile);
+createFileConfirmBtn.addEventListener("click", confirmNewFile);
+createFileCancelBtn.addEventListener("click", cancelNewFile);
+
+newFolderBtn.addEventListener("click", createNewFolder);
+createFolderConfirmBtn.addEventListener("click", confirmNewFolder);
+createFolderCancelBtn.addEventListener("click", cancelNewFolder);
+
+// Upload
+uploadImageBtn.addEventListener("click", triggerUpload);
+
+// Image modal
+insertImageBtn.addEventListener("click", openImageModal);
+insertImageConfirmBtn.addEventListener("click", confirmInsertImage);
+insertImageCancelBtn.addEventListener("click", closeImageModal);
+
+// Mode toggle
+modeToggleBtn.addEventListener("click", () => setMode(!isWysiwygMode));
+
+// Editor changes
+editorTextarea.addEventListener("input", () => {
+  updatePreview(editorTextarea.value);
+  debounceAutosave();
+});
+wysiwygEl.addEventListener("input", () => {
+  const md = htmlToMarkdown(wysiwygEl.innerHTML);
+  editorTextarea.value = md;
+  updatePreview(md);
+  debounceAutosave();
+});
+
+// Theme
+applyThemeBtn.addEventListener("click", () => applyTheme(themeSelect.value));
+darkModeToggle.addEventListener("click", () => {
+  const isDark = !document.body.classList.contains("dark");
+  applyDarkMode(isDark);
+});
+
+// Search filter (simple client-side filter by filename)
+searchInput.addEventListener("input", () => {
+  const q = searchInput.value.toLowerCase();
+  const items = fileListEl.querySelectorAll(".file-node");
+  items.forEach((li) => {
+    const text = li.textContent.toLowerCase();
+    li.style.display = text.includes(q) ? "" : "none";
+  });
+});
+
+// =============== INIT ===============
+
+(async function init() {
+  setStatus("Loading…");
+  initThemeFromStorage();
+  setMode(false);
+  await loadUser();
+  await loadFiles();
+  setStatus("Ready");
+  setAutosaveStatus("idle");
+})();
