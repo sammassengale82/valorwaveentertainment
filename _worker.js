@@ -2,9 +2,6 @@
 // Valor Wave CMS 2.0 - Cloudflare Pages Advanced Mode Worker
 // ---------------------------------------------------------
 
-// REQUIRED for Pages Advanced Mode
-export const onRequest = {};
-
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -17,7 +14,7 @@ export default {
     // API routes
     if (path.startsWith("/api/")) return handleApi(request, env);
 
-    // STATIC FALLBACK (critical fix)
+    // STATIC FALLBACK (critical)
     // Let Cloudflare Pages serve /admin, /admin/index.html, CSS, JS, images, etc.
     return env.ASSETS.fetch(request);
   },
