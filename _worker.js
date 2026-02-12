@@ -2,6 +2,8 @@
 // Valor Wave CMS 2.0 - Cloudflare Pages Advanced Mode Worker
 // ---------------------------------------------------------
 
+// force rebuild
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
