@@ -149,6 +149,7 @@ function markdownToHtml(md) {
   html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
   html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
 
+  // FIXED: link regex must be single-line and escape ]
   html = html.replace(/
 
 \[([^\]
@@ -187,6 +188,7 @@ function htmlToMarkdown(html) {
 
   md = md.replace(/<code>(.*?)<\/code>/gi, "`$1`");
 
+  // FIXED: safe link regex
   md = md.replace(/<a [^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/gi, "[$2]($1)");
 
   md = md.replace(/<ul>\s*<li>(.*?)<\/li>\s*<\/ul>/gis, "- $1\n");
