@@ -5,7 +5,6 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // Static files are served by Pages; Worker handles backend routes only
     if (path === "/login") {
       return handleLogin(request, env);
     }
@@ -18,7 +17,6 @@ export default {
       return handleApi(request, env);
     }
 
-    // For anything else, let Pages handle it (static)
     return new Response("Not found", { status: 404 });
   },
 };
@@ -109,8 +107,9 @@ async function createSessionCookie(userLogin, env) {
   const sig = await hmacSign(payloadB64, env.SESSION_SECRET);
   const value = `${payloadB64}.${sig}`;
 
-  // HttpOnly session cookie
-  return `session=${encodeURIComponent(value)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`;
+  return `session=${encodeURIComponent(
+    value
+  )}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`;
 }
 
 async function verifySession(request, env) {
@@ -168,7 +167,6 @@ async function handleCallback(request, env) {
     return jsonResponse({ error: "Invalid OAuth state" }, 400);
   }
 
-  // Exchange code for access token
   const tokenRes = await fetch(
     "https://github.com/login/oauth/access_token",
     {
@@ -203,7 +201,6 @@ async function handleCallback(request, env) {
     );
   }
 
-  // Fetch user info
   const userRes = await fetch("https://api.github.com/user", {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -227,7 +224,6 @@ async function handleCallback(request, env) {
   const clearStateCookie =
     "oauth_state=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax";
 
-  // Redirect back to /admin after successful login
   return redirectResponse("/admin", [sessionCookie, clearStateCookie]);
 }
 
@@ -237,7 +233,6 @@ async function handleApi(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
 
-  // Require auth for all /api/* routes
   const session = await verifySession(request, env);
   if (!session) {
     return jsonResponse({ error: "Unauthorized" }, 401);
@@ -253,17 +248,13 @@ async function handleApi(request, env) {
 
   if (path === "/api/content" && request.method === "GET") {
     const filePath = url.searchParams.get("path");
-    if (!filePath) {
-      return jsonResponse({ error: "Missing path" }, 400);
-    }
+    if (!filePath) return jsonResponse({ error: "Missing path" }, 400);
     return getContentFile(env, filePath);
   }
 
   if (path === "/api/content" && request.method === "PUT") {
     const filePath = url.searchParams.get("path");
-    if (!filePath) {
-      return jsonResponse({ error: "Missing path" }, 400);
-    }
+    if (!filePath) return jsonResponse({ error: "Missing path" }, 400);
     const body = await request.json().catch(() => null);
     if (!body || typeof body.content !== "string") {
       return jsonResponse({ error: "Missing content" }, 400);
@@ -275,10 +266,53 @@ async function handleApi(request, env) {
     return updateContentFile(env, filePath, body.content, message);
   }
 
+  if (path === "/api/new-file" && request.method === "POST") {
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body.path !== "string") {
+      return jsonResponse({ error: "Missing path" }, 400);
+    }
+    const content = typeof body.content === "string" ? body.content : "";
+    const message =
+      typeof body.message === "string"
+        ? body.message
+        : `Create ${body.path} via CMS`;
+    return createOrUpdateFile(env, body.path, content, message);
+  }
+
+  if (path === "/api/new-folder" && request.method === "POST") {
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body.path !== "string") {
+      return jsonResponse({ error: "Missing path" }, 400);
+    }
+    const content = typeof body.content === "string" ? body.content : "";
+    const message =
+      typeof body.message === "string"
+        ? body.message
+        : `Create folder for ${body.path} via CMS`;
+    return createOrUpdateFile(env, body.path, content, message);
+  }
+
+  if (path === "/api/upload-image" && request.method === "POST") {
+    return handleImageUpload(request, env);
+  }
+
+  if (path === "/api/theme" && request.method === "PUT") {
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body.theme !== "string") {
+      return jsonResponse({ error: "Missing theme" }, 400);
+    }
+    const themeValue = body.theme.trim();
+    const message =
+      typeof body.message === "string"
+        ? body.message
+        : `Set theme to ${themeValue} via CMS`;
+    return createOrUpdateFile(env, "theme.txt", themeValue + "\n", message);
+  }
+
   return jsonResponse({ error: "Not found" }, 404);
 }
 
-// ---------- GitHub content helpers ----------
+// ---------- GitHub helpers ----------
 
 function githubApiHeaders(env) {
   return {
@@ -289,7 +323,7 @@ function githubApiHeaders(env) {
 }
 
 async function listContentFiles(env) {
-  const base = `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/content?ref=${env.GITHUB_BRANCH}`;
+  const base = `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/git/trees/${env.GITHUB_BRANCH}?recursive=1`;
   const res = await fetch(base, {
     headers: githubApiHeaders(env),
   });
@@ -303,7 +337,16 @@ async function listContentFiles(env) {
   }
 
   const json = await res.json();
-  return jsonResponse(json);
+  const files = (json.tree || [])
+    .filter(
+      (item) =>
+        item.type === "blob" &&
+        item.path.startsWith("content/") &&
+        item.path.endsWith(".md")
+    )
+    .map((item) => ({ path: item.path }));
+
+  return jsonResponse(files);
 }
 
 async function getContentFile(env, filePath) {
@@ -326,7 +369,6 @@ async function getContentFile(env, filePath) {
 
   const json = await res.json();
 
-  // GitHub returns base64 content
   if (json && json.content && json.encoding === "base64") {
     const raw = atob(json.content.replace(/\n/g, ""));
     return jsonResponse({
@@ -340,7 +382,10 @@ async function getContentFile(env, filePath) {
 }
 
 async function updateContentFile(env, filePath, content, message) {
-  // First, get current file (to obtain SHA)
+  return createOrUpdateFile(env, filePath, content, message);
+}
+
+async function createOrUpdateFile(env, filePath, content, message) {
   const getRes = await fetch(
     `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/${filePath}?ref=${env.GITHUB_BRANCH}`,
     {
@@ -384,11 +429,86 @@ async function updateContentFile(env, filePath, content, message) {
   if (!putRes.ok) {
     const text = await putRes.text();
     return jsonResponse(
-      { error: "Failed to update file", details: text },
+      { error: "Failed to write file", details: text },
       500
     );
   }
 
   const json = await putRes.json();
   return jsonResponse(json);
+}
+
+// ---------- Image upload (/images) ----------
+
+async function handleImageUpload(request, env) {
+  const contentType = request.headers.get("Content-Type") || "";
+  if (!contentType.startsWith("multipart/form-data")) {
+    return jsonResponse({ error: "Expected multipart/form-data" }, 400);
+  }
+
+  const formData = await request.formData();
+  const file = formData.get("file");
+  if (!file || typeof file.name !== "string") {
+    return jsonResponse({ error: "Missing file" }, 400);
+  }
+
+  const arrayBuffer = await file.arrayBuffer();
+  const bytes = new Uint8Array(arrayBuffer);
+  let binary = "";
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  const contentB64 = btoa(binary);
+
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const imagePath = `images/${safeName}`;
+
+  const getRes = await fetch(
+    `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/${imagePath}?ref=${env.GITHUB_BRANCH}`,
+    {
+      headers: githubApiHeaders(env),
+    }
+  );
+
+  let sha = undefined;
+  if (getRes.status === 200) {
+    const current = await getRes.json();
+    sha = current.sha;
+  } else if (getRes.status !== 404) {
+    const text = await getRes.text();
+    return jsonResponse(
+      { error: "Failed to check existing image", details: text },
+      500
+    );
+  }
+
+  const body = {
+    message: `Upload image ${imagePath} via CMS`,
+    content: contentB64,
+    branch: env.GITHUB_BRANCH,
+  };
+  if (sha) body.sha = sha;
+
+  const putRes = await fetch(
+    `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/${imagePath}`,
+    {
+      method: "PUT",
+      headers: {
+        ...githubApiHeaders(env),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    }
+  );
+
+  if (!putRes.ok) {
+    const text = await putRes.text();
+    return jsonResponse(
+      { error: "Failed to upload image", details: text },
+      500
+    );
+  }
+
+  const publicPath = `/images/${safeName}`;
+  return jsonResponse({ path: publicPath });
 }
