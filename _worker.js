@@ -357,5 +357,3 @@ async function handleImageUpload(request, env) {
     thumb: `/cdn-cgi/image/width=200,quality=70/${imagePath}`
   });
 }
-
-}
