@@ -961,4 +961,117 @@ searchInput.addEventListener("input", () => {
   await loadFiles();
   setStatus("Ready");
   setAutosaveStatus("idle");
+  // Upload system
+const fileUploadBtn = document.getElementById("file-upload-btn");
+const fileUploadInput = document.getElementById("file-upload-input");
+const dropZone = document.getElementById("drop-zone");
+const gallery = document.getElementById("upload-gallery");
+const insertSelectedBtn = document.getElementById("insert-selected-btn");
+const progress = document.getElementById("upload-progress");
+const progressBar = document.getElementById("upload-progress-bar");
+
+let uploadedImages = [];
+
+// Button triggers hidden input
+fileUploadBtn.addEventListener("click", () => {
+    fileUploadInput.click();
+});
+
+// Handle file selection
+fileUploadInput.addEventListener("change", e => {
+    handleFiles(e.target.files);
+});
+
+// Drag & drop events
+dropZone.addEventListener("dragover", e => {
+    e.preventDefault();
+    dropZone.classList.add("dragover");
+});
+dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("dragover");
+});
+dropZone.addEventListener("drop", e => {
+    e.preventDefault();
+    dropZone.classList.remove("dragover");
+    handleFiles(e.dataTransfer.files);
+});
+
+// Main handler
+function handleFiles(files) {
+    [...files].forEach(file => {
+        if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+            alert("Only PNG, JPG, and WEBP images are allowed.");
+            return;
+        }
+        uploadFile(file);
+    });
+}
+
+// Upload with progress + auto-optimize
+async function uploadFile(file) {
+    progress.style.display = "block";
+    progressBar.style.width = "0%";
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/upload-image");
+
+    xhr.upload.onprogress = e => {
+        if (e.lengthComputable) {
+            const percent = (e.loaded / e.total) * 100;
+            progressBar.style.width = percent + "%";
+        }
+    };
+
+    xhr.onload = () => {
+        progressBar.style.width = "100%";
+        setTimeout(() => {
+            progress.style.display = "none";
+        }, 500);
+
+        const url = JSON.parse(xhr.responseText).url;
+        addThumbnail(url);
+    };
+
+    xhr.send(formData);
+}
+
+// Add thumbnail to gallery
+function addThumbnail(url) {
+    uploadedImages.push(url);
+
+    const div = document.createElement("div");
+    div.className = "thumb";
+
+    div.innerHTML = `
+        <img src="${url}">
+        <button class="delete-btn">X</button>
+    `;
+
+    div.querySelector(".delete-btn").addEventListener("click", () => {
+        div.remove();
+        uploadedImages = uploadedImages.filter(u => u !== url);
+        updateInsertButton();
+    });
+
+    gallery.appendChild(div);
+    updateInsertButton();
+}
+
+// Enable/disable insert button
+function updateInsertButton() {
+    insertSelectedBtn.disabled = uploadedImages.length === 0;
+}
+
+// Insert into WYSIWYG
+insertSelectedBtn.addEventListener("click", () => {
+    uploadedImages.forEach(url => {
+        insertAtCursor(editor, `![Image](${url})\n`);
+    });
+    uploadedImages = [];
+    gallery.innerHTML = "";
+    updateInsertButton();
+});
 })();
