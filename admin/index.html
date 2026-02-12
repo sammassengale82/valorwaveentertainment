@@ -106,7 +106,37 @@
 
           <button data-cmd="color">Text Color</button>
           <button data-cmd="bgcolor">BG Color</button>
-        </div>
+          <!-- Hidden file input -->
+          <input 
+           type="file" 
+           id="file-upload-input" 
+           accept="image/png, image/jpeg, image/webp"
+           multiple
+           style="display:none"
+           />
+
+          <!-- Upload button -->
+           <button id="file-upload-btn" class="vw-btn">
+            Upload Images
+            </button>
+
+          <!-- Insert into editor -->
+           <button id="insert-selected-btn" class="vw-btn" disabled>
+            Insert Selected
+           </button>
+          </div>
+      </div>
+      <!-- Drag-and-drop zone -->
+      <div id="drop-zone" class="vw-dropzone">
+        <p>Drag & Drop Images Here</p>
+      </div>
+
+      <!-- Thumbnail gallery -->
+        <div id="upload-gallery" class="vw-gallery"></div>
+
+      <!-- Progress bar -->
+        <div id="upload-progress" class="vw-progress">
+         <div id="upload-progress-bar"></div>
       </div>
 
       <!-- EDITOR AREA -->
