@@ -3,7 +3,7 @@ backend:
   repo: sammassengale82/valorwaveentertainment
   branch: main
 
-media_folder: "public/images"
+media_folder: "images"
 public_folder: "/images"
 
 collections:
@@ -113,7 +113,7 @@ collections:
   ############################################
   - name: "theme"
     label: "Theme Mode"
-    file: "public/theme.txt"
+    file: "theme.txt"
     fields:
       - label: "Theme"
         name: "body"
@@ -129,7 +129,7 @@ collections:
   ############################################
   - name: "images"
     label: "Images"
-    folder: "public/images"
+    folder: "images"
     create: true
     fields:
       - { label: "Image", name: "image", widget: "image" }
