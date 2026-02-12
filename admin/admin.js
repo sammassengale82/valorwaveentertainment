@@ -178,14 +178,18 @@ function markdownToHtml(md) {
     "<code>$1</code>"
   );
 
-    // Safe link regex (simple, clean, valid)
-const linkPattern = "\
-
-\[([^\\]
-
-]+)\\]
-
-\\(([^)]+)\\)";
+    // Link regex with ZERO backslashes in the string
+const linkPattern =
+  String.fromCharCode(91) +            // [
+  "(" +
+    "[^" + String.fromCharCode(93) + "]+" +  // ^]
+  ")" +
+  String.fromCharCode(93) +            // ]
+  String.fromCharCode(40) +            // (
+  "(" +
+    "[^" + String.fromCharCode(41) + "]+" +  // ^)
+  ")" +
+  String.fromCharCode(41);             // )
 
 html = html.replace(
   new RegExp(linkPattern, "g"),
