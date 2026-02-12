@@ -178,15 +178,19 @@ function markdownToHtml(md) {
     "<code>$1</code>"
   );
 
-    // Bulletproof link regex (cannot break even with line wrapping)
-const linkPattern =
-  "\
+    // Safe link regex (simple, clean, valid)
+const linkPattern = "\
 
-\[" + "([^\\]
+\[([^\\]
 
-]+)" + "\\]
+]+)\\]
 
-" + "\\(" + "([^)]*)" + "\\)";
+\\(([^)]+)\\)";
+
+html = html.replace(
+  new RegExp(linkPattern, "g"),
+  '<a href="$2" target="_blank">$1</a>'
+);
 
 html = html.replace(
   new RegExp(linkPattern, "g"),
