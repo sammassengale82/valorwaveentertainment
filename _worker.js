@@ -12,10 +12,18 @@ export default {
     if (path === "/callback") return handleCallback(request, env);
 
     // API routes
-    if (path.startsWith("/api/")) return handleApi(request, env);
+    if (path.startsWith("/api/")) {
+      return handleApi(request, env);
+    }
 
-    // STATIC FALLBACK (critical)
-    // Let Cloudflare Pages serve /admin, /admin/index.html, CSS, JS, images, etc.
+    // -----------------------------------------------------
+    // FIX: Ensure /admin loads /admin/index.html properly
+    // -----------------------------------------------------
+    if (path === "/admin") {
+      return env.ASSETS.fetch(new Request(url.origin + "/admin/"));
+    }
+
+    // STATIC FALLBACK
     return env.ASSETS.fetch(request);
   },
 };
@@ -325,7 +333,6 @@ async function handleImageUpload(request, env) {
 
   const bytes = new Uint8Array(await file.arrayBuffer());
   const binary = String.fromCharCode(...bytes);
-  const contentB64 = btoa(binary);
 
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
   const imagePath = `images/${safeName}`;
