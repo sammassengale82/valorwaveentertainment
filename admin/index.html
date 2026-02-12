@@ -3,82 +3,51 @@
 <head>
   <meta charset="UTF-8" />
   <title>Valor Wave CMS</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="admin.css" />
 </head>
-<body>
 
-  <!-- LOGIN SCREEN -->
-  <div id="loginScreen" class="login-screen hidden">
-    <div class="login-card">
-      <img src="logo.png" class="login-logo" alt="Valor Wave Logo" />
+<body class="logged-out">
+
+  <!-- HEADER -->
+  <header class="topbar">
+    <div class="brand">
+      <img src="/logo.png" class="logo" />
       <h1>Valor Wave CMS</h1>
-      <p>Secure GitHub Login</p>
-      <button id="loginBtn" class="login-btn">Login with GitHub</button>
     </div>
-  </div>
 
-  <!-- APP -->
-  <div id="app" class="app hidden">
+    <div class="user-area">
+      <span id="user-display"></span>
+      <button id="login-btn" class="btn primary">Login</button>
+      <button id="logout-btn" class="btn danger">Logout</button>
+    </div>
+  </header>
 
-    <!-- TOP NAV -->
-    <header class="top-nav">
-      <div class="brand">
-        <img src="logo.png" class="brand-logo" alt="Valor Wave Logo" />
-        <div class="brand-text">
-          <span class="brand-title">Valor Wave CMS</span>
-          <span class="brand-subtitle">Patriotic Edition</span>
-        </div>
+  <!-- MAIN LAYOUT -->
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <h2>Content</h2>
+      <div id="file-list" class="file-tree"></div>
+    </aside>
+
+    <!-- EDITOR PANEL -->
+    <main class="editor-panel">
+      <div class="editor-header">
+        <span id="current-path"></span>
+        <button id="save-btn" class="btn success">Save</button>
       </div>
 
-      <nav class="nav-actions">
-        <button id="newFileBtn" class="nav-btn">New File</button>
+      <div class="editor-body">
+        <textarea id="editor"></textarea>
+        <div id="preview" class="preview"></div>
+      </div>
 
-        <label class="nav-btn upload-label">
-          Upload
-          <input type="file" id="fileUpload" class="hidden" accept=".md,.markdown,.txt" />
-        </label>
-
-        <button id="logoutBtn" class="nav-btn nav-btn-danger">Logout</button>
-      </nav>
-    </header>
-
-    <!-- WORKSPACE -->
-    <main class="workspace">
-
-      <!-- LEFT: FOLDER TREE -->
-      <section class="panel panel-files">
-        <div class="panel-header">
-          <h2>Files</h2>
-        </div>
-        <div id="folderTree" class="folder-tree"></div>
-      </section>
-
-      <!-- MIDDLE: EDITOR -->
-      <section class="panel panel-editor">
-        <div class="panel-header">
-          <h2 id="currentFileName">No file selected</h2>
-          <div class="panel-actions">
-            <button id="saveBtn" class="panel-btn">Save</button>
-            <button id="deleteBtn" class="panel-btn panel-btn-danger">Delete</button>
-          </div>
-        </div>
-        <textarea id="editor" class="editor" placeholder="Select a file to begin editing..."></textarea>
-      </section>
-
-      <!-- RIGHT: PREVIEW -->
-      <section class="panel panel-preview">
-        <div class="panel-header">
-          <h2>Preview</h2>
-        </div>
-        <div id="preview" class="preview">
-          <p class="preview-placeholder">Live preview will appear here.</p>
-        </div>
-      </section>
-
+      <div id="status" class="status"></div>
     </main>
+
   </div>
 
-  <script src="admin.js" defer></script>
+  <script src="admin.js"></script>
 </body>
 </html>
