@@ -17,10 +17,15 @@ export default {
     }
 
     // -----------------------------------------------------
-    // FIX: Ensure /admin loads /admin/index.html properly
+    // FIX: Serve ALL /admin/* static files correctly
     // -----------------------------------------------------
+    if (url.pathname.startsWith("/admin/")) {
+      return env.ASSETS.fetch(request);
+    }
+
+    // Redirect /admin → /admin/
     if (path === "/admin") {
-      return env.ASSETS.fetch(new Request(url.origin + "/admin/"));
+      return Response.redirect(url.origin + "/admin/", 301);
     }
 
     // STATIC FALLBACK
