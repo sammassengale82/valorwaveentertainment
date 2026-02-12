@@ -1031,16 +1031,36 @@ async function uploadFile(file) {
             progress.style.display = "none";
         }, 500);
 
-        const url = JSON.parse(xhr.responseText).url;
-        addThumbnail(url);
+        const res = JSON.parse(xhr.responseText);
+        addThumbnail(res.thumb, res.original, res.webp, res.optimized);
+
     };
 
     xhr.send(formData);
 }
 
 // Add thumbnail to gallery
-function addThumbnail(url) {
-    uploadedImages.push(url);
+function addThumbnail(thumbUrl, originalUrl, webpUrl, optimizedUrl) {
+  uploadedImages.push({ originalUrl, webpUrl, optimizedUrl });
+
+  const div = document.createElement("div");
+  div.className = "thumb";
+
+  div.innerHTML = `
+    <img src="${thumbUrl}">
+    <button class="delete-btn">X</button>
+  `;
+
+  div.querySelector(".delete-btn").addEventListener("click", () => {
+    div.remove();
+    uploadedImages = uploadedImages.filter(i => i.originalUrl !== originalUrl);
+    updateInsertButton();
+  });
+
+  gallery.appendChild(div);
+  updateInsertButton();
+}
+
 
     const div = document.createElement("div");
     div.className = "thumb";
