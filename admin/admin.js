@@ -178,7 +178,7 @@ function markdownToHtml(md) {
     "<code>$1</code>"
   );
 
-  // FIXED: safe link regex (constructor, immune to wrapping)
+    // FIXED: safe link regex (constructor, immune to wrapping)
   html = html.replace(
     new RegExp("\
 
