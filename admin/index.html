@@ -4,18 +4,28 @@
   <meta charset="UTF-8" />
   <title>Valor Wave CMS</title>
   <link rel="stylesheet" href="admin.css" />
+  <link rel="stylesheet" href="themes.css" />
 </head>
 
-<body class="logged-out">
+<body class="logged-out theme-original">
 
-  <!-- HEADER -->
+  <!-- TOPBAR -->
   <header class="topbar">
     <div class="brand">
       <img src="/logo.png" class="logo" />
       <h1>Valor Wave CMS</h1>
     </div>
 
-    <div class="user-area">
+    <div class="controls">
+      <select id="theme-select" class="theme-select">
+        <option value="original">Original</option>
+        <option value="multicam">Army Multicam</option>
+        <option value="patriotic">Patriotic</option>
+      </select>
+
+      <button id="apply-theme-btn" class="btn gold">Apply Theme</button>
+      <button id="dark-mode-toggle" class="btn">Dark Mode</button>
+
       <span id="user-display"></span>
       <button id="login-btn" class="btn primary">Login</button>
       <button id="logout-btn" class="btn danger">Logout</button>
@@ -25,27 +35,78 @@
   <!-- MAIN LAYOUT -->
   <div class="layout">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <h2>Content</h2>
+    <!-- SIDEBAR (Resizable) -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <input id="search-input" type="text" placeholder="Search files..." />
+        <button id="new-file-btn" class="btn small">+ File</button>
+        <button id="new-folder-btn" class="btn small">+ Folder</button>
+      </div>
+
       <div id="file-list" class="file-tree"></div>
+
+      <div id="sidebar-resizer" class="resizer-vertical"></div>
     </aside>
 
-    <!-- EDITOR PANEL -->
-    <main class="editor-panel">
+    <!-- EDITOR + PREVIEW STACK -->
+    <main class="main-panel">
+
+      <!-- EDITOR HEADER -->
       <div class="editor-header">
         <span id="current-path"></span>
-        <button id="save-btn" class="btn success">Save</button>
+
+        <div class="editor-controls">
+          <button id="mode-toggle" class="btn small">WYSIWYG</button>
+          <button id="save-btn" class="btn success">Save</button>
+        </div>
       </div>
 
-      <div class="editor-body">
+      <!-- EDITOR AREA -->
+      <div id="editor-container" class="editor-container">
         <textarea id="editor"></textarea>
-        <div id="preview" class="preview"></div>
+        <div id="wysiwyg" class="wysiwyg" contenteditable="true"></div>
       </div>
 
-      <div id="status" class="status"></div>
-    </main>
+      <!-- PREVIEW AREA -->
+      <div id="preview-container" class="preview-container">
+        <div id="preview" class="preview"></div>
+        <div id="preview-resizer" class="resizer-horizontal"></div>
+      </div>
 
+      <!-- STATUS BAR -->
+      <div id="status" class="status"></div>
+
+    </main>
+  </div>
+
+  <!-- DRAG & DROP OVERLAY -->
+  <div id="drop-overlay" class="drop-overlay">
+    <div class="drop-message">Drop files to upload</div>
+  </div>
+
+  <!-- NEW FILE MODAL -->
+  <div id="new-file-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>New File</h2>
+      <input id="new-file-name" type="text" placeholder="filename.md" />
+      <input id="new-file-folder" type="text" placeholder="Folder (optional)" />
+      <div class="modal-actions">
+        <button id="create-file-confirm" class="btn success">Create</button>
+        <button id="create-file-cancel" class="btn danger">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW FOLDER MODAL -->
+  <div id="new-folder-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>New Folder</h2>
+      <input id="new-folder-name" type="text" placeholder="folder-name" />
+      <div class="modal-actions">
+        <button id="create-folder-confirm" class="btn success">Create</button>
+        <button id="create-folder-cancel" class="btn danger">Cancel</button>
+      </div>
+    </div>
   </div>
 
   <script src="admin.js"></script>
