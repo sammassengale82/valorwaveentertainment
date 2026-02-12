@@ -344,3 +344,23 @@ async function handleImageUpload(request, env) {
     `Upload image ${imagePath} via CMS`
   ).then(() => jsonResponse({ path: `/images/${safeName}` }));
 }
+// Image upload endpoint
+if (url.pathname === "/upload-image" && request.method === "POST") {
+    const form = await request.formData();
+    const file = form.get("file");
+
+    const arrayBuffer = await file.arrayBuffer();
+    const content = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+
+    const filename = `images/${Date.now()}-${file.name}`;
+
+    await githubRequest(`/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${filename}`, {
+        method: "PUT",
+        body: JSON.stringify({
+            message: `Upload ${filename}`,
+            content,
+        }),
+    });
+
+    return jsonResponse({ url: `/${filename}` });
+}
