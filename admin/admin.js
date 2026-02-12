@@ -138,68 +138,188 @@ function markdownToHtml(md) {
   if (!md) return "";
   let html = md;
 
-  html = html.replace(/^###### (.*)$/gm, "<h6>$1</h6>");
-  html = html.replace(/^##### (.*)$/gm, "<h5>$1</h5>");
-  html = html.replace(/^#### (.*)$/gm, "<h4>$1</h4>");
-  html = html.replace(/^### (.*)$/gm, "<h3>$1</h3>");
-  html = html.replace(/^## (.*)$/gm, "<h2>$1</h2>");
-  html = html.replace(/^# (.*)$/gm, "<h1>$1</h1>");
+  // Headings
+  html = html.replace(
+    new RegExp("^###### (.*)$", "gm"),
+    "<h6>$1</h6>"
+  );
+  html = html.replace(
+    new RegExp("^##### (.*)$", "gm"),
+    "<h5>$1</h5>"
+  );
+  html = html.replace(
+    new RegExp("^#### (.*)$", "gm"),
+    "<h4>$1</h4>"
+  );
+  html = html.replace(
+    new RegExp("^### (.*)$", "gm"),
+    "<h3>$1</h3>"
+  );
+  html = html.replace(
+    new RegExp("^## (.*)$", "gm"),
+    "<h2>$1</h2>"
+  );
+  html = html.replace(
+    new RegExp("^# (.*)$", "gm"),
+    "<h1>$1</h1>"
+  );
 
-  html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-  html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
-  html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+  // Bold, italic, code
+  html = html.replace(
+    new RegExp("\\*\\*(.+?)\\*\\*", "g"),
+    "<strong>$1</strong>"
+  );
+  html = html.replace(
+    new RegExp("\\*(.+?)\\*", "g"),
+    "<em>$1</em>"
+  );
+  html = html.replace(
+    new RegExp("`([^`]+)`", "g"),
+    "<code>$1</code>"
+  );
 
-  // FIXED: link regex must be single-line and escape ]
-  html = html.replace(/
+  // FIXED: safe link regex (constructor, immune to wrapping)
+  html = html.replace(
+    new RegExp("\
 
-\[([^\]
+\[([^\\]
 
-]+)\]
+]+)\\]
 
-\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+\\(([^)]+)\\)", "g"),
+    '<a href="$2" target="_blank">$1</a>'
+  );
 
-  html = html.replace(/^\s*[-*] (.*)$/gm, "<ul><li>$1</li></ul>");
-  html = html.replace(/^\s*\d+\. (.*)$/gm, "<ol><li>$1</li></ol>");
+  // Lists
+  html = html.replace(
+    new RegExp("^\\s*[-*] (.*)$", "gm"),
+    "<ul><li>$1</li></ul>"
+  );
+  html = html.replace(
+    new RegExp("^\\s*\\d+\\. (.*)$", "gm"),
+    "<ol><li>$1</li></ol>"
+  );
 
-  html = html.replace(/\n{2,}/g, "</p><p>");
+  // Paragraphs
+  html = html.replace(
+    new RegExp("\\n{2,}", "g"),
+    "</p><p>"
+  );
   html = `<p>${html}</p>`;
-  html = html.replace(/<p><\/p>/g, "");
+  html = html.replace(
+    new RegExp("<p><\\/p>", "g"),
+    ""
+  );
 
   return html;
 }
-
 function htmlToMarkdown(html) {
   if (!html) return "";
   let md = html;
 
-  md = md.replace(/<h1>(.*?)<\/h1>/gi, "# $1\n\n");
-  md = md.replace(/<h2>(.*?)<\/h2>/gi, "## $1\n\n");
-  md = md.replace(/<h3>(.*?)<\/h3>/gi, "### $1\n\n");
-  md = md.replace(/<h4>(.*?)<\/h4>/gi, "#### $1\n\n");
-  md = md.replace(/<h5>(.*?)<\/h5>/gi, "##### $1\n\n");
-  md = md.replace(/<h6>(.*?)<\/h6>/gi, "###### $1\n\n");
+  // Headings
+  md = md.replace(
+    new RegExp("<h1>(.*?)<\\/h1>", "gi"),
+    "# $1\n\n"
+  );
+  md = md.replace(
+    new RegExp("<h2>(.*?)<\\/h2>", "gi"),
+    "## $1\n\n"
+  );
+  md = md.replace(
+    new RegExp("<h3>(.*?)<\\/h3>", "gi"),
+    "### $1\n\n"
+  );
+  md = md.replace(
+    new RegExp("<h4>(.*?)<\\/h4>", "gi"),
+    "#### $1\n\n"
+  );
+  md = md.replace(
+    new RegExp("<h5>(.*?)<\\/h5>", "gi"),
+    "##### $1\n\n"
+  );
+  md = md.replace(
+    new RegExp("<h6>(.*?)<\\/h6>", "gi"),
+    "###### $1\n\n"
+  );
 
-  md = md.replace(/<strong>(.*?)<\/strong>/gi, "**$1**");
-  md = md.replace(/<b>(.*?)<\/b>/gi, "**$1**");
-  md = md.replace(/<em>(.*?)<\/em>/gi, "*$1*");
-  md = md.replace(/<i>(.*?)<\/i>/gi, "*$1*");
-  md = md.replace(/<u>(.*?)<\/u>/gi, "$1");
-  md = md.replace(/<s>(.*?)<\/s>/gi, "~~$1~~");
+  // Bold / italic / underline / strike
+  md = md.replace(
+    new RegExp("<strong>(.*?)<\\/strong>", "gi"),
+    "**$1**"
+  );
+  md = md.replace(
+    new RegExp("<b>(.*?)<\\/b>", "gi"),
+    "**$1**"
+  );
+  md = md.replace(
+    new RegExp("<em>(.*?)<\\/em>", "gi"),
+    "*$1*"
+  );
+  md = md.replace(
+    new RegExp("<i>(.*?)<\\/i>", "gi"),
+    "*$1*"
+  );
+  md = md.replace(
+    new RegExp("<u>(.*?)<\\/u>", "gi"),
+    "$1"
+  );
+  md = md.replace(
+    new RegExp("<s>(.*?)<\\/s>", "gi"),
+    "~~$1~~"
+  );
 
-  md = md.replace(/<code>(.*?)<\/code>/gi, "`$1`");
+  // Code
+  md = md.replace(
+    new RegExp("<code>(.*?)<\\/code>", "gi"),
+    "`$1`"
+  );
 
-  // FIXED: safe link regex
-  md = md.replace(/<a [^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/gi, "[$2]($1)");
+  // Links (safe)
+  md = md.replace(
+    new RegExp("<a [^>]*href=\"([^\"]+)\"[^>]*>(.*?)<\\/a>", "gi"),
+    "[$2]($1)"
+  );
 
-  md = md.replace(/<ul>\s*<li>(.*?)<\/li>\s*<\/ul>/gis, "- $1\n");
-  md = md.replace(/<ol>\s*<li>(.*?)<\/li>\s*<\/ol>/gis, "1. $1\n");
+  // Lists
+  md = md.replace(
+    new RegExp("<ul>\\s*<li>(.*?)<\\/li>\\s*<\\/ul>", "gis"),
+    "- $1\n"
+  );
+  md = md.replace(
+    new RegExp("<ol>\\s*<li>(.*?)<\\/li>\\s*<\\/ol>", "gis"),
+    "1. $1\n"
+  );
 
-  md = md.replace(/<br\s*\/?>/gi, "\n");
-  md = md.replace(/<\/p>\s*<p>/gi, "\n\n");
-  md = md.replace(/<\/?p>/gi, "");
+  // Line breaks / paragraphs
+  md = md.replace(
+    new RegExp("<br\\s*\\/?>", "gi"),
+    "\n"
+  );
+  md = md.replace(
+    new RegExp("<\\/p>\\s*<p>", "gi"),
+    "\n\n"
+  );
+  md = md.replace(
+    new RegExp("<\\/?p>", "gi"),
+    ""
+  );
 
-  md = md.replace(/&nbsp;/g, " ");
-  md = md.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+  // Entities
+  md = md.replace(
+    new RegExp("&nbsp;", "g"),
+    " "
+  );
+  md = md.replace(
+    new RegExp("&lt;", "g"),
+    "<"
+  ).replace(
+    new RegExp("&gt;", "g"),
+    ">"
+  ).replace(
+    new RegExp("&amp;", "g"),
+    "&"
+  );
 
   return md.trim();
 }
