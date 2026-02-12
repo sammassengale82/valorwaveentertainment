@@ -1,106 +1,205 @@
-/* ------------------------------
-   Valor Wave CMS - themes.css
-   Theme variants: original, multicam, patriotic
-   ------------------------------ */
+// ---------------------------------------------------------
+// Valor Wave CMS 2.0 - Admin Dashboard Script
+// ---------------------------------------------------------
 
-/* BASE (Original) */
+// DOM references
+const loginBtn = document.getElementById("login-btn");
+const userDisplay = document.getElementById("user-display");
+const fileList = document.getElementById("file-list");
+const editor = document.getElementById("editor");
+const saveBtn = document.getElementById("save-btn");
+const newFileBtn = document.getElementById("new-file-btn");
+const newFolderBtn = document.getElementById("new-folder-btn");
+const uploadImageInput = document.getElementById("upload-image");
+const themeSelect = document.getElementById("theme-select");
 
-body.theme-original {
-  --navy: #0a1a2f;
-  --navy-light: #132b4a;
-  --gold: #d4af37;
-  --red: #b22222;
-  --bg: #f4f6f8;
-  --bg-alt: #e6e9ee;
+let currentPath = null;
+
+// ---------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------
+
+async function api(path, options = {}) {
+  const res = await fetch(`/api/${path}`, {
+    credentials: "include",
+    ...options,
+  });
+  return res.json();
 }
 
-/* ARMY MULTICAM */
-
-body.theme-multicam {
-  --navy: #2b3a2f;
-  --navy-light: #1f2a22;
-  --gold: #c2a35b;
-  --red: #8b3a3a;
-  --bg: #1a1f18;
-  --bg-alt: #252c22;
+function showMessage(msg) {
+  alert(msg);
 }
 
-/* Multicam texture effect (CSS only) */
-body.theme-multicam .sidebar,
-body.theme-multicam .topbar {
-  background-image:
-    radial-gradient(circle at 10% 20%, rgba(120,130,90,0.35) 0, transparent 55%),
-    radial-gradient(circle at 80% 0%, rgba(70,80,50,0.35) 0, transparent 55%),
-    radial-gradient(circle at 0% 80%, rgba(90,100,70,0.35) 0, transparent 55%),
-    radial-gradient(circle at 80% 80%, rgba(50,60,40,0.35) 0, transparent 55%);
-  background-color: var(--navy-light);
+// ---------------------------------------------------------
+// Login
+// ---------------------------------------------------------
+
+if (loginBtn) {
+  loginBtn.addEventListener("click", () => {
+    window.location.href = "/login";
+  });
 }
 
-/* PATRIOTIC */
+// ---------------------------------------------------------
+// Load user
+// ---------------------------------------------------------
 
-body.theme-patriotic {
-  --navy: #0b1220;
-  --navy-light: #111827;
-  --gold: #fbbf24;
-  --red: #b91c1c;
-  --bg: #f3f4f6;
-  --bg-alt: #e5e7eb;
+async function loadUser() {
+  const me = await api("me");
+  if (me.error) return;
+
+  userDisplay.textContent = `Logged in as ${me.login}`;
 }
 
-/* Patriotic subtle flag band in topbar */
+loadUser();
 
-body.theme-patriotic .topbar {
-  background-image:
-    linear-gradient(
-      to right,
-      #1d4ed8 0%,
-      #1d4ed8 20%,
-      #ffffff 20%,
-      #ffffff 40%,
-      #b91c1c 40%,
-      #b91c1c 60%,
-      #1d4ed8 60%,
-      #1d4ed8 100%
-    );
-  background-size: 200% 100%;
-  animation: patriotic-wave 18s linear infinite;
+// ---------------------------------------------------------
+// File Browser
+// ---------------------------------------------------------
+
+async function loadFiles() {
+  const files = await api("files");
+  fileList.innerHTML = "";
+
+  files.forEach((f) => {
+    const li = document.createElement("li");
+    li.textContent = f.path.replace("content/", "");
+    li.addEventListener("click", () => openFile(f.path));
+    fileList.appendChild(li);
+  });
 }
 
-@keyframes patriotic-wave {
-  0% { background-position: 0% 0; }
-  100% { background-position: -100% 0; }
+loadFiles();
+
+// ---------------------------------------------------------
+// Open File
+// ---------------------------------------------------------
+
+async function openFile(path) {
+  const data = await api(`content?path=${encodeURIComponent(path)}`);
+  if (data.error) return showMessage("Error loading file");
+
+  currentPath = path;
+  editor.value = data.content;
 }
 
-/* Ensure text stays readable on animated topbar */
+// ---------------------------------------------------------
+// Save File
+// ---------------------------------------------------------
 
-body.theme-patriotic .topbar .brand,
-body.theme-patriotic .topbar .controls {
-  position: relative;
-  z-index: 1;
-}
+saveBtn.addEventListener("click", async () => {
+  if (!currentPath) return showMessage("No file open");
 
-body.theme-patriotic .topbar::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.7));
-  z-index: 0;
-}
+  const content = editor.value;
 
-/* Adjust sidebar for patriotic theme */
+  const res = await api(`content?path=${encodeURIComponent(currentPath)}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      content,
+      message: `Update ${currentPath} via CMS`,
+    }),
+  });
 
-body.theme-patriotic .sidebar {
-  background: #111827;
-}
+  if (res.error) return showMessage("Save failed");
+  showMessage("Saved!");
+});
 
-/* Dark mode + themes interplay */
+// ---------------------------------------------------------
+// New File
+// ---------------------------------------------------------
 
-body.dark.theme-multicam {
-  --bg: #050806;
-  --bg-alt: #11140f;
-}
+newFileBtn.addEventListener("click", async () => {
+  const name = prompt("Enter new file name (example: new.md):");
+  if (!name) return;
 
-body.dark.theme-patriotic {
-  --bg: #020617;
-  --bg-alt: #020617;
-}
+  const path = `content/${name}`;
+
+  const res = await api("new-file", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      path,
+      content: "# New File\n",
+      message: `Create ${path} via CMS`,
+    }),
+  });
+
+  if (res.error) return showMessage("Failed to create file");
+
+  loadFiles();
+  openFile(path);
+});
+
+// ---------------------------------------------------------
+// New Folder
+// ---------------------------------------------------------
+
+newFolderBtn.addEventListener("click", async () => {
+  const name = prompt("Enter new folder name:");
+  if (!name) return;
+
+  const path = `content/${name}/placeholder.txt`;
+
+  const res = await api("new-folder", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      path,
+      content: "placeholder",
+      message: `Create folder ${name} via CMS`,
+    }),
+  });
+
+  if (res.error) return showMessage("Failed to create folder");
+
+  loadFiles();
+});
+
+// ---------------------------------------------------------
+// Image Upload
+// ---------------------------------------------------------
+
+uploadImageInput.addEventListener("change", async () => {
+  const file = uploadImageInput.files[0];
+  if (!file) return;
+
+  const form = new FormData();
+  form.append("file", file);
+
+  const res = await fetch("/api/upload-image", {
+    method: "POST",
+    body: form,
+    credentials: "include",
+  });
+
+  const json = await res.json();
+  if (json.error) return showMessage("Upload failed");
+
+  showMessage(`Uploaded: ${json.path}`);
+});
+
+// ---------------------------------------------------------
+// Theme Switcher
+// ---------------------------------------------------------
+
+themeSelect.addEventListener("change", async () => {
+  const theme = themeSelect.value;
+
+  const res = await api("theme", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      theme,
+      message: `Set theme to ${theme}`,
+    }),
+  });
+
+  if (res.error) return showMessage("Theme update failed");
+
+  document.body.classList.remove("theme-original", "theme-multicam", "theme-patriotic");
+  document.body.classList.add(`theme-${theme}`);
+
+  showMessage("Theme updated!");
+});
