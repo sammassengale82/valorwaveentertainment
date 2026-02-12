@@ -1038,11 +1038,8 @@ async function uploadFile(file) {
 
     xhr.send(formData);
 }
-
 // Add thumbnail to gallery
 function addThumbnail(thumbUrl, originalUrl, webpUrl, optimizedUrl) {
-  uploadedImages.push({ originalUrl, webpUrl, optimizedUrl });
-
   const div = document.createElement("div");
   div.className = "thumb";
 
@@ -1062,36 +1059,19 @@ function addThumbnail(thumbUrl, originalUrl, webpUrl, optimizedUrl) {
 }
 
 
-    const div = document.createElement("div");
-    div.className = "thumb";
+// ⭐⭐ INSERT STEP 4 RIGHT HERE ⭐⭐
+insertSelectedBtn.addEventListener("click", () => {
+  uploadedImages.forEach(img => {
+    insertAtCursor(editor, `![Image](${img.optimizedUrl})\n`);
+  });
 
-    div.innerHTML = `
-        <img src="${url}">
-        <button class="delete-btn">X</button>
-    `;
+  uploadedImages = [];
+  gallery.innerHTML = "";
+  updateInsertButton();
+});
 
-    div.querySelector(".delete-btn").addEventListener("click", () => {
-        div.remove();
-        uploadedImages = uploadedImages.filter(u => u !== url);
-        updateInsertButton();
-    });
-
-    gallery.appendChild(div);
-    updateInsertButton();
-}
 
 // Enable/disable insert button
 function updateInsertButton() {
-    insertSelectedBtn.disabled = uploadedImages.length === 0;
+  insertSelectedBtn.disabled = uploadedImages.length === 0;
 }
-
-// Insert into WYSIWYG
-insertSelectedBtn.addEventListener("click", () => {
-    uploadedImages.forEach(url => {
-        insertAtCursor(editor, `![Image](${url})\n`);
-    });
-    uploadedImages = [];
-    gallery.innerHTML = "";
-    updateInsertButton();
-});
-})();
