@@ -2,24 +2,15 @@
 // Valor Wave CMS 2.0 - Cloudflare Pages Advanced Mode Worker
 // ---------------------------------------------------------
 
-// force rebuild
+// rebuild
 
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // OAuth routes
-    if (path === "/login") return handleLogin(request, env);
-    if (path === "/callback") return handleCallback(request, env);
-
-    // API routes
-    if (path.startsWith("/api/")) {
-      return handleApi(request, env);
-    }
-
     // -----------------------------------------------------
-    // FIX: Serve ALL /admin/* static files correctly
+    // Serve ALL /admin/* static files FIRST
     // -----------------------------------------------------
     if (url.pathname.startsWith("/admin/")) {
       return env.ASSETS.fetch(request);
@@ -28,6 +19,15 @@ export default {
     // Redirect /admin → /admin/
     if (path === "/admin") {
       return Response.redirect(url.origin + "/admin/", 301);
+    }
+
+    // OAuth routes
+    if (path === "/login") return handleLogin(request, env);
+    if (path === "/callback") return handleCallback(request, env);
+
+    // API routes
+    if (path.startsWith("/api/")) {
+      return handleApi(request, env);
     }
 
     // STATIC FALLBACK
