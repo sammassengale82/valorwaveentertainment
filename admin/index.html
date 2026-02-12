@@ -12,19 +12,27 @@
   <!-- TOPBAR -->
   <header class="topbar">
     <div class="brand">
-      <img src="/logo.png" class="logo" />
+      <img src="/logo.png" class="logo" alt="Valor Wave logo" />
       <h1>Valor Wave CMS</h1>
     </div>
 
     <div class="controls">
-      <select id="theme-select" class="theme-select">
+      <!-- Theme select (with persistence handled in JS) -->
+      <select id="theme-select" class="theme-select" data-hotkey="t">
         <option value="original">Original</option>
         <option value="multicam">Army Multicam</option>
         <option value="patriotic">Patriotic</option>
       </select>
 
-      <button id="apply-theme-btn" class="btn gold">Apply Theme</button>
-      <button id="dark-mode-toggle" class="btn">Dark Mode</button>
+      <!-- Apply theme button (JS will persist choice) -->
+      <button id="apply-theme-btn" class="btn gold" data-hotkey="Shift+T">
+        Apply Theme
+      </button>
+
+      <!-- Dark mode toggle (JS will persist in localStorage) -->
+      <button id="dark-mode-toggle" class="btn" data-hotkey="D">
+        Dark Mode
+      </button>
 
       <span id="user-display"></span>
       <button id="login-btn" class="btn primary">Login</button>
@@ -39,11 +47,23 @@
     <aside id="sidebar" class="sidebar">
       <div class="sidebar-header">
         <input id="search-input" type="text" placeholder="Search files..." />
-        <button id="new-file-btn" class="btn small">+ File</button>
-        <button id="new-folder-btn" class="btn small">+ Folder</button>
+
+        <div class="sidebar-actions">
+          <button id="new-file-btn" class="btn small" data-hotkey="N">
+            + File
+          </button>
+          <button id="new-folder-btn" class="btn small" data-hotkey="Shift+N">
+            + Folder
+          </button>
+          <!-- Upload Image button triggers hidden file input -->
+          <button id="upload-image-btn" class="btn small" data-hotkey="U">
+            Upload Image
+          </button>
+        </div>
       </div>
 
-      <div id="file-list" class="file-tree"></div>
+      <!-- File tree (folders + files rendered by JS) -->
+      <div id="file-list" class="file-tree" aria-label="Content files"></div>
 
       <div id="sidebar-resizer" class="resizer-vertical"></div>
     </aside>
@@ -56,14 +76,29 @@
         <span id="current-path"></span>
 
         <div class="editor-controls">
-          <button id="mode-toggle" class="btn small">WYSIWYG</button>
-          <button id="save-btn" class="btn success">Save</button>
+          <!-- Mode toggle: Markdown / WYSIWYG -->
+          <button id="mode-toggle" class="btn small" data-hotkey="M">
+            WYSIWYG
+          </button>
+
+          <!-- Insert image into WYSIWYG (JS will open a prompt / picker) -->
+          <button id="insert-image-btn" class="btn small" data-hotkey="I">
+            Insert Image
+          </button>
+
+          <!-- Save button (autosave will also use this logic) -->
+          <button id="save-btn" class="btn success" data-hotkey="Ctrl+S">
+            Save
+          </button>
         </div>
       </div>
 
       <!-- EDITOR AREA -->
       <div id="editor-container" class="editor-container">
-        <textarea id="editor"></textarea>
+        <!-- Raw Markdown editor -->
+        <textarea id="editor" spellcheck="false"></textarea>
+
+        <!-- WYSIWYG editor (JS toggles visibility with #editor) -->
         <div id="wysiwyg" class="wysiwyg" contenteditable="true"></div>
       </div>
 
@@ -74,12 +109,18 @@
       </div>
 
       <!-- STATUS BAR -->
-      <div id="status" class="status"></div>
+      <div id="status" class="status">
+        <span id="status-message">Ready</span>
+        <span id="status-autosave">Autosave: off</span>
+        <span id="status-shortcuts">
+          Shortcuts: Ctrl+S save · N new file · D dark mode
+        </span>
+      </div>
 
     </main>
   </div>
 
-  <!-- DRAG & DROP OVERLAY -->
+  <!-- DRAG & DROP OVERLAY (used for drag‑and‑drop uploads) -->
   <div id="drop-overlay" class="drop-overlay">
     <div class="drop-message">Drop files to upload</div>
   </div>
@@ -108,6 +149,9 @@
       </div>
     </div>
   </div>
+
+  <!-- HIDDEN FILE INPUT FOR IMAGE UPLOAD -->
+  <input type="file" id="upload-image" accept="image/*" style="display:none;" />
 
   <script src="admin.js"></script>
 </body>
