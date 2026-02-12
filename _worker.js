@@ -334,13 +334,28 @@ async function handleImageUpload(request, env) {
   const bytes = new Uint8Array(await file.arrayBuffer());
   const binary = String.fromCharCode(...bytes);
 
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-  const imagePath = `images/${safeName}`;
+  // Folder-based organization
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
 
-  return createOrUpdateFile(
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const imagePath = `images/${year}/${month}/${day}/${safeName}`;
+
+  await createOrUpdateFile(
     env,
     imagePath,
     binary,
     `Upload image ${imagePath} via CMS`
-  ).then(() => jsonResponse({ path: `/images/${safeName}` }));
+  );
+
+  return jsonResponse({
+    original: `/${imagePath}`,
+    optimized: `/cdn-cgi/image/quality=85/${imagePath}`,
+    webp: `/cdn-cgi/image/format=webp/${imagePath}`,
+    thumb: `/cdn-cgi/image/width=200,quality=70/${imagePath}`
+  });
+}
+
 }
