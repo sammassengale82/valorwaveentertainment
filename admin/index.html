@@ -19,18 +19,35 @@
   <div id="app" class="hidden">
 
     <!-- TOP BAR -->
-    <header id="topbar">
-      <div id="currentFileName">No file selected</div>
+<header id="topbar">
+  <div id="currentFileName">No file selected</div>
 
-      <div id="toolbar">
-        <button id="newFileBtn">New File</button>
-        <button id="saveBtn">Save</button>
-        <button id="deleteBtn">Delete</button>
-        <button id="logoutBtn">Logout</button>
+  <div id="toolbar">
 
-        <!-- REQUIRED FOR OPTION A (markdown file upload) -->
-        <input type="file" id="fileUpload" style="display:none" />
-      </div>
+    <!-- Primary toolbar actions -->
+    <button id="new-file-btn">New File</button>
+    <button id="save-btn">Save</button>
+    <button id="delete-btn">Delete</button>
+    <button id="logout-btn">Logout</button>
+
+    <!-- More button (toggles hidden overflow row) -->
+    <button id="toolbar-more-btn" class="toolbar-btn">More</button>
+
+    <!-- Hidden overflow row -->
+    <div id="toolbar-more" class="hidden">
+      <!-- Add extra toolbar buttons here if needed -->
+      <!-- Example:
+      <button data-cmd="hr">HR</button>
+      <button data-cmd="table">Table</button>
+      -->
+    </div>
+
+    <!-- REQUIRED FOR OPTION A (markdown file upload) -->
+    <input type="file" id="fileUpload" style="display:none" />
+
+  </div>
+</header>
+
     </header>
 
     <!-- MAIN LAYOUT -->
