@@ -2,7 +2,7 @@
 // Valor Wave CMS 2.0 - Cloudflare Pages Advanced Mode Worker
 // ---------------------------------------------------------
 
-// rebuild
+// rebuild worker + assets together
 
 export default {
   async fetch(request, env, ctx) {
