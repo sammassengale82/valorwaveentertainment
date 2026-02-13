@@ -999,7 +999,10 @@ function addThumbnail(thumbUrl, originalUrl, webpUrl, optimizedUrl) {
 // ⭐⭐ INSERT STEP 4 RIGHT HERE ⭐⭐
 insertSelectedBtn.addEventListener("click", () => {
   uploadedImages.forEach(img => {
-    insertAtCursor(editor, `![Image](${img.optimizedUrl})\n`);
+    insertAtCursor(
+  isWysiwygMode ? wysiwygEl : editorTextarea,
+  `![Image](${img.optimizedUrl})\n`
+);
   });
 
   uploadedImages = [];
