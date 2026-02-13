@@ -2,7 +2,7 @@
 // Valor Wave CMS - Admin Engine (W1 + T3 + L3 + B1)
 // ---------------------------------------------------------
 
-// rebuild assets
+// rebuild trigger
 
 // =============== DOM REFERENCES ===============
 
