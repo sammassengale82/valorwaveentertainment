@@ -1014,4 +1014,5 @@ insertSelectedBtn.addEventListener("click", () => {
 // Enable/disable insert button
 function updateInsertButton() {
   insertSelectedBtn.disabled = uploadedImages.length === 0;
-}
+}})(); 
+
