@@ -19,36 +19,53 @@
   <div id="app" class="hidden">
 
     <!-- TOP BAR -->
-<header id="topbar">
-  <div id="currentFileName">No file selected</div>
+    <header id="topbar">
+      <div id="currentFileName">No file selected</div>
 
-  <div id="toolbar">
+      <div id="toolbar">
 
-    <!-- Primary toolbar actions -->
-    <button id="new-file-btn">New File</button>
-    <button id="save-btn">Save</button>
-    <button id="delete-btn">Delete</button>
-    <button id="logout-btn">Logout</button>
+        <!-- Primary toolbar actions -->
+        <button id="new-file-btn">New File</button>
+        <button id="save-btn">Save</button>
+        <button id="delete-btn">Delete</button>
+        <button id="logout-btn">Logout</button>
 
-    <!-- More button (toggles hidden overflow row) -->
-    <button id="toolbar-more-btn" class="toolbar-btn">More</button>
+        <!-- More button (toggles hidden overflow row) -->
+        <button id="toolbar-more-btn" class="toolbar-btn">More</button>
 
-    <!-- Hidden overflow row -->
-    <div id="toolbar-more" class="hidden">
-      <!-- Add extra toolbar buttons here if needed -->
-      <!-- Example:
-      <button data-cmd="hr">HR</button>
-      <button data-cmd="table">Table</button>
-      -->
+        <!-- Hidden overflow row -->
+        <div id="toolbar-more" class="hidden"></div>
+
+        <!-- REQUIRED FOR OPTION A (markdown file upload) -->
+        <input type="file" id="fileUpload" style="display:none" />
+
+      </div>
+    </header>
+
+    <!-- REQUIRED MODALS + BUTTONS FOR FILE/FOLDER CREATION -->
+
+    <!-- NEW FILE MODAL -->
+    <div id="new-file-modal" class="modal hidden">
+      <h3>Create New File</h3>
+      <input id="new-file-name" type="text" placeholder="Enter file name" />
+      <div class="modal-actions">
+        <button id="create-file-confirm">Create</button>
+        <button id="create-file-cancel">Cancel</button>
+      </div>
     </div>
 
-    <!-- REQUIRED FOR OPTION A (markdown file upload) -->
-    <input type="file" id="fileUpload" style="display:none" />
+    <!-- NEW FOLDER BUTTON (toolbar already has new-file-btn, so folder button goes here) -->
+    <button id="new-folder-btn" class="hidden"></button>
 
-  </div>
-</header>
-
-    </header>
+    <!-- NEW FOLDER MODAL -->
+    <div id="new-folder-modal" class="modal hidden">
+      <h3>Create New Folder</h3>
+      <input id="new-folder-name" type="text" placeholder="Enter folder name" />
+      <div class="modal-actions">
+        <button id="create-folder-confirm">Create</button>
+        <button id="create-folder-cancel">Cancel</button>
+      </div>
+    </div>
 
     <!-- MAIN LAYOUT -->
     <div id="layout">
@@ -66,7 +83,7 @@
       </main>
     </div>
 
-    <!-- IMAGE UPLOAD SYSTEM (NEW) -->
+    <!-- IMAGE UPLOAD SYSTEM -->
     <section id="imageUploadSection">
 
       <h3>Image Uploads</h3>
