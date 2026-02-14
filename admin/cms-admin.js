@@ -827,10 +827,15 @@ if (searchInput && fileListEl) {
 
 (async function init() {
   setStatus("Loading…");
+
   initThemeFromStorage();
+
+  await loadUser();     // ✔ user loads first
+  await loadFiles();    // ✔ files load second
+
+  // ✔ NOW the editor exists, safe to run setMode
   setMode(false);
-  await loadUser();
-  await loadFiles();
+
   setStatus("Ready");
   setAutosaveStatus("idle");
 
