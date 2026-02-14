@@ -824,16 +824,22 @@ if (searchInput && fileListEl) {
 }
 
 // =============== INIT ===============
-
 (async function init() {
+
+  // Wait for DOM to fully render at least one frame
+  await new Promise(requestAnimationFrame);
+
   setStatus("Loading…");
 
   initThemeFromStorage();
 
-  await loadUser();     // ✔ user loads first
-  await loadFiles();    // ✔ files load second
+  await loadUser();
+  await loadFiles();
 
-  // ✔ NOW the editor exists, safe to run setMode
+  // Wait one more frame AFTER files load (this is the key)
+  await new Promise(requestAnimationFrame);
+
+  // NOW the editor exists
   setMode(false);
 
   setStatus("Ready");
