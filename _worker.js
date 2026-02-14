@@ -114,7 +114,7 @@ async function createSessionCookie(userLogin, env) {
 
   return `session=${encodeURIComponent(
     value
-  )}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`;
+  )}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=604800`;
 }
 
 async function verifySession(request, env) {
