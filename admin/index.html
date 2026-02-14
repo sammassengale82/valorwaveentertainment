@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Valor Wave CMS</title>
+  <title>Valor Wave CMS 2.0</title>
 
   <link rel="stylesheet" href="admin.css" />
   <link rel="stylesheet" href="themes.css" />
 </head>
 
-<body class="not-logged-in">
+<body class="logged-out">
 
   <!-- LOGIN SCREEN -->
   <div id="login-screen">
@@ -24,13 +24,13 @@
     <aside id="sidebar">
       <div class="sidebar-header">
         <h2>Files</h2>
-        <div id="user-display" class="user-info"></div>
+        <div id="user-display"></div>
 
         <button id="new-file-btn">New File</button>
         <button id="new-folder-btn">New Folder</button>
       </div>
 
-      <!-- REQUIRED BY JS -->
+      <!-- File tree container -->
       <div id="file-list"></div>
     </aside>
 
@@ -40,9 +40,12 @@
       <!-- TOOLBAR -->
       <div id="toolbar">
 
-        <!-- WYSIWYG COMMAND BUTTONS (JS uses data-cmd) -->
+        <!-- Formatting -->
         <button data-cmd="bold"><b>B</b></button>
         <button data-cmd="italic"><i>I</i></button>
+        <button data-cmd="underline"><u>U</u></button>
+        <button data-cmd="strike">S</button>
+
         <button data-cmd="h1">H1</button>
         <button data-cmd="h2">H2</button>
         <button data-cmd="h3">H3</button>
@@ -50,24 +53,26 @@
         <button data-cmd="ul">• List</button>
         <button data-cmd="ol">1. List</button>
 
-        <button data-cmd="quote">❝ Quote</button>
+        <button data-cmd="quote">❝</button>
         <button data-cmd="code">{ }</button>
+        <button data-cmd="hr">HR</button>
 
-        <button data-cmd="hr">— HR</button>
-
+        <!-- Alignment -->
         <button data-cmd="align-left">Left</button>
         <button data-cmd="align-center">Center</button>
         <button data-cmd="align-right">Right</button>
 
-        <button data-cmd="indent">Indent</button>
-        <button data-cmd="outdent">Outdent</button>
+        <!-- Indent -->
+        <button data-cmd="indent">→</button>
+        <button data-cmd="outdent">←</button>
 
+        <!-- Clear formatting -->
         <button data-cmd="remove-format">Clear</button>
 
-        <!-- IMAGE UPLOAD BUTTON -->
-        <button id="insert-image-btn">📷 Insert Image</button>
+        <!-- Insert image -->
+        <button id="insert-image-btn">📷 Image</button>
 
-        <!-- HIDDEN INPUT REQUIRED BY JS -->
+        <!-- Hidden upload input -->
         <input 
           type="file" 
           id="upload-image-input"
@@ -76,13 +81,13 @@
           style="display:none;"
         />
 
-        <!-- MORE MENU -->
+        <!-- More menu -->
         <button id="toolbar-more-btn">⋮</button>
         <div id="toolbar-more" class="hidden">
           <button id="theme-btn">Theme</button>
         </div>
 
-        <!-- MODE TOGGLE -->
+        <!-- Mode toggle -->
         <button id="mode-toggle">WYSIWYG</button>
 
       </div>
@@ -94,7 +99,13 @@
         <div id="preview"></div>
       </div>
 
-      <!-- IMAGE URL MODAL (JS expects this) -->
+      <!-- STATUS BAR -->
+      <div id="status-bar">
+        <span id="status-message">Ready</span>
+        <span id="status-autosave">Autosave: idle</span>
+      </div>
+
+      <!-- IMAGE URL MODAL -->
       <div id="image-modal" class="modal hidden">
         <div class="modal-content">
           <h2>Insert Image by URL</h2>
@@ -104,7 +115,7 @@
         </div>
       </div>
 
-      <!-- UPLOAD GALLERY MODAL (JS expects this) -->
+      <!-- UPLOAD GALLERY MODAL -->
       <div id="upload-gallery-modal" class="modal hidden">
         <div class="modal-content">
           <h2>Uploaded Images</h2>
