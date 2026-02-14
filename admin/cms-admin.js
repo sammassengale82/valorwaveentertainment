@@ -2,8 +2,6 @@
 // Valor Wave CMS - Admin Engine (W1 + T3 + L3 + B1)
 // ---------------------------------------------------------
 
-// rebuild trigger
-
 // =============== DOM REFERENCES ===============
 
 const loginBtn = document.getElementById("login-btn");
@@ -14,8 +12,6 @@ const fileListEl = document.getElementById("file-list");
 const searchInput = document.getElementById("search-input");
 const newFileBtn = document.getElementById("new-file-btn");
 const newFolderBtn = document.getElementById("new-folder-btn");
-const uploadImageBtn = document.getElementById("upload-image-btn");
-const uploadImageInput = document.getElementById("upload-image");
 
 const editorTextarea = document.getElementById("editor");
 const wysiwygEl = document.getElementById("wysiwyg");
@@ -25,7 +21,6 @@ const saveBtn = document.getElementById("save-btn");
 const currentPathEl = document.getElementById("current-path");
 
 const previewEl = document.getElementById("preview");
-const dropOverlay = document.getElementById("drop-overlay");
 
 const newFileModal = document.getElementById("new-file-modal");
 const newFileNameInput = document.getElementById("new-file-name");
@@ -65,7 +60,6 @@ let autosaveTimer = null;
 let isSaving = false;
 let fileTreeData = [];
 let lastContent = "";
-let isDragging = false;
 
 // =============== HELPERS ===============
 
@@ -136,72 +130,88 @@ function setEditorContent(markdown) {
   updatePreview(markdown);
 }
 
+// Insert helpers
+
+function insertAtCursor(target, text) {
+  if (target === editorTextarea) {
+    const start = target.selectionStart || 0;
+    const end = target.selectionEnd || 0;
+    const value = target.value;
+    target.value = value.slice(0, start) + text + value.slice(end);
+    target.selectionStart = target.selectionEnd = start + text.length;
+    target.focus();
+  } else {
+    // contenteditable
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) {
+      target.innerHTML += text;
+      return;
+    }
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+    const node = document.createTextNode(text);
+    range.insertNode(node);
+    range.setStartAfter(node);
+    range.setEndAfter(node);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+}
+
+function insertImageAtCursor(url) {
+  const markdown = `![Image](${url})\n`;
+  if (isWysiwygMode) {
+    insertAtCursor(wysiwygEl, markdown);
+    const md = htmlToMarkdown(wysiwygEl.innerHTML);
+    editorTextarea.value = md;
+    updatePreview(md);
+  } else {
+    insertAtCursor(editorTextarea, markdown);
+    updatePreview(editorTextarea.value);
+  }
+  debounceAutosave();
+}
+
+// Markdown → HTML
+
 function markdownToHtml(md) {
   if (!md) return "";
   let html = md;
 
   // Headings
-  html = html.replace(
-    new RegExp("^###### (.*)$", "gm"),
-    "<h6>$1</h6>"
-  );
-  html = html.replace(
-    new RegExp("^##### (.*)$", "gm"),
-    "<h5>$1</h5>"
-  );
-  html = html.replace(
-    new RegExp("^#### (.*)$", "gm"),
-    "<h4>$1</h4>"
-  );
-  html = html.replace(
-    new RegExp("^### (.*)$", "gm"),
-    "<h3>$1</h3>"
-  );
-  html = html.replace(
-    new RegExp("^## (.*)$", "gm"),
-    "<h2>$1</h2>"
-  );
-  html = html.replace(
-    new RegExp("^# (.*)$", "gm"),
-    "<h1>$1</h1>"
-  );
+  html = html.replace(new RegExp("^###### (.*)$", "gm"), "<h6>$1</h6>");
+  html = html.replace(new RegExp("^##### (.*)$", "gm"), "<h5>$1</h5>");
+  html = html.replace(new RegExp("^#### (.*)$", "gm"), "<h4>$1</h4>");
+  html = html.replace(new RegExp("^### (.*)$", "gm"), "<h3>$1</h3>");
+  html = html.replace(new RegExp("^## (.*)$", "gm"), "<h2>$1</h2>");
+  html = html.replace(new RegExp("^# (.*)$", "gm"), "<h1>$1</h1>");
 
   // Bold, italic, code
-  html = html.replace(
-    new RegExp("\\*\\*(.+?)\\*\\*", "g"),
-    "<strong>$1</strong>"
-  );
-  html = html.replace(
-    new RegExp("\\*(.+?)\\*", "g"),
-    "<em>$1</em>"
-  );
-  html = html.replace(
-    new RegExp("`([^`]+)`", "g"),
-    "<code>$1</code>"
-  );
+  html = html.replace(new RegExp("\\*\\*(.+?)\\*\\*", "g"), "<strong>$1</strong>");
+  html = html.replace(new RegExp("\\*(.+?)\\*", "g"), "<em>$1</em>");
+  html = html.replace(new RegExp("`([^`]+)`", "g"), "<code>$1</code>");
 
-    // Link regex with ZERO backslashes in the string
-const linkPattern =
-  String.fromCharCode(91) +            // [
-  "(" +
-    "[^" + String.fromCharCode(93) + "]+" +  // ^]
-  ")" +
-  String.fromCharCode(93) +            // ]
-  String.fromCharCode(40) +            // (
-  "(" +
-    "[^" + String.fromCharCode(41) + "]+" +  // ^)
-  ")" +
-  String.fromCharCode(41);             // )
+  // Link regex with ZERO backslashes in the string
+  const linkPattern =
+    String.fromCharCode(91) + // [
+    "(" +
+    "[^" +
+    String.fromCharCode(93) +
+    "]+" +
+    ")" +
+    String.fromCharCode(93) + // ]
+    String.fromCharCode(40) + // (
+    "(" +
+    "[^" +
+    String.fromCharCode(41) +
+    "]+" +
+    ")" +
+    String.fromCharCode(41); // )
 
-html = html.replace(
-  new RegExp(linkPattern, "g"),
-  '<a href="$2" target="_blank">$1</a>'
-);
-
-html = html.replace(
-  new RegExp(linkPattern, "g"),
-  '<a href="$2" target="_blank">$1</a>'
-);
+  html = html.replace(
+    new RegExp(linkPattern, "g"),
+    '<a href="$2" target="_blank">$1</a>'
+  );
 
   // Lists
   html = html.replace(
@@ -214,83 +224,41 @@ html = html.replace(
   );
 
   // Paragraphs
-  html = html.replace(
-    new RegExp("\\n{2,}", "g"),
-    "</p><p>"
-  );
+  html = html.replace(new RegExp("\\n{2,}", "g"), "</p><p>");
   html = `<p>${html}</p>`;
-  html = html.replace(
-    new RegExp("<p><\\/p>", "g"),
-    ""
-  );
+  html = html.replace(new RegExp("<p><\\/p>", "g"), "");
 
   return html;
 }
+
+// HTML → Markdown
+
 function htmlToMarkdown(html) {
   if (!html) return "";
   let md = html;
 
   // Headings
-  md = md.replace(
-    new RegExp("<h1>(.*?)<\\/h1>", "gi"),
-    "# $1\n\n"
-  );
-  md = md.replace(
-    new RegExp("<h2>(.*?)<\\/h2>", "gi"),
-    "## $1\n\n"
-  );
-  md = md.replace(
-    new RegExp("<h3>(.*?)<\\/h3>", "gi"),
-    "### $1\n\n"
-  );
-  md = md.replace(
-    new RegExp("<h4>(.*?)<\\/h4>", "gi"),
-    "#### $1\n\n"
-  );
-  md = md.replace(
-    new RegExp("<h5>(.*?)<\\/h5>", "gi"),
-    "##### $1\n\n"
-  );
-  md = md.replace(
-    new RegExp("<h6>(.*?)<\\/h6>", "gi"),
-    "###### $1\n\n"
-  );
+  md = md.replace(new RegExp("<h1>(.*?)<\\/h1>", "gi"), "# $1\n\n");
+  md = md.replace(new RegExp("<h2>(.*?)<\\/h2>", "gi"), "## $1\n\n");
+  md = md.replace(new RegExp("<h3>(.*?)<\\/h3>", "gi"), "### $1\n\n");
+  md = md.replace(new RegExp("<h4>(.*?)<\\/h4>", "gi"), "#### $1\n\n");
+  md = md.replace(new RegExp("<h5>(.*?)<\\/h5>", "gi"), "##### $1\n\n");
+  md = md.replace(new RegExp("<h6>(.*?)<\\/h6>", "gi"), "###### $1\n\n");
 
   // Bold / italic / underline / strike
-  md = md.replace(
-    new RegExp("<strong>(.*?)<\\/strong>", "gi"),
-    "**$1**"
-  );
-  md = md.replace(
-    new RegExp("<b>(.*?)<\\/b>", "gi"),
-    "**$1**"
-  );
-  md = md.replace(
-    new RegExp("<em>(.*?)<\\/em>", "gi"),
-    "*$1*"
-  );
-  md = md.replace(
-    new RegExp("<i>(.*?)<\\/i>", "gi"),
-    "*$1*"
-  );
-  md = md.replace(
-    new RegExp("<u>(.*?)<\\/u>", "gi"),
-    "$1"
-  );
-  md = md.replace(
-    new RegExp("<s>(.*?)<\\/s>", "gi"),
-    "~~$1~~"
-  );
+  md = md.replace(new RegExp("<strong>(.*?)<\\/strong>", "gi"), "**$1**");
+  md = md.replace(new RegExp("<b>(.*?)<\\/b>", "gi"), "**$1**");
+  md = md.replace(new RegExp("<em>(.*?)<\\/em>", "gi"), "*$1*");
+  md = md.replace(new RegExp("<i>(.*?)<\\/i>", "gi"), "*$1*");
+  md = md.replace(new RegExp("<u>(.*?)<\\/u>", "gi"), "$1");
+  md = md.replace(new RegExp("<s>(.*?)<\\/s>", "gi"), "~~$1~~");
 
   // Code
-  md = md.replace(
-    new RegExp("<code>(.*?)<\\/code>", "gi"),
-    "`$1`"
-  );
+  md = md.replace(new RegExp("<code>(.*?)<\\/code>", "gi"), "`$1`");
 
-  // Links (safe)
+  // Links
   md = md.replace(
-    new RegExp("<a [^>]*href=\"([^\"]+)\"[^>]*>(.*?)<\\/a>", "gi"),
+    new RegExp('<a [^>]*href="([^"]+)"[^>]*>(.*?)<\\/a>', "gi"),
     "[$2]($1)"
   );
 
@@ -305,34 +273,16 @@ function htmlToMarkdown(html) {
   );
 
   // Line breaks / paragraphs
-  md = md.replace(
-    new RegExp("<br\\s*\\/?>", "gi"),
-    "\n"
-  );
-  md = md.replace(
-    new RegExp("<\\/p>\\s*<p>", "gi"),
-    "\n\n"
-  );
-  md = md.replace(
-    new RegExp("<\\/?p>", "gi"),
-    ""
-  );
+  md = md.replace(new RegExp("<br\\s*\\/?>", "gi"), "\n");
+  md = md.replace(new RegExp("<\\/p>\\s*<p>", "gi"), "\n\n");
+  md = md.replace(new RegExp("<\\/?p>", "gi"), "");
 
   // Entities
-  md = md.replace(
-    new RegExp("&nbsp;", "g"),
-    " "
-  );
-  md = md.replace(
-    new RegExp("&lt;", "g"),
-    "<"
-  ).replace(
-    new RegExp("&gt;", "g"),
-    ">"
-  ).replace(
-    new RegExp("&amp;", "g"),
-    "&"
-  );
+  md = md.replace(new RegExp("&nbsp;", "g"), " ");
+  md = md
+    .replace(new RegExp("&lt;", "g"), "<")
+    .replace(new RegExp("&gt;", "g"), ">")
+    .replace(new RegExp("&amp;", "g"), "&");
 
   return md.trim();
 }
@@ -516,7 +466,7 @@ async function confirmNewFile() {
     return;
   }
   const path = folder
-    ? `content/${folder.replace(/\/+$/,"")}/${name}`
+    ? `content/${folder.replace(/\/+$/, "")}/${name}`
     : `content/${name}`;
 
   const res = await api("new-file", {
@@ -555,7 +505,7 @@ async function confirmNewFolder() {
     showToast("Folder name required", "error");
     return;
   }
-  const path = `content/${name.replace(/\/+$/,"")}/.keep`;
+  const path = `content/${name.replace(/\/+$/, "")}/.keep`;
 
   const res = await api("new-folder", {
     method: "POST",
@@ -579,31 +529,6 @@ async function confirmNewFolder() {
 function cancelNewFolder() {
   newFolderModal.classList.add("hidden");
 }
-
-// Drag & drop
-["dragenter", "dragover"].forEach((evt) => {
-  window.addEventListener(evt, (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    isDragging = true;
-    dropOverlay.classList.add("visible");
-  });
-});
-
-["dragleave", "drop"].forEach((evt) => {
-  window.addEventListener(evt, (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (evt === "drop") {
-      const files = e.dataTransfer.files;
-      if (files && files.length) {
-        Array.from(files).forEach((f) => handleUploadFile(f));
-      }
-    }
-    isDragging = false;
-    dropOverlay.classList.remove("visible");
-  });
-});
 
 // =============== IMAGE MODAL ===============
 
@@ -633,14 +558,14 @@ function setMode(wysiwyg) {
   isWysiwygMode = wysiwyg;
   if (wysiwyg) {
     wysiwygEl.innerHTML = markdownToHtml(editorTextarea.value);
-    wysiwygEl.style.display = "block";
-    editorTextarea.style.display = "none";
+    wysiwygEl.classList.remove("hidden");
+    editorTextarea.classList.add("hidden");
     modeToggleBtn.textContent = "Markdown";
   } else {
     const md = htmlToMarkdown(wysiwygEl.innerHTML);
     editorTextarea.value = md;
-    wysiwygEl.style.display = "none";
-    editorTextarea.style.display = "block";
+    wysiwygEl.classList.add("hidden");
+    editorTextarea.classList.remove("hidden");
     modeToggleBtn.textContent = "WYSIWYG";
   }
   updatePreview(getEditorContent());
@@ -743,20 +668,25 @@ function execCommand(cmd) {
 }
 
 // Toolbar buttons
-toolbarEl.addEventListener("click", (e) => {
-  const btn = e.target.closest("button");
-  if (!btn) return;
-  const cmd = btn.getAttribute("data-cmd");
-  if (!cmd) return;
-  if (!isWysiwygMode) {
-    setMode(true);
-  }
-  execCommand(cmd);
-});
 
-toolbarMoreBtn.addEventListener("click", () => {
-  toolbarMoreRow.classList.toggle("hidden");
-});
+if (toolbarEl) {
+  toolbarEl.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    const cmd = btn.getAttribute("data-cmd");
+    if (!cmd) return;
+    if (!isWysiwygMode) {
+      setMode(true);
+    }
+    execCommand(cmd);
+  });
+}
+
+if (toolbarMoreBtn) {
+  toolbarMoreBtn.addEventListener("click", () => {
+    toolbarMoreRow.classList.toggle("hidden");
+  });
+}
 
 // =============== THEME & DARK MODE ===============
 
@@ -773,7 +703,7 @@ function applyDarkMode(enabled) {
 
 function initThemeFromStorage() {
   const theme = localStorage.getItem("vw-theme") || "original";
-  themeSelect.value = theme;
+  if (themeSelect) themeSelect.value = theme;
   applyTheme(theme);
 
   const dark = localStorage.getItem("vw-dark") === "1";
@@ -817,10 +747,6 @@ window.addEventListener("keydown", (e) => {
       e.preventDefault();
       setMode(!isWysiwygMode);
     }
-    if (e.key === "U" || e.key === "u") {
-      e.preventDefault();
-      triggerUpload();
-    }
   }
 });
 
@@ -840,53 +766,62 @@ if (logoutBtn) {
 }
 
 // Files
-newFileBtn.addEventListener("click", createNewFile);
-createFileConfirmBtn.addEventListener("click", confirmNewFile);
-createFileCancelBtn.addEventListener("click", cancelNewFile);
+if (newFileBtn) newFileBtn.addEventListener("click", createNewFile);
+if (createFileConfirmBtn) createFileConfirmBtn.addEventListener("click", confirmNewFile);
+if (createFileCancelBtn) createFileCancelBtn.addEventListener("click", cancelNewFile);
 
-newFolderBtn.addEventListener("click", createNewFolder);
-createFolderConfirmBtn.addEventListener("click", confirmNewFolder);
-createFolderCancelBtn.addEventListener("click", cancelNewFolder);
-
-// Upload
-uploadImageBtn.addEventListener("click", triggerUpload);
+if (newFolderBtn) newFolderBtn.addEventListener("click", createNewFolder);
+if (createFolderConfirmBtn) createFolderConfirmBtn.addEventListener("click", confirmNewFolder);
+if (createFolderCancelBtn) createFolderCancelBtn.addEventListener("click", cancelNewFolder);
 
 // Image modal
-insertImageBtn.addEventListener("click", openImageModal);
-insertImageConfirmBtn.addEventListener("click", confirmInsertImage);
-insertImageCancelBtn.addEventListener("click", closeImageModal);
+if (insertImageBtn) insertImageBtn.addEventListener("click", openImageModal);
+if (insertImageConfirmBtn) insertImageConfirmBtn.addEventListener("click", confirmInsertImage);
+if (insertImageCancelBtn) insertImageCancelBtn.addEventListener("click", closeImageModal);
 
 // Mode toggle
-modeToggleBtn.addEventListener("click", () => setMode(!isWysiwygMode));
+if (modeToggleBtn) {
+  modeToggleBtn.addEventListener("click", () => setMode(!isWysiwygMode));
+}
 
 // Editor changes
-editorTextarea.addEventListener("input", () => {
-  updatePreview(editorTextarea.value);
-  debounceAutosave();
-});
-wysiwygEl.addEventListener("input", () => {
-  const md = htmlToMarkdown(wysiwygEl.innerHTML);
-  editorTextarea.value = md;
-  updatePreview(md);
-  debounceAutosave();
-});
+if (editorTextarea) {
+  editorTextarea.addEventListener("input", () => {
+    updatePreview(editorTextarea.value);
+    debounceAutosave();
+  });
+}
+if (wysiwygEl) {
+  wysiwygEl.addEventListener("input", () => {
+    const md = htmlToMarkdown(wysiwygEl.innerHTML);
+    editorTextarea.value = md;
+    updatePreview(md);
+    debounceAutosave();
+  });
+}
 
 // Theme
-applyThemeBtn.addEventListener("click", () => applyTheme(themeSelect.value));
-darkModeToggle.addEventListener("click", () => {
-  const isDark = !document.body.classList.contains("dark");
-  applyDarkMode(isDark);
-});
-
-// Search filter (simple client-side filter by filename)
-searchInput.addEventListener("input", () => {
-  const q = searchInput.value.toLowerCase();
-  const items = fileListEl.querySelectorAll(".file-node");
-  items.forEach((li) => {
-    const text = li.textContent.toLowerCase();
-    li.style.display = text.includes(q) ? "" : "none";
+if (applyThemeBtn) {
+  applyThemeBtn.addEventListener("click", () => applyTheme(themeSelect.value));
+}
+if (darkModeToggle) {
+  darkModeToggle.addEventListener("click", () => {
+    const isDark = !document.body.classList.contains("dark");
+    applyDarkMode(isDark);
   });
-});
+}
+
+// Search filter
+if (searchInput && fileListEl) {
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.toLowerCase();
+    const items = fileListEl.querySelectorAll(".file-node");
+    items.forEach((li) => {
+      const text = li.textContent.toLowerCase();
+      li.style.display = text.includes(q) ? "" : "none";
+    });
+  });
+}
 
 // =============== INIT ===============
 
@@ -898,54 +833,45 @@ searchInput.addEventListener("input", () => {
   await loadFiles();
   setStatus("Ready");
   setAutosaveStatus("idle");
+
   // Upload system
-const fileUploadBtn = document.getElementById("file-upload-btn");
-const fileUploadInput = document.getElementById("file-upload-input");
-const dropZone = document.getElementById("drop-zone");
-const gallery = document.getElementById("upload-gallery");
-const insertSelectedBtn = document.getElementById("insert-selected-btn");
-const progress = document.getElementById("upload-progress");
-const progressBar = document.getElementById("upload-progress-bar");
+  const fileUploadBtn = document.getElementById("file-upload-btn");
+  const fileUploadInput = document.getElementById("file-upload-input");
+  const dropZone = document.getElementById("drop-zone");
+  const gallery = document.getElementById("upload-gallery");
+  const insertSelectedBtn = document.getElementById("insert-selected-btn");
+  const progress = document.getElementById("upload-progress");
+  const progressBar = document.getElementById("upload-progress-bar");
 
-let uploadedImages = [];
+  let uploadedImages = [];
 
-// Button triggers hidden input
-fileUploadBtn.addEventListener("click", () => {
-    fileUploadInput.click();
-});
+  function updateInsertButton() {
+    insertSelectedBtn.disabled = uploadedImages.length === 0;
+  }
 
-// Handle file selection
-fileUploadInput.addEventListener("change", e => {
-    handleFiles(e.target.files);
-});
+  function addThumbnail(thumbUrl, originalUrl, webpUrl, optimizedUrl) {
+    const div = document.createElement("div");
+    div.className = "thumb";
 
-// Drag & drop events
-dropZone.addEventListener("dragover", e => {
-    e.preventDefault();
-    dropZone.classList.add("dragover");
-});
-dropZone.addEventListener("dragleave", () => {
-    dropZone.classList.remove("dragover");
-});
-dropZone.addEventListener("drop", e => {
-    e.preventDefault();
-    dropZone.classList.remove("dragover");
-    handleFiles(e.dataTransfer.files);
-});
+    div.innerHTML = `
+      <img src="${thumbUrl}">
+      <button class="delete-btn">X</button>
+    `;
 
-// Main handler
-function handleFiles(files) {
-    [...files].forEach(file => {
-        if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
-            alert("Only PNG, JPG, and WEBP images are allowed.");
-            return;
-        }
-        uploadFile(file);
+    div.querySelector(".delete-btn").addEventListener("click", () => {
+      div.remove();
+      uploadedImages = uploadedImages.filter(
+        (i) => i.originalUrl !== originalUrl
+      );
+      updateInsertButton();
     });
-}
 
-// Upload with progress + auto-optimize
-async function uploadFile(file) {
+    gallery.appendChild(div);
+    uploadedImages.push({ thumbUrl, originalUrl, webpUrl, optimizedUrl });
+    updateInsertButton();
+  }
+
+  async function uploadFile(file) {
     progress.style.display = "block";
     progressBar.style.width = "0%";
 
@@ -955,64 +881,89 @@ async function uploadFile(file) {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "/upload-image");
 
-    xhr.upload.onprogress = e => {
-        if (e.lengthComputable) {
-            const percent = (e.loaded / e.total) * 100;
-            progressBar.style.width = percent + "%";
-        }
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        const percent = (e.loaded / e.total) * 100;
+        progressBar.style.width = percent + "%";
+      }
     };
 
     xhr.onload = () => {
-        progressBar.style.width = "100%";
-        setTimeout(() => {
-            progress.style.display = "none";
-        }, 500);
+      progressBar.style.width = "100%";
+      setTimeout(() => {
+        progress.style.display = "none";
+      }, 500);
 
+      try {
         const res = JSON.parse(xhr.responseText);
         addThumbnail(res.thumb, res.original, res.webp, res.optimized);
+      } catch {
+        showToast("Upload failed (invalid response)", "error");
+      }
+    };
 
+    xhr.onerror = () => {
+      progress.style.display = "none";
+      showToast("Upload failed", "error");
     };
 
     xhr.send(formData);
-}
-// Add thumbnail to gallery
-function addThumbnail(thumbUrl, originalUrl, webpUrl, optimizedUrl) {
-  const div = document.createElement("div");
-  div.className = "thumb";
+  }
 
-  div.innerHTML = `
-    <img src="${thumbUrl}">
-    <button class="delete-btn">X</button>
-  `;
+  function handleFiles(files) {
+    [...files].forEach((file) => {
+      if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+        showToast("Only PNG, JPG, and WEBP images are allowed.", "error");
+        return;
+      }
+      uploadFile(file);
+    });
+  }
 
-  div.querySelector(".delete-btn").addEventListener("click", () => {
-    div.remove();
-    uploadedImages = uploadedImages.filter(i => i.originalUrl !== originalUrl);
-    updateInsertButton();
-  });
+  if (fileUploadBtn && fileUploadInput) {
+    fileUploadBtn.addEventListener("click", () => {
+      fileUploadInput.click();
+    });
 
-  gallery.appendChild(div);
-  updateInsertButton();
-}
+    fileUploadInput.addEventListener("change", (e) => {
+      handleFiles(e.target.files);
+    });
+  }
 
+  if (dropZone) {
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.classList.add("dragover");
+    });
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("dragover");
+    });
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("dragover");
+      handleFiles(e.dataTransfer.files);
+    });
+  }
 
-// ⭐⭐ INSERT STEP 4 RIGHT HERE ⭐⭐
-insertSelectedBtn.addEventListener("click", () => {
-  uploadedImages.forEach(img => {
-    insertAtCursor(
-  isWysiwygMode ? wysiwygEl : editorTextarea,
-  `![Image](${img.optimizedUrl})\n`
-);
-  });
+  if (insertSelectedBtn) {
+    insertSelectedBtn.addEventListener("click", () => {
+      uploadedImages.forEach((img) => {
+        const target = isWysiwygMode ? wysiwygEl : editorTextarea;
+        insertAtCursor(
+          target,
+          `![Image](${img.optimizedUrl || img.originalUrl})\n`
+        );
+      });
 
-  uploadedImages = [];
-  gallery.innerHTML = "";
-  updateInsertButton();
-});
+      const md = isWysiwygMode
+        ? htmlToMarkdown(wysiwygEl.innerHTML)
+        : editorTextarea.value;
+      updatePreview(md);
+      debounceAutosave();
 
-
-// Enable/disable insert button
-function updateInsertButton() {
-  insertSelectedBtn.disabled = uploadedImages.length === 0;
-}})(); 
-
+      uploadedImages = [];
+      gallery.innerHTML = "";
+      updateInsertButton();
+    });
+  }
+})();
