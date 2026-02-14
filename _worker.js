@@ -333,12 +333,16 @@ export default {
 
     // ADMIN UI ROUTING
     if (path === "/admin" || path === "/admin/") {
-      return env.ASSETS.fetch("admin/index.html", {
+      // Serve the admin shell from /admin/index.html in the project root
+      const assetUrl = new URL("/admin/index.html", request.url);
+      const assetRequest = new Request(assetUrl.toString(), request);
+      return env.ASSETS.fetch(assetRequest, {
         cf: { cacheEverything: false, cacheTtl: 0 }
       });
     }
 
     if (path.startsWith("/admin/")) {
+      // Serve all other admin assets (JS, CSS, etc.) from Pages assets
       return env.ASSETS.fetch(request, {
         cf: { cacheEverything: false, cacheTtl: 0 }
       });
