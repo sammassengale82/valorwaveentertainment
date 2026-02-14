@@ -333,6 +333,7 @@ export default {
 
     // ADMIN UI ROUTING
     if (path === "/admin" || path === "/admin/") {
+      return env.ASSETS.fetch("https://dummy/admin/index.html");
       // Serve the admin shell from /admin/index.html in the project root
       const assetUrl = new URL("/admin/index.html", request.url);
       const assetRequest = new Request(assetUrl.toString(), request);
