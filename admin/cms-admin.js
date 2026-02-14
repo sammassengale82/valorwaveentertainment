@@ -824,7 +824,7 @@ if (searchInput && fileListEl) {
 }
 
 // =============== INIT ===============
-(async function init() {
+async function init() {
 
   // Wait for DOM to fully render at least one frame
   await new Promise(requestAnimationFrame);
@@ -839,10 +839,7 @@ if (searchInput && fileListEl) {
   await loadUser();
   await loadFiles();
 
-  // ⭐ Make CMS visible BEFORE touching editor elements 
-  document.getElementById("cms").style.display = "block"; 
-  
-  // ⭐ Wait one frame so DOM nodes are created 
+  // Wait one frame so DOM nodes are created 
   await new Promise(requestAnimationFrame);
 
   // NOW the editor exists
@@ -851,7 +848,7 @@ if (searchInput && fileListEl) {
   setStatus("Ready");
   setAutosaveStatus("idle");
 
-  // Upload system
+    // Upload system
   const fileUploadBtn = document.getElementById("file-upload-btn");
   const fileUploadInput = document.getElementById("file-upload-input");
   const dropZone = document.getElementById("drop-zone");
