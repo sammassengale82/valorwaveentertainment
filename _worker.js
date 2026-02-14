@@ -288,7 +288,7 @@ async function createOrUpdateFile(env, filePath, content, message) {
 }
 
 // ---------------------------------------------------------
-// Image Upload (/images)
+// Image Upload
 // ---------------------------------------------------------
 
 async function handleImageUpload(request, env) {
@@ -333,21 +333,14 @@ export default {
 
     // ADMIN UI ROUTING
     if (path === "/admin" || path === "/admin/") {
-      // Serve the admin shell explicitly from Pages assets
-      const assetUrl = new URL("admin/index.html", request.url);
-      const adminRequest = new Request(assetUrl.toString(), {
-        method: "GET",
-        headers: request.headers,
-      });
-      return env.ASSETS.fetch(adminRequest, {
-        cf: { cacheEverything: false, cacheTtl: 0 },
+      return env.ASSETS.fetch("admin/index.html", {
+        cf: { cacheEverything: false, cacheTtl: 0 }
       });
     }
 
     if (path.startsWith("/admin/")) {
-      // Serve all other admin assets (JS, CSS, etc.) from Pages assets
       return env.ASSETS.fetch(request, {
-        cf: { cacheEverything: false, cacheTtl: 0 },
+        cf: { cacheEverything: false, cacheTtl: 0 }
       });
     }
 
@@ -362,7 +355,7 @@ export default {
 
     // STATIC FALLBACK
     return env.ASSETS.fetch(request, {
-      cf: { cacheEverything: false, cacheTtl: 0 },
+      cf: { cacheEverything: false, cacheTtl: 0 }
     });
   }
 };
