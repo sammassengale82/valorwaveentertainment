@@ -1032,3 +1032,5 @@ function insertAtCursor(target, text) {
   updatePreview(el.value);
   debounceAutosave();
 }
+  } // <-- CLOSE init() 
+init(); // <-- CALL init()
