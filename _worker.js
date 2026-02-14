@@ -207,7 +207,7 @@ async function handleCallback(request, env) {
   const sessionCookie = await createSessionCookie(login, env);
   const clearState = "oauth_state=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None";
 
-  return redirectResponse("/admin", [sessionCookie, clearState]);
+  return redirectResponse("/admin/", [sessionCookie, clearState]);
 }
 
 // ---------------------------------------------------------
