@@ -336,14 +336,14 @@ export default {
       // Serve the admin shell from /admin/index.html in the project root
       const assetUrl = new URL("/admin/index.html", request.url);
       const assetRequest = new Request(assetUrl.toString(), request);
-      return env.ASSETS.fetch(assetRequest, {
+      return env.STATIC.fetch(assetRequest, {
         cf: { cacheEverything: false, cacheTtl: 0 }
       });
     }
 
     if (path.startsWith("/admin/")) {
-      // Serve all other admin assets (JS, CSS, etc.) from Pages assets
-      return env.ASSETS.fetch(request, {
+      // Serve all other admin STATIC (JS, CSS, etc.) from Pages STATIC
+      return env.STATIC.fetch(request, {
         cf: { cacheEverything: false, cacheTtl: 0 }
       });
     }
@@ -358,7 +358,7 @@ export default {
     }
 
     // STATIC FALLBACK
-    return env.ASSETS.fetch(request, {
+    return env.STATIC.fetch(request, {
       cf: { cacheEverything: false, cacheTtl: 0 }
     });
   }
