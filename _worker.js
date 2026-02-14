@@ -8,20 +8,27 @@ export default {
     const path = url.pathname;
 
     // -----------------------------------------------------
-    // ADMIN UI ROUTING (FIXED — NO REDIRECT LOOPS)
-    // -----------------------------------------------------
+// ADMIN UI ROUTING (OVERRIDES CLOUDFLARE REDIRECT)
+// -----------------------------------------------------
 
-    // Serve /admin and /admin/ → index.html
-    if (path === "/admin" || path === "/admin/") {
-      return env.ASSETS.fetch(
-        new Request(url.origin + "/admin/index.html", request)
-      );
-    }
+// Stop Cloudflare's automatic /admin → /admin/ redirect
+if (path === "/admin") {
+  return env.ASSETS.fetch(
+    new Request(url.origin + "/admin/index.html", request)
+  );
+}
 
-    // Serve all static admin assets (JS, CSS, images, etc.)
-    if (path.startsWith("/admin/")) {
-      return env.ASSETS.fetch(request);
-    }
+// Serve /admin/ → index.html
+if (path === "/admin/") {
+  return env.ASSETS.fetch(
+    new Request(url.origin + "/admin/index.html", request)
+  );
+}
+
+// Serve all static admin assets
+if (path.startsWith("/admin/")) {
+  return env.ASSETS.fetch(request);
+}
 
     // -----------------------------------------------------
     // OAuth routes
