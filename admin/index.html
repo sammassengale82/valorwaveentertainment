@@ -4,176 +4,92 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Valor Wave CMS</title>
+
   <link rel="stylesheet" href="admin.css" />
+  <link rel="stylesheet" href="themes.css" />
 </head>
-<body class="logged-out theme-original">
+
+<body class="not-logged-in">
 
   <!-- LOGIN SCREEN -->
   <div id="login-screen">
     <h1>Valor Wave CMS</h1>
-    <p id="user-display"></p>
     <button id="login-btn">Login with GitHub</button>
   </div>
 
-  <!-- APP -->
-  <div id="app" class="hidden">
+  <!-- MAIN CMS UI -->
+  <div id="cms" style="display:none;">
 
-    <!-- TOP BAR -->
-    <header id="topbar">
-      <div id="current-path">No file selected</div>
-
-      <div id="toolbar">
-        <!-- Primary toolbar actions -->
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <h2>Files</h2>
         <button id="new-file-btn">New File</button>
         <button id="new-folder-btn">New Folder</button>
-        <button id="save-btn">Save</button>
-        <button id="logout-btn">Logout</button>
+      </div>
+      <div id="file-tree"></div>
+    </aside>
 
-        <!-- Mode / image -->
-        <button id="mode-toggle">WYSIWYG</button>
-        <button id="insert-image-btn">Insert Image</button>
+    <!-- EDITOR AREA -->
+    <main id="editor-area">
 
-        <!-- Theme controls -->
-        <select id="theme-select">
-          <option value="original">Original</option>
-          <option value="multicam">Multicam</option>
-          <option value="patriotic">Patriotic</option>
-        </select>
-        <button id="apply-theme-btn">Apply Theme</button>
-        <button id="dark-mode-toggle">Dark</button>
+      <!-- TOOLBAR -->
+      <div id="toolbar">
 
-        <!-- More button (toggles hidden overflow row) -->
-        <button id="toolbar-more-btn" class="toolbar-btn">More</button>
+        <button id="bold-btn"><b>B</b></button>
+        <button id="italic-btn"><i>I</i></button>
+        <button id="h1-btn">H1</button>
+        <button id="h2-btn">H2</button>
+        <button id="h3-btn">H3</button>
 
-        <!-- Hidden overflow row -->
+        <button id="ul-btn">• List</button>
+        <button id="ol-btn">1. List</button>
+
+        <button id="quote-btn">❝ Quote</button>
+        <button id="code-btn">{ }</button>
+
+        <button id="link-btn">🔗 Link</button>
+
+        <!-- IMAGE UPLOAD BUTTON -->
+        <button id="upload-image-btn">📷 Upload Image</button>
+
+        <!-- HIDDEN INPUT REQUIRED BY JS -->
+        <input 
+          type="file" 
+          id="upload-image" 
+          accept="image/*" 
+          multiple 
+          style="display:none;"
+        />
+
+        <!-- MORE MENU -->
+        <button id="toolbar-more-btn">⋮</button>
         <div id="toolbar-more" class="hidden">
-          <!-- Example extra commands -->
-          <button data-cmd="h1">H1</button>
-          <button data-cmd="h2">H2</button>
-          <button data-cmd="h3">H3</button>
-          <button data-cmd="ul">Bullets</button>
-          <button data-cmd="ol">Numbers</button>
-          <button data-cmd="quote">Quote</button>
-          <button data-cmd="code">Code Block</button>
-          <button data-cmd="hr">HR</button>
-          <button data-cmd="align-left">Left</button>
-          <button data-cmd="align-center">Center</button>
-          <button data-cmd="align-right">Right</button>
-          <button data-cmd="indent">Indent</button>
-          <button data-cmd="outdent">Outdent</button>
-          <button data-cmd="remove-format">Clear</button>
+          <button id="theme-btn">Theme</button>
         </div>
 
-        <!-- REQUIRED FOR OPTION A (markdown file upload) -->
-        <input type="file" id="fileUpload" style="display:none" />
       </div>
-    </header>
 
-    <!-- STATUS BAR -->
-    <div id="status-bar">
-      <span id="status-message">Ready</span>
-      <span id="status-autosave">Autosave: idle</span>
-    </div>
-
-    <!-- MAIN LAYOUT -->
-    <div id="layout">
-      <!-- LEFT: FILE TREE + SEARCH -->
-      <aside id="sidebar">
-        <div class="sidebar-header">
-          <h3>Files</h3>
-          <input id="search-input" type="text" placeholder="Search files…" />
-        </div>
-        <div id="file-list"></div>
-      </aside>
-
-      <!-- RIGHT: EDITOR + PREVIEW -->
-      <main id="editorArea">
-        <div id="editor-wrapper">
-          <textarea id="editor"></textarea>
-          <div id="wysiwyg" contenteditable="true" class="hidden"></div>
-        </div>
+      <!-- EDITOR + PREVIEW -->
+      <div id="editor-wrapper">
+        <textarea id="editor-textarea"></textarea>
+        <div id="wysiwyg" contenteditable="true"></div>
         <div id="preview"></div>
-      </main>
-    </div>
-
-    <!-- IMAGE UPLOAD SYSTEM -->
-    <section id="imageUploadSection">
-      <h3>Image Uploads</h3>
-
-      <button id="file-upload-btn">Upload Images</button>
-      <input
-        type="file"
-        id="file-upload-input"
-        accept="image/*"
-        multiple
-        style="display:none"
-      />
-
-      <div id="drop-zone">Drag & Drop Images Here</div>
-
-      <div id="upload-progress">
-        <div id="upload-progress-bar"></div>
       </div>
 
-      <div id="upload-gallery"></div>
-
-      <button id="insert-selected-btn" disabled>Insert Selected</button>
-    </section>
-
-    <!-- NEW FILE MODAL -->
-    <div id="new-file-modal" class="modal hidden">
-      <div class="modal-content">
-        <h3>Create New File</h3>
-        <label>
-          File name
-          <input id="new-file-name" type="text" placeholder="example.md" />
-        </label>
-        <label>
-          Folder (optional, relative to content/)
-          <input id="new-file-folder" type="text" placeholder="blog/posts" />
-        </label>
-        <div class="modal-actions">
-          <button id="create-file-confirm">Create</button>
-          <button id="create-file-cancel">Cancel</button>
+      <!-- IMAGE GALLERY MODAL -->
+      <div id="image-gallery-modal" class="modal hidden">
+        <div class="modal-content">
+          <h2>Uploaded Images</h2>
+          <div id="image-gallery"></div>
+          <button id="insert-selected-btn" disabled>Insert Selected</button>
+          <button id="close-gallery-btn">Close</button>
         </div>
       </div>
-    </div>
 
-    <!-- NEW FOLDER MODAL -->
-    <div id="new-folder-modal" class="modal hidden">
-      <div class="modal-content">
-        <h3>Create New Folder</h3>
-        <label>
-          Folder name (relative to content/)
-          <input id="new-folder-name" type="text" placeholder="blog/posts" />
-        </label>
-        <div class="modal-actions">
-          <button id="create-folder-confirm">Create</button>
-          <button id="create-folder-cancel">Cancel</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- IMAGE URL MODAL -->
-    <div id="image-modal" class="modal hidden">
-      <div class="modal-content">
-        <h3>Insert Image by URL</h3>
-        <label>
-          Image URL
-          <input id="image-url-input" type="text" placeholder="https://…" />
-        </label>
-        <div class="modal-actions">
-          <button id="insert-image-confirm">Insert</button>
-          <button id="insert-image-cancel">Cancel</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- TOASTS -->
-    <div id="toast-container"></div>
-
+    </main>
   </div>
 
   <script src="cms-admin.js?v=1"></script>
 </body>
-    </html>
+</html>
