@@ -25,12 +25,12 @@
       <div class="sidebar-header">
         <h2>Files</h2>
         <div id="user-display" class="user-info"></div>
-        
+
         <button id="new-file-btn">New File</button>
         <button id="new-folder-btn">New Folder</button>
       </div>
 
-      <!-- ⭐ REQUIRED BY renderTree() ⭐ -->
+      <!-- REQUIRED BY JS -->
       <div id="file-list"></div>
     </aside>
 
@@ -40,29 +40,39 @@
       <!-- TOOLBAR -->
       <div id="toolbar">
 
-        <button id="bold-btn"><b>B</b></button>
-        <button id="italic-btn"><i>I</i></button>
-        <button id="h1-btn">H1</button>
-        <button id="h2-btn">H2</button>
-        <button id="h3-btn">H3</button>
+        <!-- WYSIWYG COMMAND BUTTONS (JS uses data-cmd) -->
+        <button data-cmd="bold"><b>B</b></button>
+        <button data-cmd="italic"><i>I</i></button>
+        <button data-cmd="h1">H1</button>
+        <button data-cmd="h2">H2</button>
+        <button data-cmd="h3">H3</button>
 
-        <button id="ul-btn">• List</button>
-        <button id="ol-btn">1. List</button>
+        <button data-cmd="ul">• List</button>
+        <button data-cmd="ol">1. List</button>
 
-        <button id="quote-btn">❝ Quote</button>
-        <button id="code-btn">{ }</button>
+        <button data-cmd="quote">❝ Quote</button>
+        <button data-cmd="code">{ }</button>
 
-        <button id="link-btn">🔗 Link</button>
+        <button data-cmd="hr">— HR</button>
+
+        <button data-cmd="align-left">Left</button>
+        <button data-cmd="align-center">Center</button>
+        <button data-cmd="align-right">Right</button>
+
+        <button data-cmd="indent">Indent</button>
+        <button data-cmd="outdent">Outdent</button>
+
+        <button data-cmd="remove-format">Clear</button>
 
         <!-- IMAGE UPLOAD BUTTON -->
-        <button id="upload-image-btn">📷 Upload Image</button>
+        <button id="insert-image-btn">📷 Insert Image</button>
 
         <!-- HIDDEN INPUT REQUIRED BY JS -->
         <input 
           type="file" 
-          id="upload-image" 
-          accept="image/*" 
-          multiple 
+          id="upload-image-input"
+          accept="image/*"
+          multiple
           style="display:none;"
         />
 
@@ -70,32 +80,47 @@
         <button id="toolbar-more-btn">⋮</button>
         <div id="toolbar-more" class="hidden">
           <button id="theme-btn">Theme</button>
-
-          <select id="mode" style="display:none;">
-            <option value="original">Original</option>
-            <option value="army">Army Multicam</option>
-            <option value="patriotic">Patriotic</option>
-          </select>
         </div>
+
+        <!-- MODE TOGGLE -->
+        <button id="mode-toggle">WYSIWYG</button>
 
       </div>
 
       <!-- EDITOR + PREVIEW -->
       <div id="editor-wrapper">
-        <textarea id="editor-textarea"></textarea>
-        <div id="wysiwyg" contenteditable="true"></div>
+        <textarea id="editor"></textarea>
+        <div id="wysiwyg" class="hidden" contenteditable="true"></div>
         <div id="preview"></div>
       </div>
 
-      <!-- IMAGE GALLERY MODAL -->
-      <div id="image-gallery-modal" class="modal hidden">
+      <!-- IMAGE URL MODAL (JS expects this) -->
+      <div id="image-modal" class="modal hidden">
+        <div class="modal-content">
+          <h2>Insert Image by URL</h2>
+          <input id="image-url-input" type="text" placeholder="https://example.com/image.jpg" />
+          <button id="insert-image-confirm">Insert</button>
+          <button id="insert-image-cancel">Cancel</button>
+        </div>
+      </div>
+
+      <!-- UPLOAD GALLERY MODAL (JS expects this) -->
+      <div id="upload-gallery-modal" class="modal hidden">
         <div class="modal-content">
           <h2>Uploaded Images</h2>
-          <div id="image-gallery"></div>
+          <div id="upload-gallery"></div>
           <button id="insert-selected-btn" disabled>Insert Selected</button>
           <button id="close-gallery-btn">Close</button>
         </div>
       </div>
+
+      <!-- UPLOAD PROGRESS -->
+      <div id="upload-progress" style="display:none;">
+        <div id="upload-progress-bar"></div>
+      </div>
+
+      <!-- DROP ZONE -->
+      <div id="drop-zone">Drop images here</div>
 
     </main>
   </div>
