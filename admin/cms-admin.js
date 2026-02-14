@@ -966,4 +966,56 @@ if (searchInput && fileListEl) {
       updateInsertButton();
     });
   }
+  // =============== MISSING HELPERS (UPLOAD + INSERT) ===============
+
+// Basic "triggerUpload" for the top Upload Image button
+function triggerUpload() {
+  if (uploadImageInput) {
+    uploadImageInput.click();
+  }
+}
+
+// Wire the hidden input to reuse the same handler as drop
+if (uploadImageInput) {
+  uploadImageInput.addEventListener("change", (e) => {
+    const files = e.target.files;
+    if (files && files.length) {
+      Array.from(files).forEach((f) => handleUploadFile(f));
+    }
+  });
+}
+
+// Fallback for handleUploadFile used by the global drag/drop
+function handleUploadFile(file) {
+  // Reuse the multi-image upload pipeline if you want,
+  // or just no-op safely for now:
+  // uploadFile(file); // if uploadFile is in scope
+  console.warn("handleUploadFile called, but no upload pipeline wired for this entry point yet.", file);
+}
+
+// Generic insertAtCursor used by the gallery "Insert Selected" button
+function insertAtCursor(target, text) {
+  // If we're in WYSIWYG, just append markdown into the textarea mirror
+  if (target === wysiwygEl) {
+    const md = htmlToMarkdown(wysiwygEl.innerHTML) + text;
+    editorTextarea.value = md;
+    wysiwygEl.innerHTML = markdownToHtml(md);
+    updatePreview(md);
+    debounceAutosave();
+    return;
+  }
+
+  // Plain textarea insertion
+  const el = target;
+  const start = el.selectionStart || 0;
+  const end = el.selectionEnd || 0;
+  const before = el.value.substring(0, start);
+  const after = el.value.substring(end);
+  el.value = before + text + after;
+  const pos = start + text.length;
+  el.selectionStart = el.selectionEnd = pos;
+  el.focus();
+  updatePreview(el.value);
+  debounceAutosave();
+}
 })();
