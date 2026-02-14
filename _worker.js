@@ -153,7 +153,7 @@ async function handleLogin(request, env) {
 
   const stateCookie = `oauth_state=${encodeURIComponent(
     state
-  )}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`;
+  )}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=600`;
 
   return redirectResponse(authorizeUrl.toString(), [stateCookie]);
 }
@@ -205,7 +205,7 @@ async function handleCallback(request, env) {
   const login = user.login;
 
   const sessionCookie = await createSessionCookie(login, env);
-  const clearState = "oauth_state=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax";
+  const clearState = "oauth_state=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None";
 
   return redirectResponse("/admin", [sessionCookie, clearState]);
 }
