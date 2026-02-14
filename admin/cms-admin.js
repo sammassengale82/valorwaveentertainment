@@ -839,7 +839,10 @@ if (searchInput && fileListEl) {
   await loadUser();
   await loadFiles();
 
-  // Wait one more frame AFTER files load (this is the key)
+  // ⭐ Make CMS visible BEFORE touching editor elements 
+  document.getElementById("cms").style.display = "block"; 
+  
+  // ⭐ Wait one frame so DOM nodes are created 
   await new Promise(requestAnimationFrame);
 
   // NOW the editor exists
