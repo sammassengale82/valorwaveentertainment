@@ -829,6 +829,9 @@ if (searchInput && fileListEl) {
   // Wait for DOM to fully render at least one frame
   await new Promise(requestAnimationFrame);
 
+  // SHOW CMS UI BEFORE ANY EDITOR CODE RUNS 
+  document.getElementById("cms").style.display = "block";
+  
   setStatus("Loading…");
 
   initThemeFromStorage();
