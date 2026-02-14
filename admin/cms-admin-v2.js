@@ -984,14 +984,14 @@ async function init() {
 
 // Basic "triggerUpload" for the top Upload Image button
 function triggerUpload() {
-  if (uploadImageInput) {
-    uploadImageInput.click();
+  if (fileUploadInput) {
+    fileUploadInput.click();
   }
 }
 
 // Wire the hidden input to reuse the same handler as drop
-if (uploadImageInput) {
-  uploadImageInput.addEventListener("change", (e) => {
+if (fileUploadInput) {
+  fileUploadInput.addEventListener("change", (e) => {
     const files = e.target.files;
     if (files && files.length) {
       Array.from(files).forEach((f) => handleUploadFile(f));
