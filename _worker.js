@@ -19,12 +19,6 @@ if (url.pathname.startsWith("/admin/")) {
   return env.ASSETS.fetch(request);
 }
 
-
-    // Redirect /admin → /admin/
-    if (path === "/admin") {
-      return Response.redirect(url.origin + "/admin/", 301);
-    }
-
     // OAuth routes
     if (path === "/login") return handleLogin(request, env);
     if (path === "/callback") return handleCallback(request, env);
