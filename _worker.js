@@ -2,33 +2,43 @@
 // Valor Wave CMS 2.0 - Cloudflare Pages Advanced Mode Worker
 // ---------------------------------------------------------
 
-
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
 
     // -----------------------------------------------------
-    // Serve ALL /admin/* static files FIRST
+    // ADMIN UI ROUTING (FIXED — NO REDIRECT LOOPS)
     // -----------------------------------------------------
-    if (url.pathname === "/admin" || url.pathname === "/admin/") {
-  return env.ASSETS.fetch(new Request(url.origin + "/admin/index.html", request));
-}
 
-if (url.pathname.startsWith("/admin/")) {
-  return env.ASSETS.fetch(request);
-}
+    // Serve /admin and /admin/ → index.html
+    if (path === "/admin" || path === "/admin/") {
+      return env.ASSETS.fetch(
+        new Request(url.origin + "/admin/index.html", request)
+      );
+    }
 
+    // Serve all static admin assets (JS, CSS, images, etc.)
+    if (path.startsWith("/admin/")) {
+      return env.ASSETS.fetch(request);
+    }
+
+    // -----------------------------------------------------
     // OAuth routes
+    // -----------------------------------------------------
     if (path === "/login") return handleLogin(request, env);
     if (path === "/callback") return handleCallback(request, env);
 
+    // -----------------------------------------------------
     // API routes
+    // -----------------------------------------------------
     if (path.startsWith("/api/")) {
       return handleApi(request, env);
     }
 
-    // STATIC FALLBACK
+    // -----------------------------------------------------
+    // STATIC FALLBACK (public site)
+    // -----------------------------------------------------
     return env.ASSETS.fetch(request);
   },
 };
