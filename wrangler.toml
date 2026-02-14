@@ -7,4 +7,4 @@ pages_build_output_dir = "/"
 
 [assets]
 directory = "/"
-binding = "ASSETS"
+binding = "STATIC"   # <-- MUST NOT be ASSETS
