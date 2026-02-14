@@ -11,6 +11,10 @@ export default {
     // -----------------------------------------------------
     // Serve ALL /admin/* static files FIRST
     // -----------------------------------------------------
+    if (url.pathname === "/admin" || url.pathname === "/admin/") {
+      return env.ASSETS.fetch(new Request(url.origin + "/admin/index.html", request));
+    }
+
     if (url.pathname.startsWith("/admin/")) {
       return env.ASSETS.fetch(request);
     }
