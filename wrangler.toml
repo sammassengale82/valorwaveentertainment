@@ -1,3 +1,19 @@
-name = "valorwaveentertainment"
+name = "valorwave-cms"
+compatibility_date = "2024-12-01"
+
+# ============================================================
+# Cloudflare Pages Advanced Mode
+# This tells Cloudflare that _worker.js is your Functions entry
+# ============================================================
 pages_build_output_dir = "."
-compatibility_date = "2024-10-01"
+
+# ============================================================
+# Environment Variables (EXACT NAMES your _worker.js requires)
+# ============================================================
+[vars]
+GITHUB_CLIENT_ID = "Ov23liB8LRnUd7aQcwyZ"
+GITHUB_REDIRECT_URI = "https://valorwaveentertainment.com/callback"
+
+GITHUB_OWNER = "sammassengale82"
+GITHUB_REPO = "valorwaveentertainment"
+GITHUB_BRANCH = "main"
