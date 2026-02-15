@@ -1,3 +1,5 @@
+console.log("WORKER IS RUNNING", path);
+
 // ---------------------------------------------------------
 // Valor Wave CMS 2.0 - Cloudflare Pages Advanced Mode Worker
 // ---------------------------------------------------------
