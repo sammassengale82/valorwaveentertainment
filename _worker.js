@@ -5,20 +5,37 @@ export default {
 
     console.log("WORKER IS RUNNING", path);
 
-    // ============================
-    // ADMIN UI ROUTING (FIXED)
-    // ============================
-    if (path === "/admin" || path.startsWith("/admin")) {
+    // ============================================================
+    // ADMIN UI ROUTING (FINAL + CORRECT)
+    // ============================================================
+    //
+    // Cloudflare normalizes /admin → /admin/ for navigation requests.
+    // So we must treat BOTH as the same route and always serve index.html.
+    //
+    // Also: path.startsWith("/admin") must NOT serve raw request for "/admin/"
+    // because that is a folder → 404. Instead, always serve index.html.
+    //
+    // ============================================================
+
+    // Serve the admin dashboard root
+    if (path === "/admin" || path === "/admin/") {
       const assetUrl = new URL("/admin/index.html", request.url);
-      const assetRequest = new Request(assetUrl.toString(), request);
-      return env.ASSETS.fetch(assetRequest, {
+      return env.ASSETS.fetch(assetUrl.toString(), {
         cf: { cacheEverything: false, cacheTtl: 0 }
       });
     }
 
-    // ============================
+    // Serve admin static assets (CSS, JS, images, etc.)
+    if (path.startsWith("/admin/")) {
+      const assetUrl = new URL(path, request.url);
+      return env.ASSETS.fetch(assetUrl.toString(), {
+        cf: { cacheEverything: false, cacheTtl: 0 }
+      });
+    }
+
+    // ============================================================
     // API: READ FILE
-    // ============================
+    // ============================================================
     if (path === "/api/read-file" && request.method === "POST") {
       const { filePath } = await request.json();
 
@@ -40,9 +57,9 @@ export default {
       });
     }
 
-    // ============================
+    // ============================================================
     // API: WRITE FILE
-    // ============================
+    // ============================================================
     if (path === "/api/write-file" && request.method === "POST") {
       const { filePath, content, message } = await request.json();
 
@@ -79,9 +96,9 @@ export default {
       });
     }
 
-    // ============================
+    // ============================================================
     // API: CREATE FOLDER
-    // ============================
+    // ============================================================
     if (path === "/api/create-folder" && request.method === "POST") {
       const { folderPath } = await request.json();
 
@@ -109,9 +126,9 @@ export default {
       });
     }
 
-    // ============================
+    // ============================================================
     // API: UPLOAD IMAGE
-    // ============================
+    // ============================================================
     if (path === "/api/upload-image" && request.method === "POST") {
       const form = await request.formData();
       const file = form.get("file");
@@ -143,9 +160,9 @@ export default {
       });
     }
 
-    // ============================
+    // ============================================================
     // FALLBACK: STATIC ASSETS
-    // ============================
+    // ============================================================
     return env.ASSETS.fetch(request);
   }
 };
