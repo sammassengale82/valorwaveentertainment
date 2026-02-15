@@ -6,13 +6,15 @@ export default {
     console.log("WORKER IS RUNNING", path);
 
     // ============================================================
-    // HARD NORMALIZATION OVERRIDE (fixes redirect loops)
+    // OVERRIDE CLOUDFLARE DIRECTORY NORMALIZATION
     // ============================================================
     //
-    // Cloudflare sometimes forces /admin → /admin/
-    // Browsers sometimes force /admin/ → /admin
+    // Cloudflare Pages v2 applies an automatic rewrite:
+    //     /admin → /admin/
     //
-    // We override BOTH and always serve /admin/index.html
+    // This happens BEFORE the Worker unless we intercept it.
+    //
+    // We stop the rewrite by returning a Response EARLY.
     //
     // ============================================================
 
@@ -37,7 +39,7 @@ export default {
     }
 
     // ============================================================
-    // API: READ FILE
+    // API ROUTES
     // ============================================================
 
     if (path === "/api/read-file" && request.method === "POST") {
@@ -60,10 +62,6 @@ export default {
         headers: { "Content-Type": "application/json" }
       });
     }
-
-    // ============================================================
-    // API: WRITE FILE
-    // ============================================================
 
     if (path === "/api/write-file" && request.method === "POST") {
       const { filePath, content, message } = await request.json();
@@ -101,10 +99,6 @@ export default {
       });
     }
 
-    // ============================================================
-    // API: CREATE FOLDER
-    // ============================================================
-
     if (path === "/api/create-folder" && request.method === "POST") {
       const { folderPath } = await request.json();
 
@@ -131,10 +125,6 @@ export default {
         headers: { "Content-Type": "application/json" }
       });
     }
-
-    // ============================================================
-    // API: UPLOAD IMAGE
-    // ============================================================
 
     if (path === "/api/upload-image" && request.method === "POST") {
       const form = await request.formData();
@@ -168,7 +158,7 @@ export default {
     }
 
     // ============================================================
-    // FALLBACK: STATIC ASSETS
+    // FALLBACK STATIC ASSETS
     // ============================================================
 
     return env.ASSETS.fetch(request);
