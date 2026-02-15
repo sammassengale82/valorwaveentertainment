@@ -323,7 +323,7 @@ async function handleImageUpload(request, env) {
 }
 
 // ---------------------------------------------------------
-// MAIN WORKER ROUTER (single routing block)
+// MAIN WORKER ROUTER (corrected)
 // ---------------------------------------------------------
 
 export default {
@@ -331,10 +331,8 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // ADMIN UI ROUTING
+    // ADMIN UI ROUTING (FIXED)
     if (path === "/admin" || path === "/admin/") {
-      return env.ASSETS.fetch("https://dummy/admin/index.html");
-      // Serve the admin shell from /admin/index.html in the project root
       const assetUrl = new URL("/admin/index.html", request.url);
       const assetRequest = new Request(assetUrl.toString(), request);
       return env.ASSETS.fetch(assetRequest, {
@@ -343,7 +341,6 @@ export default {
     }
 
     if (path.startsWith("/admin/")) {
-      // Serve all other admin ASSETS (JS, CSS, etc.) from Pages ASSETS
       return env.ASSETS.fetch(request, {
         cf: { cacheEverything: false, cacheTtl: 0 }
       });
