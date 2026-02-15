@@ -1,9 +1,6 @@
 name = "valorwave-cms"
 compatibility_date = "2024-12-01"
 
-# Tell Cloudflare Pages where static files live
-pages_build_output_dir = "public"
-
 [vars]
 GITHUB_CLIENT_ID = "Ov23liB8LRnUd7aQcwyZ"
 GITHUB_REDIRECT_URI = "https://valorwaveentertainment.com/callback"
