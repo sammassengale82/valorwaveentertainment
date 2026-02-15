@@ -1,5 +1,3 @@
-console.log("WORKER IS RUNNING", path);
-
 // ---------------------------------------------------------
 // Valor Wave CMS 2.0 - Cloudflare Pages Advanced Mode Worker
 // ---------------------------------------------------------
@@ -333,6 +331,8 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
+
+    console.log("WORKER IS RUNNING", path);
 
     // ADMIN UI ROUTING (Corrected)
     if (path === "/admin" || path === "/admin/") {
