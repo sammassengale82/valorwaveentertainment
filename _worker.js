@@ -1,25 +1,17 @@
 export default {
   async fetch(request, env, ctx) {
-    // Parse URL and path FIRST — nothing can reference `path` before this
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // Safe to log now
     console.log("WORKER IS RUNNING", path);
 
     // ============================
-    // ADMIN UI ROUTING
+    // ADMIN UI ROUTING (FIXED)
     // ============================
-    if (path === "/admin" || path === "/admin/") {
+    if (path === "/admin" || path.startsWith("/admin")) {
       const assetUrl = new URL("/admin/index.html", request.url);
       const assetRequest = new Request(assetUrl.toString(), request);
       return env.ASSETS.fetch(assetRequest, {
-        cf: { cacheEverything: false, cacheTtl: 0 }
-      });
-    }
-
-    if (path.startsWith("/admin/")) {
-      return env.ASSETS.fetch(request, {
         cf: { cacheEverything: false, cacheTtl: 0 }
       });
     }
