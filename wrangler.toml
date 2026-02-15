@@ -1,27 +1,12 @@
 name = "valorwave-cms"
 compatibility_date = "2024-12-01"
 
-# ============================================================
-# FORCE ADVANCED MODE FOR CLOUDFLARE PAGES
-# ============================================================
-# This tells Cloudflare:
-# - DO NOT treat this as a static site
-# - DO NOT apply directory index rules
-# - DO NOT apply trailing slash redirects
-# - DO run _worker.js as the primary router
-# ============================================================
+# Tell Cloudflare Pages where static files live
+pages_build_output_dir = "public"
 
-pages_build_output_dir = "."
-main = "_worker.js"
-compatibility_flags = ["nodejs_compat"]
-
-# ============================================================
-# Environment Variables
-# ============================================================
 [vars]
 GITHUB_CLIENT_ID = "Ov23liB8LRnUd7aQcwyZ"
 GITHUB_REDIRECT_URI = "https://valorwaveentertainment.com/callback"
-
 GITHUB_OWNER = "sammassengale82"
 GITHUB_REPO = "valorwaveentertainment"
 GITHUB_BRANCH = "main"
