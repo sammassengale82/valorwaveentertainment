@@ -173,6 +173,7 @@ async function handleCallback(request, env) {
   const sessionCookie = await createSessionCookie(login, env);
   const clearState = "oauth_state=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None";
 
+  // IMPORTANT: redirect to /admin (NO trailing slash)
   return redirectResponse("/admin", [sessionCookie, clearState]);
 }
 
@@ -323,7 +324,7 @@ async function handleImageUpload(request, env) {
 }
 
 // ---------------------------------------------------------
-// MAIN WORKER ROUTER (corrected)
+// MAIN WORKER ROUTER (Corrected)
 // ---------------------------------------------------------
 
 export default {
@@ -331,7 +332,7 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // ADMIN UI ROUTING (FIXED)
+    // ADMIN UI ROUTING (Corrected)
     if (path === "/admin" || path === "/admin/") {
       const assetUrl = new URL("/admin/index.html", request.url);
       const assetRequest = new Request(assetUrl.toString(), request);
