@@ -6,17 +6,19 @@ export default {
     console.log("WORKER IS RUNNING", path);
 
     // ============================================================
-    // CMS ROUTING — FIXED (NO REDIRECTS)
+    // CMS ROUTING — FINAL, NO REDIRECTS, NO INVALID URL
     // ============================================================
 
-    // Serve the CMS index directly without redirect
+    // Serve /cms and /cms/ → /cms/index.html
     if (path === "/cms" || path === "/cms/") {
-      return env.ASSETS.fetch("/cms/index.html");
+      const assetUrl = new URL("/cms/index.html", url.origin);
+      return env.ASSETS.fetch(new Request(assetUrl, request));
     }
 
     // Serve all CMS assets directly
     if (path.startsWith("/cms/")) {
-      return env.ASSETS.fetch(path);
+      const assetUrl = new URL(path, url.origin);
+      return env.ASSETS.fetch(new Request(assetUrl, request));
     }
 
     // ============================================================
