@@ -6,51 +6,27 @@ export default {
     console.log("WORKER IS RUNNING", path);
 
     // ============================================================
-    // STOP CLOUDFLARE'S AUTOMATIC DIRECTORY REWRITE
-    // ============================================================
-    //
-    // Cloudflare Pages v2 applies a hidden rewrite:
-    //     /admin → /admin/
-    //
-    // This happens BEFORE the Worker unless we intercept it.
-    //
-    // The ONLY way to stop the redirect loop is to:
-    // 1. Intercept /admin and /admin/
-    // 2. Return index.html with a 200 (NOT a redirect)
-    //
+    // CMS ROUTING (renamed from /admin to /cms)
     // ============================================================
 
-    if (path === "/admin" || path === "/admin/") {
-      const assetUrl = new URL("/admin/index.html", request.url);
-      const assetRequest = new Request(assetUrl, {
-        method: request.method,
-        headers: request.headers
-      });
-
-      const response = await env.ASSETS.fetch(assetRequest);
-
-      // Force Cloudflare to STOP rewriting
-      return new Response(response.body, {
-        status: 200,
-        headers: {
-          "Content-Type": "text/html; charset=utf-8",
-          "Cache-Control": "no-store"
-        }
+    if (path === "/cms" || path === "/cms/") {
+      const assetUrl = new URL("/cms/index.html", request.url);
+      const assetRequest = new Request(assetUrl, request);
+      return env.ASSETS.fetch(assetRequest, {
+        cf: { cacheEverything: false, cacheTtl: 0 }
       });
     }
 
-    // ============================================================
-    // ADMIN STATIC ASSETS
-    // ============================================================
-
-    if (path.startsWith("/admin/")) {
+    if (path.startsWith("/cms/")) {
       const assetUrl = new URL(path, request.url);
       const assetRequest = new Request(assetUrl, request);
-      return env.ASSETS.fetch(assetRequest);
+      return env.ASSETS.fetch(assetRequest, {
+        cf: { cacheEverything: false, cacheTtl: 0 }
+      });
     }
 
     // ============================================================
-    // API ROUTES
+    // API ROUTES (unchanged)
     // ============================================================
 
     if (path === "/api/read-file" && request.method === "POST") {
