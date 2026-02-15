@@ -1,28 +1,41 @@
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    let path = url.pathname;
+    const path = url.pathname;
 
     console.log("WORKER IS RUNNING", path);
 
     // ============================================================
-    // OVERRIDE CLOUDFLARE DIRECTORY NORMALIZATION
+    // STOP CLOUDFLARE'S AUTOMATIC DIRECTORY REWRITE
     // ============================================================
     //
-    // Cloudflare Pages v2 applies an automatic rewrite:
+    // Cloudflare Pages v2 applies a hidden rewrite:
     //     /admin → /admin/
     //
     // This happens BEFORE the Worker unless we intercept it.
     //
-    // We stop the rewrite by returning a Response EARLY.
+    // The ONLY way to stop the redirect loop is to:
+    // 1. Intercept /admin and /admin/
+    // 2. Return index.html with a 200 (NOT a redirect)
     //
     // ============================================================
 
     if (path === "/admin" || path === "/admin/") {
       const assetUrl = new URL("/admin/index.html", request.url);
-      const assetRequest = new Request(assetUrl, request);
-      return env.ASSETS.fetch(assetRequest, {
-        cf: { cacheEverything: false, cacheTtl: 0 }
+      const assetRequest = new Request(assetUrl, {
+        method: request.method,
+        headers: request.headers
+      });
+
+      const response = await env.ASSETS.fetch(assetRequest);
+
+      // Force Cloudflare to STOP rewriting
+      return new Response(response.body, {
+        status: 200,
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "no-store"
+        }
       });
     }
 
@@ -33,9 +46,7 @@ export default {
     if (path.startsWith("/admin/")) {
       const assetUrl = new URL(path, request.url);
       const assetRequest = new Request(assetUrl, request);
-      return env.ASSETS.fetch(assetRequest, {
-        cf: { cacheEverything: false, cacheTtl: 0 }
-      });
+      return env.ASSETS.fetch(assetRequest);
     }
 
     // ============================================================
