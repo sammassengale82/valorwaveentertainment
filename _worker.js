@@ -1,27 +1,36 @@
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    const path = url.pathname;
+    let path = url.pathname;
 
     console.log("WORKER IS RUNNING", path);
 
     // ============================================================
-    // ADMIN UI ROUTING
+    // HARD NORMALIZATION OVERRIDE (fixes redirect loops)
+    // ============================================================
+    //
+    // Cloudflare sometimes forces /admin → /admin/
+    // Browsers sometimes force /admin/ → /admin
+    //
+    // We override BOTH and always serve /admin/index.html
+    //
     // ============================================================
 
-    // Serve the admin dashboard root for both /admin and /admin/
     if (path === "/admin" || path === "/admin/") {
       const assetUrl = new URL("/admin/index.html", request.url);
-      const assetRequest = new Request(assetUrl.toString(), request);
+      const assetRequest = new Request(assetUrl, request);
       return env.ASSETS.fetch(assetRequest, {
         cf: { cacheEverything: false, cacheTtl: 0 }
       });
     }
 
-    // Serve admin static assets (CSS, JS, etc.)
+    // ============================================================
+    // ADMIN STATIC ASSETS
+    // ============================================================
+
     if (path.startsWith("/admin/")) {
       const assetUrl = new URL(path, request.url);
-      const assetRequest = new Request(assetUrl.toString(), request);
+      const assetRequest = new Request(assetUrl, request);
       return env.ASSETS.fetch(assetRequest, {
         cf: { cacheEverything: false, cacheTtl: 0 }
       });
