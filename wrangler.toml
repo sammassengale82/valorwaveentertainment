@@ -2,13 +2,21 @@ name = "valorwave-cms"
 compatibility_date = "2024-12-01"
 
 # ============================================================
-# Cloudflare Pages Advanced Mode
-# This tells Cloudflare that _worker.js is your Functions entry
+# FORCE ADVANCED MODE FOR CLOUDFLARE PAGES
 # ============================================================
+# This tells Cloudflare:
+# - DO NOT treat this as a static site
+# - DO NOT apply directory index rules
+# - DO NOT apply trailing slash redirects
+# - DO run _worker.js as the primary router
+# ============================================================
+
 pages_build_output_dir = "."
+main = "_worker.js"
+compatibility_flags = ["nodejs_compat"]
 
 # ============================================================
-# Environment Variables (EXACT NAMES your _worker.js requires)
+# Environment Variables
 # ============================================================
 [vars]
 GITHUB_CLIENT_ID = "Ov23liB8LRnUd7aQcwyZ"
