@@ -529,7 +529,7 @@ a {
       });
     }
 
-    // cms/admin.css → embedded CSS
+    // /cms/admin.css → embedded CSS
     if (path === "/cms/admin.css") {
       return new Response(ADMIN_CSS, {
         status: 200,
@@ -537,7 +537,7 @@ a {
       });
     }
 
-    // cms/themes.css → embedded CSS
+    // /cms/themes.css → embedded CSS
     if (path === "/cms/themes.css") {
       return new Response(THEMES_CSS, {
         status: 200,
@@ -545,7 +545,7 @@ a {
       });
     }
 
-    // cms/cms-admin-v2.js → from GitHub (JS is safe from sandbox issue)
+    // /cms/cms-admin-v2.js → from GitHub (JS is safe from sandbox issue)
     if (path === "/cms/cms-admin-v2.js") {
       return fetchFromGitHub("/cms/cms-admin-v2.js");
     }
