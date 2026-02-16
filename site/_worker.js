@@ -17,8 +17,8 @@ export default {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Valor Wave CMS 2.0</title>
 
-  <link rel="stylesheet" href="/site/cms/admin.css" />
-  <link rel="stylesheet" href="/site/cms/themes.css" />
+  <link rel="stylesheet" href="/cms/admin.css" />
+  <link rel="stylesheet" href="/cms/themes.css" />
 </head>
 
 <body class="logged-out">
@@ -148,7 +148,7 @@ export default {
     </main>
   </div>
 
-  <script src="/site/cms/cms-admin-v2.js" defer></script>
+  <script src="/cms/cms-admin-v2.js" defer></script>
 </body>
 </html>`;
 
@@ -530,29 +530,29 @@ a {
       });
     }
 
-    // /site/cms/admin.css → embedded CSS
-    if (path === "/site/cms/admin.css") {
+    // /cms/admin.css → embedded CSS
+    if (path === "/cms/admin.css") {
       return new Response(ADMIN_CSS, {
         status: 200,
         headers: { "Content-Type": "text/css; charset=utf-8" }
       });
     }
 
-    // /site/cms/themes.css → embedded CSS
-    if (path === "/site/cms/themes.css") {
+    // /cms/themes.css → embedded CSS
+    if (path === "/cms/themes.css") {
       return new Response(THEMES_CSS, {
         status: 200,
         headers: { "Content-Type": "text/css; charset=utf-8" }
       });
     }
 
-    // /site/cms/cms-admin-v2.js → from GitHub (JS is safe from sandbox issue)
+    // /cms/cms-admin-v2.js → from GitHub (JS is safe from sandbox issue)
     if (path === "/cms/cms-admin-v2.js") {
-      return fetchFromGitHub("/site/cms/cms-admin-v2.js");
+      return fetchFromGitHub("/cms/cms-admin-v2.js");
     }
     // Serve favicon
     if (path === "/favicon.ico") {
-      return fetchFromGitHub("/site/favicon.ico");
+      return fetchFromGitHub("/favicon.ico");
     }
 
     // /content/* → markdown, images, etc. from GitHub
