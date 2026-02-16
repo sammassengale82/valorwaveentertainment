@@ -529,25 +529,29 @@ a {
       });
     }
 
-    // /admin.css → embedded CSS
-    if (path === "/admin.css") {
+    // cms/admin.css → embedded CSS
+    if (path === "cms/admin.css") {
       return new Response(ADMIN_CSS, {
         status: 200,
         headers: { "Content-Type": "text/css; charset=utf-8" }
       });
     }
 
-    // /themes.css → embedded CSS
-    if (path === "/themes.css") {
+    // cms/themes.css → embedded CSS
+    if (path === "cms/themes.css") {
       return new Response(THEMES_CSS, {
         status: 200,
         headers: { "Content-Type": "text/css; charset=utf-8" }
       });
     }
 
-    // /cms-admin-v2.js → from GitHub (JS is safe from sandbox issue)
-    if (path === "/cms-admin-v2.js") {
+    // cms/cms-admin-v2.js → from GitHub (JS is safe from sandbox issue)
+    if (path === "cms/cms-admin-v2.js") {
       return fetchFromGitHub("/cms/cms-admin-v2.js");
+    }
+    // Serve favicon
+    if (path === "/favicon.ico") {
+      return fetchFromGitHub("/site/favicon.ico");
     }
 
     // /content/* → markdown, images, etc. from GitHub
