@@ -17,8 +17,8 @@ export default {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Valor Wave CMS 2.0</title>
 
-  <link rel="stylesheet" href="/cms/admin.css" />
-  <link rel="stylesheet" href="/cms/themes.css" />
+  <link rel="stylesheet" href="/site/cms/admin.css" />
+  <link rel="stylesheet" href="/site/cms/themes.css" />
 </head>
 
 <body class="logged-out">
@@ -148,7 +148,7 @@ export default {
     </main>
   </div>
 
-  <script src="/cms/cms-admin-v2.js" defer></script>
+  <script src="/site/cms/cms-admin-v2.js" defer></script>
 </body>
 </html>`;
 
