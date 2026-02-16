@@ -4,6 +4,7 @@ export default {
     const path = url.pathname;
 
     console.log("CMS WORKER ACTIVE:", path);
+    console.log("RAW URL:", `https://raw.githubusercontent.com/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/${env.GITHUB_BRANCH}/cms/cms-admin-v2.js`);
 
     // ============================================================
     // EMBEDDED CMS ASSETS (HTML + CSS)
