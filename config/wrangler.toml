@@ -1,9 +1,0 @@
-name = "valorwave-cms"
-compatibility_date = "2024-12-01"
-
-[vars]
-GITHUB_CLIENT_ID = "Ov23liB8LRnUd7aQcwyZ"
-GITHUB_REDIRECT_URI = "https://valorwaveentertainment.com/callback"
-GITHUB_OWNER = "sammassengale82"
-GITHUB_REPO = "valorwaveentertainment"
-GITHUB_BRANCH = "main"
