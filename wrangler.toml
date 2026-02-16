@@ -2,9 +2,6 @@ name = "valorwaveentertainment"
 main = "_worker.js"
 compatibility_date = "2024-01-01"
 
-# This forces Cloudflare Pages to use Advanced Mode
-pages_build_output_dir = "."
-
 [vars]
 GITHUB_OWNER = "sammassengale82"
 GITHUB_REPO = "valorwaveentertainment"
