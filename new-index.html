@@ -1,0 +1,1139 @@
+<!doctype html>
+<html lang="en" data-cms-enabled="false">
+<head>
+  <!-- ============================================================
+       META + SOCIAL (CMS-ENABLED)
+  ============================================================ -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title data-editable="meta-title"
+         data-edit-type="text"
+         data-edit-group="meta">
+    Faith-Based DJ Services | Valor Wave Entertainment
+  </title>
+
+  <meta name="description"
+        content="Veteran-owned, faith-based wedding and event DJ in Chattanooga serving Southeast Tennessee and Northwest Georgia. Clean music, professional sound, MC services, lighting, and worry-free planning. Request a quote today."
+        data-editable="meta-description"
+        data-edit-type="text"
+        data-edit-group="meta" />
+
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Valor Wave Entertainment">
+
+  <meta property="og:title"
+        content="Valor Wave Entertainment | Faith-Based • Veteran-Owned DJ"
+        data-editable="og-title"
+        data-edit-type="text"
+        data-edit-group="meta">
+
+  <meta property="og:description"
+        content="Veteran-owned, faith-based DJ service serving Southeast Tennessee & Northwest Georgia. Weddings, church events, corporate & community celebrations. Hero Discounts available."
+        data-editable="og-description"
+        data-edit-type="text"
+        data-edit-group="meta">
+
+  <meta property="og:url" content="https://valorwaveentertainment.com/">
+
+  <meta property="og:image"
+        content="https://valorwaveentertainment.com/og-image.jpg"
+        data-editable="og-image"
+        data-edit-type="image"
+        data-edit-group="meta">
+
+  <meta name="twitter:card" content="summary_large_image">
+
+  <meta name="twitter:title"
+        content="Valor Wave Entertainment | Faith-Based • Veteran-Owned DJ"
+        data-editable="twitter-title"
+        data-edit-type="text"
+        data-edit-group="meta">
+
+  <meta name="twitter:description"
+        content="Weddings, church events, corporate & community celebrations across Southeast TN & Northwest GA."
+        data-editable="twitter-description"
+        data-edit-type="text"
+        data-edit-group="meta">
+
+  <meta name="twitter:image"
+        content="https://valorwaveentertainment.com/og-image.jpg"
+        data-editable="twitter-image"
+        data-edit-type="image"
+        data-edit-group="meta">
+
+  <!-- ============================================================
+       GLOBAL + SITE CSS
+  ============================================================ -->
+<style>
+/* ============================================================
+   ROOT + GLOBAL
+============================================================ */
+:root{
+  --navy:#0F172A;
+  --dark:#020617;
+  --gold:#D4AF37;
+  --white:#F8FAFC;
+  --gray:#CBD5E1;
+  --panel: rgba(2, 6, 23, 0.78);
+  --border:#1E293B;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+  background:var(--navy);
+  color:var(--white);
+  line-height:1.6;
+}
+
+a{
+  color:var(--gold);
+  text-decoration:none;
+}
+/* ============================================================
+   HERO
+============================================================ */
+header.hero{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  min-height: 640px;
+  padding: 42px 18px 72px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border-bottom:1px solid var(--border);
+  background:none;
+}
+header.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(to bottom, rgba(2,6,23,0.60), rgba(15,23,42,0.93)),
+    url("images/hero-wedding.jpg");
+  background-size:cover;
+  background-position:center;
+  z-index:0;
+}
+.hero-inner{
+  position:relative;
+  z-index:1;
+  width:min(980px, 100%);
+  padding: 26px 16px;
+  border-radius: 16px;
+  background: rgba(2,6,23,0.78);
+  border: 1px solid rgba(30,41,59,0.55);
+}
+.hero-logo{
+  display:block;
+  margin: 0 auto 10px;
+  width: min(520px, 92%);
+  height:auto;
+  max-height: 140px;
+  object-fit: contain;
+}
+.kicker{margin-top:6px;font-size:28px;font-weight:800}
+.tagline{margin-top:10px;color:var(--gold);font-size:24px;font-family:Georgia,"Times New Roman",serif;font-style:italic}
+.subline{margin-top:10px;color:var(--gray);font-size:15px}
+.btn{
+  display:inline-block;
+  margin-top: 18px;
+  padding: 14px 30px;
+  background: var(--gold);
+  color: var(--dark);
+  font-weight: 900;
+  border-radius: 10px;
+  border:none;
+  cursor:pointer;
+  text-align:center;
+}
+
+/* ============================================================
+   SECTIONS + CARDS
+============================================================ */
+section{max-width:1100px;margin:auto;padding:70px 18px}
+h2{text-align:center;margin-bottom:38px;font-size:34px;font-family:Georgia,"Times New Roman",serif}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.card img{
+  width:100%;
+  height: 220px;
+  object-fit: cover;
+  object-position: center;
+  display:block;
+  background: rgba(2,6,23,0.55);
+}
+.card-body{text-align:center;padding:18px 16px 22px}
+.card-body h3{color:var(--gold);font-family:Georgia,"Times New Roman",serif;font-size:26px;margin-bottom:10px}
+.card-body p{color:var(--gray);font-size:14.5px}
+
+.service-area{max-width:920px;margin:0 auto;text-align:center;color:var(--gray);font-size:16px}
+
+/* ============================================================
+   BIO
+============================================================ */
+.bio-wrap{
+  max-width: 920px;
+  margin: 0 auto;
+  background: var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding: 26px 20px;
+}
+.bio-head{text-align:center;margin-bottom:16px}
+.bio-image{
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  object-position: 50% 30%;
+  border-radius: 16px;
+  display:block;
+  margin: 0 auto 12px;
+  border: 1px solid rgba(212,175,55,0.35);
+}
+.bio-name{color:var(--gold);font-family:Georgia,"Times New Roman",serif;font-size:26px;text-align:center}
+.bio-wrap p{color:var(--gray);font-size:15.5px;margin:10px 0;line-height:1.75}
+
+/* ============================================================
+   FORM
+============================================================ */
+form{
+  max-width: 760px;
+  margin: 0 auto;
+  display:grid;
+  gap: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+}
+input, textarea{
+  width:100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #0b1220;
+  background: rgba(248,250,252,0.95);
+  font-size: 16px;
+  color: #0b1220;
+}
+textarea{min-height:120px;resize:vertical}
+.form-actions{display:flex;justify-content:center;padding-top:6px}
+
+/* ============================================================
+   FOOTER
+============================================================ */
+footer{
+  padding:40px 18px;
+  text-align:center;
+  background:var(--dark);
+  color:var(--gray);
+  border-top:1px solid var(--border)
+}
+footer img{max-width:160px;display:block;margin:0 auto 14px}
+
+/* ============================================================
+   SOCIAL LINKS
+============================================================ */
+.social-links{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.social-links a{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:42px;
+  height:42px;
+  border-radius:999px;
+  background: var(--panel);
+  border:1px solid var(--border);
+  transition: transform .2s ease, background .2s ease;
+}
+.social-links a:hover{
+  background: var(--gold);
+  transform: translateY(-2px);
+}
+.social-links svg{
+  width:20px;
+  height:20px;
+  fill: var(--white);
+}
+
+/* ============================================================
+   HEADER BAR
+============================================================ */
+.site-header{
+  position:sticky;
+  top:0;
+  z-index:1000;
+  background: rgba(2,6,23,.86);
+  backdrop-filter: blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.header-inner{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+.brand-mini{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  color: var(--white);
+}
+.brand-mini img{
+  width:38px;
+  height:auto;
+  display:block;
+}
+.brand-mini .brand-text{
+  font-weight:800;
+  letter-spacing:.3px;
+}
+.header-nav{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.header-nav a{
+  color: var(--white);
+  text-decoration:none;
+  font-size:12px;
+  opacity:.9;
+}
+.header-nav a:hover{opacity:1}
+
+/* Hide desktop nav on mobile */
+@media (max-width: 760px){
+  .brand-mini .brand-text{display:none;}
+  .header-nav{display:none;}
+}
+/* ============================================================
+   MOBILE SLIDE-OUT MENU (Option B)
+============================================================ */
+
+/* Hamburger button */
+#mobile-menu-btn {
+  display:none;
+  flex-direction:column;
+  gap:5px;
+  background:none;
+  border:none;
+  cursor:pointer;
+  padding:6px;
+  z-index:2001;
+}
+#mobile-menu-btn span {
+  width:26px;
+  height:3px;
+  background:var(--white);
+  border-radius:3px;
+  transition:0.3s ease;
+}
+
+/* Show hamburger on mobile */
+@media (max-width:760px){
+  #mobile-menu-btn { display:flex; }
+}
+
+/* Animate hamburger into X */
+#mobile-menu-btn.open span:nth-child(1){
+  transform:translateY(8px) rotate(45deg);
+}
+#mobile-menu-btn.open span:nth-child(2){
+  opacity:0;
+}
+#mobile-menu-btn.open span:nth-child(3){
+  transform:translateY(-8px) rotate(-45deg);
+}
+
+/* Slide-out drawer */
+#mobile-menu {
+  position:fixed;
+  top:0;
+  right:-260px;
+  width:260px;
+  height:100vh;
+  background:rgba(2,6,23,0.96);
+  border-left:1px solid var(--border);
+  backdrop-filter:blur(10px);
+  transition:right 0.35s ease;
+  z-index:2000;
+  padding-top:70px;
+}
+#mobile-menu.open {
+  right:0;
+}
+
+.mobile-menu-inner {
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  padding:20px;
+}
+#mobile-menu a {
+  color:var(--white);
+  font-size:18px;
+  font-weight:700;
+  text-decoration:none;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+#mobile-menu a:hover {
+  color:var(--gold);
+}
+
+/* Social links inside drawer */
+.mobile-social a {
+  display:block;
+  margin-top:10px;
+  font-size:16px;
+  opacity:0.85;
+}
+.mobile-social a:hover {
+  opacity:1;
+}
+
+/* Dark overlay */
+#mobile-overlay {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(2px);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.3s ease;
+  z-index:1500;
+}
+#mobile-overlay.show {
+  opacity:1;
+  pointer-events:auto;
+}
+
+/* ============================================================
+   STICKY SOCIAL BAR (mobile)
+============================================================ */
+.sticky-social{
+  display:none;
+  position:fixed;
+  left:12px;
+  right:12px;
+  bottom:12px;
+  z-index:1200;
+  border:1px solid var(--border);
+  background: rgba(2,6,23,.86);
+  backdrop-filter: blur(10px);
+  border-radius:18px;
+  padding:10px 12px;
+}
+.sticky-social .inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.sticky-social .inner a{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:10px 8px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  text-decoration:none;
+  color:var(--white);
+  background: var(--panel);
+  font-weight:800;
+  font-size:14px;
+}
+.sticky-social svg{width:18px;height:18px;fill:var(--white);}
+@media (max-width: 760px){
+  .sticky-social{display:block;}
+  body{padding-bottom:88px;}
+}
+
+/* ============================================================
+   RESPONSIVE TWEAKS
+============================================================ */
+@media (max-width: 720px){
+  header.hero{min-height: 600px;padding: 30px 14px 54px}
+  .hero-inner{padding: 20px 14px}
+  .kicker{font-size:22px}
+  .tagline{font-size:20px}
+  .subline{font-size:13.5px}
+  section{padding: 52px 14px}
+  h2{font-size:28px;margin-bottom:26px}
+  .grid{grid-template-columns:1fr;gap:18px}
+  .card img{height: 200px}
+  .bio-wrap{padding: 20px 16px}
+  .bio-image{width: 130px;height: 130px}
+  .bio-name{font-size:22px}
+  .form-actions{justify-content:stretch}
+  .form-actions .btn{width:100%}
+  .btn{width:100%}
+}
+
+@media (max-width: 640px){
+  #calendar iframe{height:520px;}
+}
+</style>
+
+<!-- ============================================================
+     GOOGLE ANALYTICS
+============================================================ -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PPBLPGS51B"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-PPBLPGS51B');
+</script>
+
+</head>
+
+<body data-theme="original" data-cms-enabled="false">
+<div id="top"></div>
+<!-- ============================================================
+     HEADER (CMS-ENABLED)
+============================================================ -->
+<header class="site-header"
+        data-editable="header"
+        data-edit-type="section"
+        data-edit-group="header">
+
+  <div class="header-inner">
+
+    <!-- Brand Mini -->
+    <a href="#top"
+       class="brand-mini"
+       data-editable="header-brand"
+       data-edit-type="link"
+       data-edit-group="header">
+
+      <img src="images/logo-mini.png"
+           alt="Valor Wave Mini Logo"
+           data-editable="header-logo-mini"
+           data-edit-type="image"
+           data-edit-group="header">
+
+      <span class="brand-text"
+            data-editable="header-brand-text"
+            data-edit-type="text"
+            data-edit-group="header">
+        Valor Wave Entertainment
+      </span>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="header-nav"
+         data-editable="header-nav"
+         data-edit-type="list"
+         data-edit-group="header"
+         data-list-item-type="nav-link">
+
+      <a href="#services"
+         data-editable="nav-services"
+         data-edit-type="link"
+         data-edit-group="header">
+        Services
+      </a>
+
+      <a href="#calendar"
+         data-editable="nav-calendar"
+         data-edit-type="link"
+         data-edit-group="header">
+        Availability
+      </a>
+
+      <a href="#hero-discount"
+         data-editable="nav-hero-discount"
+         data-edit-type="link"
+         data-edit-group="header">
+        Hero Discount
+      </a>
+
+      <a href="https://portal.valorwaveentertainment.com/request_information.asp?djidnumber=28542"
+         data-editable="nav-quote"
+         data-edit-type="link"
+         data-edit-group="header">
+        Request a Quote
+      </a>
+
+      <a href="https://portal.valorwaveentertainment.com/clientlogon.asp?djidnumber=28542"
+         data-editable="nav-client-portal"
+         data-edit-type="link"
+         data-edit-group="header">
+        Client Portal
+      </a>
+
+    </nav>
+
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-btn"
+            data-editable="mobile-menu-button"
+            data-edit-type="component"
+            data-edit-group="mobile-menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+  </div>
+</header>
+
+<!-- ============================================================
+     HERO SECTION (CMS-ENABLED)
+============================================================ -->
+<header class="hero"
+        data-editable="section-hero"
+        data-edit-type="section"
+        data-edit-group="hero"
+        data-theme-scope="all">
+
+  <div class="hero-inner">
+
+    <!-- Hero Logo -->
+    <img src="images/valorwave-logo.png"
+         alt="Valor Wave Entertainment Logo"
+         class="hero-logo"
+         data-editable="hero-logo"
+         data-edit-type="image"
+         data-edit-group="hero"
+         data-theme-scope="all">
+
+    <!-- Kicker -->
+    <div class="kicker"
+         data-editable="hero-kicker"
+         data-edit-type="text"
+         data-edit-group="hero"
+         data-theme-scope="all">
+      Faith-Based • Veteran-Owned
+    </div>
+
+    <!-- Tagline -->
+    <div class="tagline"
+         data-editable="hero-tagline"
+         data-edit-type="text"
+         data-edit-group="hero"
+         data-theme-scope="all">
+      Clean Music • Professional Sound • Unforgettable Moments
+    </div>
+
+    <!-- Subline -->
+    <div class="subline"
+         data-editable="hero-subline"
+         data-edit-type="text"
+         data-edit-group="hero"
+         data-theme-scope="all">
+      Serving Chattanooga, Southeast Tennessee & Northwest Georgia
+    </div>
+
+    <!-- CTA Button -->
+    <a href="https://portal.valorwaveentertainment.com/request_information.asp?djidnumber=28542"
+       class="btn"
+       data-editable="hero-cta"
+       data-edit-type="button"
+       data-edit-group="hero"
+       data-theme-scope="all">
+      Request a Quote
+    </a>
+
+  </div>
+</header>
+<!-- ============================================================
+     BRAND MEANING SECTION (CMS-ENABLED)
+============================================================ -->
+<section id="brand-meaning"
+         data-editable="section-brand-meaning"
+         data-edit-type="section"
+         data-edit-group="brand-meaning">
+
+  <h2 data-editable="brand-meaning-title"
+      data-edit-type="text"
+      data-edit-group="brand-meaning">
+    The Meaning Behind Valor Wave Entertainment
+  </h2>
+
+  <div class="bio-wrap"
+       data-editable="brand-meaning-body"
+       data-edit-type="rich-text"
+       data-edit-group="brand-meaning">
+
+    <p>
+      <strong>Valor Wave Entertainment</strong> represents the powerful blend of <strong>honor, service, and celebration</strong>.
+      <em>Valor</em> reflects courage, sacrifice, and respect for those who serve — our military, veterans, first responders,
+      healthcare workers, educators, and everyday heroes in our communities.
+    </p>
+
+    <p>
+      The word <em>Wave</em> symbolizes movement, energy, and the moments that bring people together.
+      Just like a wave, music carries emotion, creates connection, and leaves a lasting impact long after the event ends.
+    </p>
+
+    <p>
+      Together, <strong>Valor Wave Entertainment</strong> stands for honoring what matters most while creating unforgettable,
+      joy-filled experiences — all delivered with professionalism, integrity, and faith-based values.
+    </p>
+
+  </div>
+</section>
+<!-- ============================================================
+     HERO DISCOUNT SECTION (CMS-ENABLED)
+============================================================ -->
+<section id="hero-discount"
+         data-editable="section-hero-discount"
+         data-edit-type="section"
+         data-edit-group="hero-discount">
+
+  <h2 data-editable="hero-discount-title"
+      data-edit-type="text"
+      data-edit-group="hero-discount">
+    Hero Discount
+  </h2>
+
+  <div class="bio-wrap"
+       data-editable="hero-discount-body"
+       data-edit-type="rich-text"
+       data-edit-group="hero-discount">
+
+    <div class="bio-name"
+         style="text-align:center;margin-bottom:10px;"
+         data-editable="hero-discount-heading"
+         data-edit-type="text"
+         data-edit-group="hero-discount">
+      We Honor All Heroes
+    </div>
+
+    <p style="text-align:center;"
+       data-editable="hero-discount-description"
+       data-edit-type="rich-text"
+       data-edit-group="hero-discount">
+      We proudly offer a <strong>Hero Discount</strong> for <strong>active-duty military, veterans, first responders, healthcare workers, and teachers</strong>.
+      Mention it in your quote request and we’ll apply it to qualifying events.
+    </p>
+
+    <p style="text-align:center;color:var(--gray);font-size:14px;margin-top:10px;"
+       data-editable="hero-discount-note"
+       data-edit-type="text"
+       data-edit-group="hero-discount">
+      Proof of service may be requested. Discount amount varies by package and date availability.
+    </p>
+
+  </div>
+</section>
+<!-- ============================================================
+     TESTIMONIALS SECTION (CMS-ENABLED)
+============================================================ -->
+<section id="testimonials"
+         data-editable="section-testimonials"
+         data-edit-type="section"
+         data-edit-group="testimonials">
+
+  <h2 data-editable="testimonials-title"
+      data-edit-type="text"
+      data-edit-group="testimonials">
+    What Our Clients Say
+  </h2>
+
+  <div class="grid"
+       data-editable="testimonials-list"
+       data-edit-type="list"
+       data-edit-group="testimonials"
+       data-list-item-type="testimonial">
+
+    <!-- Testimonial 1 -->
+    <div class="card"
+         data-editable="testimonial-1"
+         data-edit-type="testimonial"
+         data-edit-group="testimonials">
+      <div class="card-body">
+        <p data-editable="testimonial-1-text"
+           data-edit-type="rich-text"
+           data-edit-group="testimonials">
+          "Valor Wave Entertainment made our wedding absolutely perfect. Professional, faith-centered, and fun!"
+        </p>
+        <strong data-editable="testimonial-1-author"
+                data-edit-type="text"
+                data-edit-group="testimonials">
+          - Sarah M.
+        </strong>
+      </div>
+    </div>
+
+    <!-- Testimonial 2 -->
+    <div class="card"
+         data-editable="testimonial-2"
+         data-edit-type="testimonial"
+         data-edit-group="testimonials">
+      <div class="card-body">
+        <p data-editable="testimonial-2-text"
+           data-edit-type="rich-text"
+           data-edit-group="testimonials">
+          "Sam was incredible. From ceremony to reception, everything was smooth and stress-free."
+        </p>
+        <strong data-editable="testimonial-2-author"
+                data-edit-type="text"
+                data-edit-group="testimonials">
+          - James & Emily
+        </strong>
+      </div>
+    </div>
+
+    <!-- Testimonial 3 -->
+    <div class="card"
+         data-editable="testimonial-3"
+         data-edit-type="testimonial"
+         data-edit-group="testimonials">
+      <div class="card-body">
+        <p data-editable="testimonial-3-text"
+           data-edit-type="rich-text"
+           data-edit-group="testimonials">
+          "Highly recommend for church and community events. Clean music and great energy."
+        </p>
+        <strong data-editable="testimonial-3-author"
+                data-edit-type="text"
+                data-edit-group="testimonials">
+          - Pastor David R.
+        </strong>
+      </div>
+    </div>
+
+  </div>
+</section>
+<!-- ============================================================
+     SUBMIT TESTIMONIAL SECTION (CMS-ENABLED)
+============================================================ -->
+<section id="submit-testimonial"
+         data-editable="section-submit-testimonial"
+         data-edit-type="section"
+         data-edit-group="submit-testimonial">
+
+  <h2 data-editable="submit-testimonial-title"
+      data-edit-type="text"
+      data-edit-group="submit-testimonial">
+    Submit a Testimonial
+  </h2>
+
+  <!-- Form is intentionally NOT editable for safety -->
+  <form action="https://formsubmit.co/valorwaveentertainment@gmail.com"
+        method="POST"
+        class="testimonial-form">
+
+    <input type="hidden" name="_subject" value="New Testimonial Submission - Valor Wave Entertainment">
+    <input type="hidden" name="_template" value="table">
+    <input type="hidden" name="_next" value="https://valorwaveentertainment.com/testimonial-thank-you.html">
+
+    <input type="text" name="client_name" placeholder="Your Name" required>
+    <input type="email" name="client_email" placeholder="Your Email (optional)">
+    <input type="text" name="event_type" placeholder="Event Type (Wedding, Birthday, Corporate, etc.)" required>
+    <input type="date" name="event_date" placeholder="Event Date">
+
+    <select name="rating" required style="padding:14px;border-radius:10px;border:1px solid #0b1220;background:rgba(248,250,252,0.92);font-size:16px;color:#0b1220;">
+      <option value="" selected disabled>Rating</option>
+      <option>5 - Excellent</option>
+      <option>4 - Great</option>
+      <option>3 - Good</option>
+      <option>2 - Fair</option>
+      <option>1 - Poor</option>
+    </select>
+
+    <textarea name="testimonial" placeholder="Write your testimonial here..." required></textarea>
+
+    <label style="display:block;color:var(--gray);font-size:14px;line-height:1.4;">
+      <input type="checkbox" name="permission" value="Yes" required>
+      I give Valor Wave Entertainment permission to use my testimonial on the website.
+    </label>
+
+    <div class="form-actions">
+      <button type="submit" class="btn">Send Testimonial</button>
+    </div>
+
+    <p style="margin-top:12px;color:var(--gray);font-size:13px;text-align:center;"
+       data-editable="submit-testimonial-footer"
+       data-edit-type="text"
+       data-edit-group="submit-testimonial">
+      Thank you—your feedback helps future couples and clients book with confidence.
+    </p>
+
+  </form>
+</section>
+<!-- ============================================================
+     FOOTER (CMS-ENABLED)
+============================================================ -->
+<footer id="site-footer"
+        data-editable="footer"
+        data-edit-type="section"
+        data-edit-group="footer">
+
+  <!-- Footer Logo -->
+  <img src="logo.png"
+       alt="Valor Wave Entertainment Logo"
+       data-editable="footer-logo"
+       data-edit-type="image"
+       data-edit-group="footer" />
+
+  <!-- Footer Copyright -->
+  <p data-editable="footer-copy"
+     data-edit-type="text"
+     data-edit-group="footer">
+    © 2026 Valor Wave Entertainment
+  </p>
+
+  <!-- Footer Tagline -->
+  <p data-editable="footer-tagline"
+     data-edit-type="text"
+     data-edit-group="footer">
+    Faith-Based Wedding & Event DJ | Southeast TN & Northwest GA
+  </p>
+
+  <!-- Footer Contact -->
+  <p data-editable="footer-contact"
+     data-edit-type="rich-text"
+     data-edit-group="footer">
+    Phone: (423) 680-2700 • Email: <a href="mailto:valorwaveentertainment@gmail.com">valorwaveentertainment@gmail.com</a>
+  </p>
+
+  <!-- Footer Address -->
+  <p data-editable="footer-address"
+     data-edit-type="text"
+     data-edit-group="footer">
+    Address: 5424 School Dr, Hixson, TN 37343
+  </p>
+
+  <!-- Footer Social Links -->
+  <div class="social-links footer-social"
+       aria-label="Social links"
+       style="justify-content:center;margin-top:16px;"
+       data-editable="footer-social-links"
+       data-edit-type="list"
+       data-edit-group="footer"
+       data-list-item-type="social-link">
+
+    <!-- Facebook -->
+    <a href="https://www.facebook.com/valorwaveentertainment"
+       target="_blank"
+       rel="noopener"
+       aria-label="Facebook"
+       data-editable="footer-facebook"
+       data-edit-type="link"
+       data-edit-group="footer">
+      <svg viewBox="0 0 24 24">
+        <path d="M22 12a10 10 0 1 0-11.6 9.9v-7h-2.4V12h2.4V9.8c0-2.4 1.4-3.7 3.6-3.7 1 0 2 .2 2 .2v2.2h-1.1c-1.1 0-1.4.7-1.4 1.4V12h2.5l-.4 2.9h-2.1v7A10 10 0 0 0 22 12z"/>
+      </svg>
+    </a>
+
+    <!-- Instagram -->
+    <a href="https://www.instagram.com/valorwaveentertainment/"
+       target="_blank"
+       rel="noopener"
+       aria-label="Instagram"
+       data-editable="footer-instagram"
+       data-edit-type="link"
+       data-edit-group="footer">
+      <svg viewBox="0 0 24 24">
+        <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm6.5-.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z"/>
+      </svg>
+    </a>
+
+    <!-- X -->
+    <a href="https://x.com/ValorwaveEnt"
+       target="_blank"
+       rel="noopener"
+       aria-label="X"
+       data-editable="footer-x"
+       data-edit-type="link"
+       data-edit-group="footer">
+      <svg viewBox="0 0 24 24">
+        <path d="M18.9 2H22l-7.3 8.3L23 22h-6.7l-5.2-6.7L4.9 22H2l7.8-9L1 2h6.8l4.7 6L18.9 2z"/>
+      </svg>
+    </a>
+
+  </div>
+</footer>
+<!-- ============================================================
+     STICKY SOCIAL BAR (MOBILE) — CMS-ENABLED
+============================================================ -->
+<div class="sticky-social"
+     aria-label="Social quick links"
+     data-editable="sticky-social"
+     data-edit-type="component"
+     data-edit-group="social"
+     data-sticky-enabled="true"
+     data-sticky-mobile-enabled="false">
+
+  <div class="inner">
+
+    <!-- Facebook -->
+    <a href="https://www.facebook.com/valorwaveentertainment"
+       target="_blank"
+       rel="noopener"
+       aria-label="Facebook"
+       data-editable="sticky-facebook"
+       data-edit-type="link"
+       data-edit-group="social">
+      <svg viewBox="0 0 24 24">
+        <path d="M22 12a10 10 0 1 0-11.6 9.9v-7h-2.4V12h2.4V9.8c0-2.4 1.4-3.7 3.6-3.7 1 0 2 .2 2 .2v2.2h-1.1c-1.1 0-1.4.7-1.4 1.4V12h2.5l-.4 2.9h-2.1v7A10 10 0 0 0 22 12z"/>
+      </svg>
+      Facebook
+    </a>
+
+    <!-- Instagram -->
+    <a href="https://www.instagram.com/valorwaveentertainment/"
+       target="_blank"
+       rel="noopener"
+       aria-label="Instagram"
+       data-editable="sticky-instagram"
+       data-edit-type="link"
+       data-edit-group="social">
+      <svg viewBox="0 0 24 24">
+        <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm6.5-.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z"/>
+      </svg>
+      Instagram
+    </a>
+
+    <!-- X -->
+    <a href="https://x.com/ValorwaveEnt"
+       target="_blank"
+       rel="noopener"
+       aria-label="X"
+       data-editable="sticky-x"
+       data-edit-type="link"
+       data-edit-group="social">
+      <svg viewBox="0 0 24 24">
+        <path d="M18.9 2H22l-7.3 8.3L23 22h-6.7l-5.2-6.7L4.9 22H2l7.8-9L1 2h6.8l4.7 6L18.9 2z"/>
+      </svg>
+      X
+    </a>
+
+  </div>
+</div>
+<!-- ============================================================
+     MOBILE SLIDE-OUT MENU (DRAWER) — CMS-ENABLED
+============================================================ -->
+<nav id="mobile-menu"
+     aria-label="Mobile Navigation"
+     data-editable="mobile-menu"
+     data-edit-type="list"
+     data-edit-group="mobile-menu"
+     data-list-item-type="mobile-nav-link">
+
+  <div class="mobile-menu-inner">
+
+    <!-- Mobile Nav Links -->
+    <a href="#services"
+       data-editable="mobile-nav-services"
+       data-edit-type="link"
+       data-edit-group="mobile-menu">
+      Services
+    </a>
+
+    <a href="#calendar"
+       data-editable="mobile-nav-calendar"
+       data-edit-type="link"
+       data-edit-group="mobile-menu">
+      Availability
+    </a>
+
+    <a href="#hero-discount"
+       data-editable="mobile-nav-hero-discount"
+       data-edit-type="link"
+       data-edit-group="mobile-menu">
+      Hero Discount
+    </a>
+
+    <a href="https://portal.valorwaveentertainment.com/request_information.asp?djidnumber=28542"
+       data-editable="mobile-nav-quote"
+       data-edit-type="link"
+       data-edit-group="mobile-menu">
+      Request a Quote
+    </a>
+
+    <a href="https://portal.valorwaveentertainment.com/clientlogon.asp?djidnumber=28542"
+       data-editable="mobile-nav-client-portal"
+       data-edit-type="link"
+       data-edit-group="mobile-menu">
+      Client Portal
+    </a>
+
+    <!-- Mobile Social Links -->
+    <div class="mobile-social"
+         data-editable="mobile-social-links"
+         data-edit-type="list"
+         data-edit-group="mobile-menu"
+         data-list-item-type="mobile-social-link">
+
+      <a href="https://www.facebook.com/valorwaveentertainment"
+         target="_blank"
+         data-editable="mobile-social-facebook"
+         data-edit-type="link"
+         data-edit-group="mobile-menu">
+        Facebook
+      </a>
+
+      <a href="https://www.instagram.com/valorwaveentertainment/"
+         target="_blank"
+         data-editable="mobile-social-instagram"
+         data-edit-type="link"
+         data-edit-group="mobile-menu">
+        Instagram
+      </a>
+
+      <a href="https://x.com/ValorwaveEnt"
+         target="_blank"
+         data-editable="mobile-social-x"
+         data-edit-type="link"
+         data-edit-group="mobile-menu">
+        X
+      </a>
+
+    </div>
+
+  </div>
+</nav>
+<!-- ============================================================
+     DARK OVERLAY
+============================================================ -->
+<div id="mobile-overlay"></div>
+
+<!-- ============================================================
+     MOBILE MENU TOGGLE SCRIPT
+============================================================ -->
+<script>
+  const mobileBtn = document.getElementById("mobile-menu-btn");
+  const mobileMenu = document.getElementById("mobile-menu");
+  const mobileOverlay = document.getElementById("mobile-overlay");
+
+  mobileBtn.addEventListener("click", () => {
+    mobileBtn.classList.toggle("open");
+    mobileMenu.classList.toggle("open");
+    mobileOverlay.classList.toggle("show");
+  });
+
+  mobileOverlay.addEventListener("click", () => {
+    mobileBtn.classList.remove("open");
+    mobileMenu.classList.remove("open");
+    mobileOverlay.classList.remove("show");
+  });
+</script>
+
+</body>
+</html>
