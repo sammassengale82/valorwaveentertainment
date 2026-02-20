@@ -816,43 +816,86 @@
     </div>
   </div>
 <script>
+  
+<script>
 document.addEventListener("click", function (e) {
   const el = e.target.closest("[data-editable]");
   if (!el) return;
 
-  // Prevent navigation (links, buttons)
   e.preventDefault();
 
   const editType = el.getAttribute("data-edit-type") || "text";
-  let content = "";
-  let imageUrl = "";
 
-  if (editType === "text") {
-    content = el.innerHTML.trim();
+  let payload = {
+    type: "open-editor",
+    editType,
+    targetSelector: getDomPath(el)
+  };
+
+  if (editType === "text" || editType === "list") {
+    payload.content = el.innerHTML.trim();
   }
 
   if (editType === "image") {
-    imageUrl =
-      el.getAttribute("src") ||
-      el.getAttribute("content") ||
-      el.getAttribute("data-image") ||
-      "";
+    payload.imageUrl = el.getAttribute("src") || "";
   }
 
-  if (editType === "list") {
-    content = el.innerHTML.trim();
+  if (editType === "link") {
+    payload.url = el.getAttribute("href") || "";
+    payload.label = el.innerText.trim();
   }
 
-  window.parent.postMessage(
-    {
-      type: "open-editor",
-      editType,
-      content,
-      imageUrl
-    },
-    "*"
-  );
+  window.parent.postMessage(payload, "*");
 });
+
+// Apply edits coming from CMS
+window.addEventListener("message", (event) => {
+  const data = event.data;
+  if (!data || data.type !== "apply-edit") return;
+
+  const el = document.querySelector(data.targetSelector);
+  if (!el) return;
+
+  if (data.editType === "text" || data.editType === "list") {
+    el.innerHTML = data.content;
+  }
+
+  if (data.editType === "image") {
+    el.setAttribute("src", data.imageUrl);
+  }
+
+  if (data.editType === "link") {
+    el.setAttribute("href", data.url);
+    el.innerText = data.label;
+  }
+});
+
+// Helper: generate a unique DOM path for targeting
+function getDomPath(el) {
+  if (!el) return "";
+  const stack = [];
+  while (el.parentNode != null) {
+    let sibCount = 0;
+    let sibIndex = 0;
+    for (let i = 0; i < el.parentNode.childNodes.length; i++) {
+      const sib = el.parentNode.childNodes[i];
+      if (sib.nodeName === el.nodeName) {
+        if (sib === el) {
+          sibIndex = sibCount;
+        }
+        sibCount++;
+      }
+    }
+    const nodeName = el.nodeName.toLowerCase();
+    if (sibCount > 1) {
+      stack.unshift(`${nodeName}:nth-of-type(${sibIndex + 1})`);
+    } else {
+      stack.unshift(nodeName);
+    }
+    el = el.parentNode;
+  }
+  return stack.join(" > ");
+}
 </script>
 
 </body>
