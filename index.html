@@ -815,6 +815,45 @@
       </a>
     </div>
   </div>
+<script>
+document.addEventListener("click", function (e) {
+  const el = e.target.closest("[data-editable]");
+  if (!el) return;
+
+  // Prevent navigation (links, buttons)
+  e.preventDefault();
+
+  const editType = el.getAttribute("data-edit-type") || "text";
+  let content = "";
+  let imageUrl = "";
+
+  if (editType === "text") {
+    content = el.innerHTML.trim();
+  }
+
+  if (editType === "image") {
+    imageUrl =
+      el.getAttribute("src") ||
+      el.getAttribute("content") ||
+      el.getAttribute("data-image") ||
+      "";
+  }
+
+  if (editType === "list") {
+    content = el.innerHTML.trim();
+  }
+
+  window.parent.postMessage(
+    {
+      type: "open-editor",
+      editType,
+      content,
+      imageUrl
+    },
+    "*"
+  );
+});
+</script>
 
 </body>
 </html>
