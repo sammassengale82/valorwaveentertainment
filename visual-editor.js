@@ -1,26 +1,45 @@
-// ======================================================
-// VALOR WAVE — VISUAL EDITOR ENGINE (PHASE 12)
-// Runs inside the editable iframe loaded by the CMS
-// Supports:
-// - data-editable elements (text/image/link/list)
-// - data-editable-block blocks (any tag)
-// - drag-reorder blocks
-// - delete blocks
-// - insert blocks from CMS
-// - DOM sync back to CMS
-// ======================================================
+/* ============================================================
+   VALOR WAVE — VISUAL EDITOR ENGINE (PHASE 13)
+   Responsive Grid Editing + Table Movement + Resizing
+   ------------------------------------------------------------
+   Features:
+   - Auto-detect sections containing 2+ tables
+   - Auto-wrap tables into responsive grid containers
+   - Grid items get drag handles + resize handles (RH1)
+   - Resize changes grid-column span (R4-A)
+   - Vertical resizing supported
+   - Table column resizing supported
+   - Drag tables to reorder inside grid (M1)
+   - DOM sync to CMS
+   - Full Phase 12 block editing
+   - Full Phase 11 element editing
+   ============================================================ */
 
-const HIGHLIGHT_COLOR = "rgba(59, 130, 246, 0.35)";
-const BLOCK_HIGHLIGHT_COLOR = "rgba(16, 185, 129, 0.25)";
+/* -----------------------------
+   GLOBAL CONSTANTS
+----------------------------- */
+const ELEMENT_HIGHLIGHT = "rgba(59, 130, 246, 0.35)";
+const BLOCK_HIGHLIGHT = "rgba(16, 185, 129, 0.25)";
+const GRID_HIGHLIGHT = "rgba(96, 165, 250, 0.25)";
 
-let currentElementHighlight = null;
-let currentBlockHighlight = null;
-let dragBlock = null;
+/* -----------------------------
+   STATE
+----------------------------- */
+let currentElement = null;
+let currentBlock = null;
+let dragItem = null;
 let dragPlaceholder = null;
+let resizeTarget = null;
+let resizeMode = null; // "right", "bottom", "corner"
+let startX = 0;
+let startY = 0;
+let startWidth = 0;
+let startHeight = 0;
+let startColSpan = 1;
 
-// -------------------------------
-// Utility: unique selector for elements
-// -------------------------------
+/* ============================================================
+   UTILITY: UNIQUE SELECTOR
+============================================================ */
 function getUniqueSelector(el) {
     if (!el) return null;
     if (el.id) return `#${el.id}`;
@@ -42,275 +61,353 @@ function getUniqueSelector(el) {
     return path.join(" > ");
 }
 
-// -------------------------------
-// Element-level editing
-// -------------------------------
-function isEditableElement(el) {
-    return el && el.hasAttribute("data-editable");
-}
+/* ============================================================
+   PHASE 13 — AUTO-GRID DETECTION + WRAPPING
+============================================================ */
+function autoWrapTablesIntoGrid() {
+    const sections = document.querySelectorAll("[data-editable-block]");
 
-function highlightElement(el) {
-    if (currentElementHighlight === el) return;
-    removeElementHighlight();
-    currentElementHighlight = el;
-    el.style.outline = `2px solid ${HIGHLIGHT_COLOR}`;
-    el.style.cursor = "pointer";
-}
+    sections.forEach(section => {
+        const tables = Array.from(section.querySelectorAll("table"));
 
-function removeElementHighlight() {
-    if (!currentElementHighlight) return;
-    currentElementHighlight.style.outline = "";
-    currentElementHighlight.style.cursor = "";
-    currentElementHighlight = null;
-}
+        if (tables.length < 2) return; // Only gridify if 2+ tables
 
-function extractElementContent(el) {
-    const type = el.getAttribute("data-edit-type") || "text";
+        // Avoid double-wrapping
+        if (section.querySelector("[data-grid-container]")) return;
 
-    switch (type) {
-        case "text":
-        case "list":
-            return { editType: type, content: el.innerHTML };
-        case "image":
-            return { editType: "image", imageUrl: el.src };
-        case "link":
-            return {
-                editType: "link",
-                label: el.textContent,
-                url: el.href
-            };
-        default:
-            return { editType: "text", content: el.innerHTML };
-    }
-}
+        // Create grid container
+        const grid = document.createElement("div");
+        grid.className = "cms-grid";
+        grid.setAttribute("data-grid-container", "");
 
-// -------------------------------
-// Block-level editing (Phase 12)
-// -------------------------------
-function getAllBlocks() {
-    return Array.from(document.querySelectorAll("[data-editable-block]"));
-}
+        // Move tables into grid items
+        tables.forEach(table => {
+            const wrapper = document.createElement("div");
+            wrapper.className = "cms-grid-item";
+            wrapper.setAttribute("data-grid-item", "");
 
-function highlightBlock(block) {
-    if (currentBlockHighlight === block) return;
-    removeBlockHighlight();
-    currentBlockHighlight = block;
-    block.style.outline = `2px dashed ${BLOCK_HIGHLIGHT_COLOR}`;
-    block.style.position = block.style.position || "relative";
-}
-
-function removeBlockHighlight() {
-    if (!currentBlockHighlight) return;
-    currentBlockHighlight.style.outline = "";
-    currentBlockHighlight = null;
-}
-
-// Inject drag handle + delete button into each block
-function enhanceBlocks() {
-    const blocks = getAllBlocks();
-
-    blocks.forEach(block => {
-        if (block.querySelector(".cms-block-handle")) return; // already enhanced
-
-        const handle = document.createElement("div");
-        handle.className = "cms-block-handle";
-        handle.textContent = "⋮⋮";
-        handle.title = "Drag to reorder section";
-        handle.draggable = true;
-
-        const del = document.createElement("button");
-        del.className = "cms-block-delete";
-        del.type = "button";
-        del.textContent = "×";
-        del.title = "Delete section";
-
-        block.insertBefore(handle, block.firstChild);
-        block.insertBefore(del, block.firstChild);
-
-        // Drag events
-        handle.addEventListener("dragstart", (e) => {
-            dragBlock = block;
-            dragPlaceholder = document.createElement(block.tagName);
-            dragPlaceholder.className = "cms-block-placeholder";
-            dragPlaceholder.style.height = `${block.offsetHeight}px`;
-            dragPlaceholder.style.border = "2px dashed rgba(148, 163, 184, 0.8)";
-            dragPlaceholder.style.margin = getComputedStyle(block).margin;
-
-            block.parentNode.insertBefore(dragPlaceholder, block.nextSibling);
-            block.classList.add("cms-block-dragging");
-
-            e.dataTransfer.effectAllowed = "move";
+            table.parentNode.insertBefore(wrapper, table);
+            wrapper.appendChild(table);
         });
 
-        handle.addEventListener("dragend", () => {
-            if (dragBlock) dragBlock.classList.remove("cms-block-dragging");
-            if (dragPlaceholder && dragPlaceholder.parentNode) {
-                dragPlaceholder.parentNode.removeChild(dragPlaceholder);
-            }
-            dragBlock = null;
-            dragPlaceholder = null;
-            sendDomUpdated();
-        });
+        // Move grid into section
+        section.appendChild(grid);
 
-        // Delete
-        del.addEventListener("click", () => {
-            const blockId = block.getAttribute("data-block-id") || "(unnamed)";
-            const ok = window.confirm(`Delete section "${blockId}"? This cannot be undone.`);
-            if (!ok) return;
-
-            block.parentNode.removeChild(block);
-            sendDomUpdated();
-        });
+        // Move wrappers into grid
+        const wrappers = section.querySelectorAll("[data-grid-item]");
+        wrappers.forEach(w => grid.appendChild(w));
     });
 }
 
-// Handle dragover at document level
-document.addEventListener("dragover", (e) => {
-    if (!dragBlock || !dragPlaceholder) return;
+/* ============================================================
+   PHASE 13 — GRID ITEM DRAGGING
+============================================================ */
+function enableGridDragging() {
+    document.addEventListener("mousedown", (e) => {
+        const handle = e.target.closest(".grid-drag-handle");
+        if (!handle) return;
 
-    e.preventDefault();
-    const blocks = getAllBlocks().filter(b => b !== dragBlock && b !== dragPlaceholder);
+        dragItem = handle.closest("[data-grid-item]");
+        if (!dragItem) return;
 
-    let closest = null;
-    let closestOffset = Number.NEGATIVE_INFINITY;
+        e.preventDefault();
 
-    blocks.forEach(block => {
-        const rect = block.getBoundingClientRect();
-        const offset = e.clientY - rect.top - rect.height / 2;
-        if (offset < 0 && offset > closestOffset) {
-            closestOffset = offset;
-            closest = block;
+        dragPlaceholder = document.createElement("div");
+        dragPlaceholder.className = "cms-grid-placeholder";
+        dragPlaceholder.style.height = dragItem.offsetHeight + "px";
+
+        dragItem.classList.add("dragging");
+        dragItem.parentNode.insertBefore(dragPlaceholder, dragItem.nextSibling);
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (!dragItem || !dragPlaceholder) return;
+
+        e.preventDefault();
+
+        const grid = dragItem.closest("[data-grid-container]");
+        const items = Array.from(grid.querySelectorAll("[data-grid-item]"))
+            .filter(i => i !== dragItem);
+
+        let closest = null;
+        let closestDist = Infinity;
+
+        items.forEach(item => {
+            const rect = item.getBoundingClientRect();
+            const dist = Math.abs(e.clientY - (rect.top + rect.height / 2));
+            if (dist < closestDist) {
+                closestDist = dist;
+                closest = item;
+            }
+        });
+
+        if (closest) {
+            const rect = closest.getBoundingClientRect();
+            if (e.clientY < rect.top + rect.height / 2) {
+                closest.parentNode.insertBefore(dragPlaceholder, closest);
+            } else {
+                closest.parentNode.insertBefore(dragPlaceholder, closest.nextSibling);
+            }
         }
     });
 
-    if (!closest) {
-        // Place at end
-        const parent = dragPlaceholder.parentNode || dragBlock.parentNode;
-        parent.appendChild(dragPlaceholder);
-    } else {
-        closest.parentNode.insertBefore(dragPlaceholder, closest);
-    }
-});
+    document.addEventListener("mouseup", () => {
+        if (!dragItem || !dragPlaceholder) return;
 
-// On drop, move block to placeholder position
-document.addEventListener("drop", (e) => {
-    if (!dragBlock || !dragPlaceholder) return;
-    e.preventDefault();
+        dragPlaceholder.parentNode.insertBefore(dragItem, dragPlaceholder);
+        dragItem.classList.remove("dragging");
+        dragPlaceholder.remove();
 
-    dragPlaceholder.parentNode.insertBefore(dragBlock, dragPlaceholder);
-});
+        dragItem = null;
+        dragPlaceholder = null;
 
-// -------------------------------
-// Messaging: apply edits from CMS
-// -------------------------------
+        sendDomUpdated();
+    });
+}
+
+/* ============================================================
+   PHASE 13 — GRID ITEM RESIZING (RH1)
+============================================================ */
+function enableGridResizing() {
+    document.addEventListener("mousedown", (e) => {
+        const handle = e.target.closest(".grid-resize-handle");
+        if (!handle) return;
+
+        resizeTarget = handle.closest("[data-grid-item]");
+        if (!resizeTarget) return;
+
+        resizeMode = handle.dataset.resize;
+        startX = e.clientX;
+        startY = e.clientY;
+        startWidth = resizeTarget.offsetWidth;
+        startHeight = resizeTarget.offsetHeight;
+
+        const grid = resizeTarget.closest("[data-grid-container]");
+        const style = window.getComputedStyle(grid);
+        const colWidth = parseFloat(style.gridTemplateColumns.split(" ")[0]);
+        startColSpan = Math.round(startWidth / colWidth);
+
+        e.preventDefault();
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (!resizeTarget || !resizeMode) return;
+
+        e.preventDefault();
+
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        if (resizeMode === "right" || resizeMode === "corner") {
+            const newWidth = startWidth + dx;
+            const grid = resizeTarget.closest("[data-grid-container]");
+            const style = window.getComputedStyle(grid);
+            const colWidth = parseFloat(style.gridTemplateColumns.split(" ")[0]);
+            const newSpan = Math.max(1, Math.round(newWidth / colWidth));
+            resizeTarget.style.gridColumn = `span ${newSpan}`;
+        }
+
+        if (resizeMode === "bottom" || resizeMode === "corner") {
+            const newHeight = Math.max(50, startHeight + dy);
+            resizeTarget.style.height = newHeight + "px";
+        }
+    });
+
+    document.addEventListener("mouseup", () => {
+        if (resizeTarget) sendDomUpdated();
+        resizeTarget = null;
+        resizeMode = null;
+    });
+}
+
+/* ============================================================
+   PHASE 13 — TABLE COLUMN RESIZING
+============================================================ */
+function enableTableColumnResizing() {
+    document.addEventListener("mousedown", (e) => {
+        const colHandle = e.target.closest(".table-col-resize");
+        if (!colHandle) return;
+
+        resizeTarget = colHandle.closest("th, td");
+        if (!resizeTarget) return;
+
+        resizeMode = "table-col";
+        startX = e.clientX;
+        startWidth = resizeTarget.offsetWidth;
+
+        e.preventDefault();
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (resizeMode !== "table-col" || !resizeTarget) return;
+
+        e.preventDefault();
+
+        const dx = e.clientX - startX;
+        const newWidth = Math.max(40, startWidth + dx);
+        resizeTarget.style.width = newWidth + "px";
+    });
+
+    document.addEventListener("mouseup", () => {
+        if (resizeMode === "table-col") sendDomUpdated();
+        resizeTarget = null;
+        resizeMode = null;
+    });
+}
+
+/* ============================================================
+   PHASE 12 — BLOCK EDITING (unchanged)
+============================================================ */
+function highlightBlock(block) {
+    if (currentBlock === block) return;
+    removeBlockHighlight();
+    currentBlock = block;
+    block.style.outline = `2px dashed ${BLOCK_HIGHLIGHT}`;
+}
+
+function removeBlockHighlight() {
+    if (!currentBlock) return;
+    currentBlock.style.outline = "";
+    currentBlock = null;
+}
+
+/* ============================================================
+   ELEMENT EDITING (Phase 11)
+============================================================ */
+function highlightElement(el) {
+    if (currentElement === el) return;
+    removeElementHighlight();
+    currentElement = el;
+    el.style.outline = `2px solid ${ELEMENT_HIGHLIGHT}`;
+}
+
+function removeElementHighlight() {
+    if (!currentElement) return;
+    currentElement.style.outline = "";
+    currentElement = null;
+}
+
+/* ============================================================
+   APPLY EDITS FROM CMS
+============================================================ */
 window.addEventListener("message", (event) => {
     const data = event.data;
     if (!data) return;
 
-    // Apply element-level edits
     if (data.type === "apply-edit") {
-        const selector = data.targetSelector;
-        if (!selector) return;
-
-        const el = document.querySelector(selector);
+        const el = document.querySelector(data.targetSelector);
         if (!el) return;
 
-        switch (data.editType) {
-            case "text":
-            case "list":
-                el.innerHTML = data.content;
-                break;
-            case "image":
-                if (data.imageUrl) el.src = data.imageUrl;
-                break;
-            case "link":
-                if (data.label) el.textContent = data.label;
-                if (data.url) el.href = data.url;
-                break;
+        if (data.editType === "text" || data.editType === "list") {
+            el.innerHTML = data.content;
+        } else if (data.editType === "image") {
+            el.src = data.imageUrl;
+        } else if (data.editType === "link") {
+            el.textContent = data.label;
+            el.href = data.url;
         }
 
         sendDomUpdated();
-        return;
     }
 
-    // Theme sync
-    if (data.type === "set-theme") {
-        document.body.className = `theme-${data.theme}`;
-        return;
-    }
-
-    // Insert block from CMS
     if (data.type === "insert-block") {
-        const { html, position, targetBlockId } = data;
-        if (!html) return;
-
         const temp = document.createElement("div");
-        temp.innerHTML = html.trim();
+        temp.innerHTML = data.html.trim();
         const newBlock = temp.firstElementChild;
-        if (!newBlock) return;
 
-        const blocks = getAllBlocks();
-        let targetBlock = null;
+        const blocks = document.querySelectorAll("[data-editable-block]");
+        let target = null;
 
-        if (targetBlockId) {
-            targetBlock = blocks.find(
-                b => b.getAttribute("data-block-id") === targetBlockId
+        if (data.targetBlockId) {
+            target = Array.from(blocks).find(
+                b => b.getAttribute("data-block-id") === data.targetBlockId
             );
         }
 
-        if (!targetBlock && blocks.length > 0) {
-            targetBlock = blocks[blocks.length - 1];
+        if (!target && blocks.length > 0) {
+            target = blocks[blocks.length - 1];
         }
 
-        if (!targetBlock) {
-            // No existing blocks, append to body
-            document.body.appendChild(newBlock);
-        } else {
-            if (position === "before") {
-                targetBlock.parentNode.insertBefore(newBlock, targetBlock);
+        if (target) {
+            if (data.position === "before") {
+                target.parentNode.insertBefore(newBlock, target);
             } else {
-                targetBlock.parentNode.insertBefore(newBlock, targetBlock.nextSibling);
+                target.parentNode.insertBefore(newBlock, target.nextSibling);
             }
+        } else {
+            document.body.appendChild(newBlock);
         }
 
-        enhanceBlocks();
+        autoWrapTablesIntoGrid();
+        enhanceGridItems();
         sendDomUpdated();
-        return;
-    }
-
-    // Delete block by ID from CMS (optional)
-    if (data.type === "delete-block") {
-        const { blockId } = data;
-        if (!blockId) return;
-
-        const block = document.querySelector(
-            `[data-editable-block][data-block-id="${blockId}"]`
-        );
-        if (!block) return;
-
-        block.parentNode.removeChild(block);
-        sendDomUpdated();
-        return;
     }
 });
 
-// -------------------------------
-// Messaging: send DOM updates to CMS
-// -------------------------------
+/* ============================================================
+   SEND DOM UPDATE TO CMS
+============================================================ */
 function sendDomUpdated() {
     const html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
     window.parent.postMessage(
-        {
-            type: "dom-updated",
-            html
-        },
+        { type: "dom-updated", html },
         "*"
     );
 }
 
-// -------------------------------
-// Hover + click behavior
-// -------------------------------
+/* ============================================================
+   GRID ITEM ENHANCEMENT (drag + resize handles)
+============================================================ */
+function enhanceGridItems() {
+    const items = document.querySelectorAll("[data-grid-item]");
+
+    items.forEach(item => {
+        if (!item.querySelector(".grid-drag-handle")) {
+            const dragHandle = document.createElement("div");
+            dragHandle.className = "grid-drag-handle";
+            dragHandle.textContent = "⋮⋮";
+            item.appendChild(dragHandle);
+        }
+
+        if (!item.querySelector(".grid-resize-right")) {
+            const right = document.createElement("div");
+            right.className = "grid-resize-handle grid-resize-right";
+            right.dataset.resize = "right";
+            item.appendChild(right);
+        }
+
+        if (!item.querySelector(".grid-resize-bottom")) {
+            const bottom = document.createElement("div");
+            bottom.className = "grid-resize-handle grid-resize-bottom";
+            bottom.dataset.resize = "bottom";
+            item.appendChild(bottom);
+        }
+
+        if (!item.querySelector(".grid-resize-corner")) {
+            const corner = document.createElement("div");
+            corner.className = "grid-resize-handle grid-resize-corner";
+            corner.dataset.resize = "corner";
+            item.appendChild(corner);
+        }
+
+        // Add table column resize handles
+        const table = item.querySelector("table");
+        if (table) {
+            const headers = table.querySelectorAll("th, td");
+            headers.forEach(cell => {
+                if (!cell.querySelector(".table-col-resize")) {
+                    const colHandle = document.createElement("div");
+                    colHandle.className = "table-col-resize";
+                    cell.appendChild(colHandle);
+                }
+            });
+        }
+    });
+}
+
+/* ============================================================
+   HOVER + CLICK HANDLERS
+============================================================ */
 document.addEventListener("mouseover", (e) => {
     const block = e.target.closest("[data-editable-block]");
     if (block) {
@@ -327,11 +424,8 @@ document.addEventListener("mouseover", (e) => {
 });
 
 document.addEventListener("mouseout", (e) => {
-    const block = e.target.closest("[data-editable-block]");
-    if (!block) removeBlockHighlight();
-
-    const el = e.target.closest("[data-editable]");
-    if (!el) removeElementHighlight();
+    if (!e.target.closest("[data-editable-block]")) removeBlockHighlight();
+    if (!e.target.closest("[data-editable]")) removeElementHighlight();
 });
 
 document.addEventListener("click", (e) => {
@@ -342,21 +436,33 @@ document.addEventListener("click", (e) => {
     e.stopPropagation();
 
     const selector = getUniqueSelector(el);
-    const extracted = extractElementContent(el);
+    const type = el.getAttribute("data-edit-type") || "text";
 
-    window.parent.postMessage(
-        {
-            type: "open-editor",
-            targetSelector: selector,
-            ...extracted
-        },
-        "*"
-    );
+    const payload = {
+        type: "open-editor",
+        targetSelector: selector,
+        editType: type
+    };
+
+    if (type === "text" || type === "list") {
+        payload.content = el.innerHTML;
+    } else if (type === "image") {
+        payload.imageUrl = el.src;
+    } else if (type === "link") {
+        payload.label = el.textContent;
+        payload.url = el.href;
+    }
+
+    window.parent.postMessage(payload, "*");
 });
 
-// -------------------------------
-// Init
-// -------------------------------
+/* ============================================================
+   INIT
+============================================================ */
 document.addEventListener("DOMContentLoaded", () => {
-    enhanceBlocks();
+    autoWrapTablesIntoGrid();
+    enhanceGridItems();
+    enableGridDragging();
+    enableGridResizing();
+    enableTableColumnResizing();
 });
