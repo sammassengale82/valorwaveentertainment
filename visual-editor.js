@@ -1,35 +1,40 @@
 // ======================================================
-// VALOR WAVE — VISUAL EDITOR ENGINE
+// VALOR WAVE — VISUAL EDITOR ENGINE (PHASE 12)
 // Runs inside the editable iframe loaded by the CMS
+// Supports:
+// - data-editable elements (text/image/link/list)
+// - data-editable-block blocks (any tag)
+// - drag-reorder blocks
+// - delete blocks
+// - insert blocks from CMS
+// - DOM sync back to CMS
 // ======================================================
 
-// Highlight color for editable elements
 const HIGHLIGHT_COLOR = "rgba(59, 130, 246, 0.35)";
+const BLOCK_HIGHLIGHT_COLOR = "rgba(16, 185, 129, 0.25)";
 
-// Track currently highlighted element
-let currentHighlight = null;
+let currentElementHighlight = null;
+let currentBlockHighlight = null;
+let dragBlock = null;
+let dragPlaceholder = null;
 
-// Utility: generate a unique CSS selector for an element
+// -------------------------------
+// Utility: unique selector for elements
+// -------------------------------
 function getUniqueSelector(el) {
     if (!el) return null;
-
-    // If element has an ID, that's the best selector
     if (el.id) return `#${el.id}`;
 
-    // Build a path of tag names + nth-child
     const path = [];
     let node = el;
 
     while (node && node.nodeType === 1 && node !== document.body) {
         let selector = node.tagName.toLowerCase();
-
-        // Add nth-child for uniqueness
         const parent = node.parentNode;
         if (parent) {
             const index = Array.from(parent.children).indexOf(node) + 1;
             selector += `:nth-child(${index})`;
         }
-
         path.unshift(selector);
         node = parent;
     }
@@ -37,40 +42,35 @@ function getUniqueSelector(el) {
     return path.join(" > ");
 }
 
-// Highlight element on hover
+// -------------------------------
+// Element-level editing
+// -------------------------------
+function isEditableElement(el) {
+    return el && el.hasAttribute("data-editable");
+}
+
 function highlightElement(el) {
-    if (currentHighlight === el) return;
-
-    removeHighlight();
-
-    currentHighlight = el;
-    el.style.outline = `3px solid ${HIGHLIGHT_COLOR}`;
+    if (currentElementHighlight === el) return;
+    removeElementHighlight();
+    currentElementHighlight = el;
+    el.style.outline = `2px solid ${HIGHLIGHT_COLOR}`;
     el.style.cursor = "pointer";
 }
 
-// Remove highlight
-function removeHighlight() {
-    if (!currentHighlight) return;
-    currentHighlight.style.outline = "";
-    currentHighlight.style.cursor = "";
-    currentHighlight = null;
+function removeElementHighlight() {
+    if (!currentElementHighlight) return;
+    currentElementHighlight.style.outline = "";
+    currentElementHighlight.style.cursor = "";
+    currentElementHighlight = null;
 }
 
-// Detect editable elements
-function isEditable(el) {
-    if (!el) return false;
-    return el.hasAttribute("data-editable");
-}
-
-// Extract content depending on type
-function extractContent(el) {
+function extractElementContent(el) {
     const type = el.getAttribute("data-edit-type") || "text";
 
     switch (type) {
         case "text":
-            return { editType: "text", content: el.innerHTML };
         case "list":
-            return { editType: "list", content: el.innerHTML };
+            return { editType: type, content: el.innerHTML };
         case "image":
             return { editType: "image", imageUrl: el.src };
         case "link":
@@ -84,52 +84,254 @@ function extractContent(el) {
     }
 }
 
-// Apply edits sent from CMS
-window.addEventListener("message", (event) => {
-    const data = event.data;
-    if (!data || data.type !== "apply-edit") return;
+// -------------------------------
+// Block-level editing (Phase 12)
+// -------------------------------
+function getAllBlocks() {
+    return Array.from(document.querySelectorAll("[data-editable-block]"));
+}
 
-    const selector = data.targetSelector;
-    if (!selector) return;
+function highlightBlock(block) {
+    if (currentBlockHighlight === block) return;
+    removeBlockHighlight();
+    currentBlockHighlight = block;
+    block.style.outline = `2px dashed ${BLOCK_HIGHLIGHT_COLOR}`;
+    block.style.position = block.style.position || "relative";
+}
 
-    const el = document.querySelector(selector);
-    if (!el) return;
+function removeBlockHighlight() {
+    if (!currentBlockHighlight) return;
+    currentBlockHighlight.style.outline = "";
+    currentBlockHighlight = null;
+}
 
-    switch (data.editType) {
-        case "text":
-        case "list":
-            el.innerHTML = data.content;
-            break;
+// Inject drag handle + delete button into each block
+function enhanceBlocks() {
+    const blocks = getAllBlocks();
 
-        case "image":
-            if (data.imageUrl) el.src = data.imageUrl;
-            break;
+    blocks.forEach(block => {
+        if (block.querySelector(".cms-block-handle")) return; // already enhanced
 
-        case "link":
-            if (data.label) el.textContent = data.label;
-            if (data.url) el.href = data.url;
-            break;
+        const handle = document.createElement("div");
+        handle.className = "cms-block-handle";
+        handle.textContent = "⋮⋮";
+        handle.title = "Drag to reorder section";
+        handle.draggable = true;
+
+        const del = document.createElement("button");
+        del.className = "cms-block-delete";
+        del.type = "button";
+        del.textContent = "×";
+        del.title = "Delete section";
+
+        block.insertBefore(handle, block.firstChild);
+        block.insertBefore(del, block.firstChild);
+
+        // Drag events
+        handle.addEventListener("dragstart", (e) => {
+            dragBlock = block;
+            dragPlaceholder = document.createElement(block.tagName);
+            dragPlaceholder.className = "cms-block-placeholder";
+            dragPlaceholder.style.height = `${block.offsetHeight}px`;
+            dragPlaceholder.style.border = "2px dashed rgba(148, 163, 184, 0.8)";
+            dragPlaceholder.style.margin = getComputedStyle(block).margin;
+
+            block.parentNode.insertBefore(dragPlaceholder, block.nextSibling);
+            block.classList.add("cms-block-dragging");
+
+            e.dataTransfer.effectAllowed = "move";
+        });
+
+        handle.addEventListener("dragend", () => {
+            if (dragBlock) dragBlock.classList.remove("cms-block-dragging");
+            if (dragPlaceholder && dragPlaceholder.parentNode) {
+                dragPlaceholder.parentNode.removeChild(dragPlaceholder);
+            }
+            dragBlock = null;
+            dragPlaceholder = null;
+            sendDomUpdated();
+        });
+
+        // Delete
+        del.addEventListener("click", () => {
+            const blockId = block.getAttribute("data-block-id") || "(unnamed)";
+            const ok = window.confirm(`Delete section "${blockId}"? This cannot be undone.`);
+            if (!ok) return;
+
+            block.parentNode.removeChild(block);
+            sendDomUpdated();
+        });
+    });
+}
+
+// Handle dragover at document level
+document.addEventListener("dragover", (e) => {
+    if (!dragBlock || !dragPlaceholder) return;
+
+    e.preventDefault();
+    const blocks = getAllBlocks().filter(b => b !== dragBlock && b !== dragPlaceholder);
+
+    let closest = null;
+    let closestOffset = Number.NEGATIVE_INFINITY;
+
+    blocks.forEach(block => {
+        const rect = block.getBoundingClientRect();
+        const offset = e.clientY - rect.top - rect.height / 2;
+        if (offset < 0 && offset > closestOffset) {
+            closestOffset = offset;
+            closest = block;
+        }
+    });
+
+    if (!closest) {
+        // Place at end
+        const parent = dragPlaceholder.parentNode || dragBlock.parentNode;
+        parent.appendChild(dragPlaceholder);
+    } else {
+        closest.parentNode.insertBefore(dragPlaceholder, closest);
     }
 });
 
-// Theme syncing from CMS
-window.addEventListener("message", (event) => {
-    const data = event.data;
-    if (!data || data.type !== "set-theme") return;
+// On drop, move block to placeholder position
+document.addEventListener("drop", (e) => {
+    if (!dragBlock || !dragPlaceholder) return;
+    e.preventDefault();
 
-    document.body.className = `theme-${data.theme}`;
+    dragPlaceholder.parentNode.insertBefore(dragBlock, dragPlaceholder);
 });
 
-// Hover + click listeners
+// -------------------------------
+// Messaging: apply edits from CMS
+// -------------------------------
+window.addEventListener("message", (event) => {
+    const data = event.data;
+    if (!data) return;
+
+    // Apply element-level edits
+    if (data.type === "apply-edit") {
+        const selector = data.targetSelector;
+        if (!selector) return;
+
+        const el = document.querySelector(selector);
+        if (!el) return;
+
+        switch (data.editType) {
+            case "text":
+            case "list":
+                el.innerHTML = data.content;
+                break;
+            case "image":
+                if (data.imageUrl) el.src = data.imageUrl;
+                break;
+            case "link":
+                if (data.label) el.textContent = data.label;
+                if (data.url) el.href = data.url;
+                break;
+        }
+
+        sendDomUpdated();
+        return;
+    }
+
+    // Theme sync
+    if (data.type === "set-theme") {
+        document.body.className = `theme-${data.theme}`;
+        return;
+    }
+
+    // Insert block from CMS
+    if (data.type === "insert-block") {
+        const { html, position, targetBlockId } = data;
+        if (!html) return;
+
+        const temp = document.createElement("div");
+        temp.innerHTML = html.trim();
+        const newBlock = temp.firstElementChild;
+        if (!newBlock) return;
+
+        const blocks = getAllBlocks();
+        let targetBlock = null;
+
+        if (targetBlockId) {
+            targetBlock = blocks.find(
+                b => b.getAttribute("data-block-id") === targetBlockId
+            );
+        }
+
+        if (!targetBlock && blocks.length > 0) {
+            targetBlock = blocks[blocks.length - 1];
+        }
+
+        if (!targetBlock) {
+            // No existing blocks, append to body
+            document.body.appendChild(newBlock);
+        } else {
+            if (position === "before") {
+                targetBlock.parentNode.insertBefore(newBlock, targetBlock);
+            } else {
+                targetBlock.parentNode.insertBefore(newBlock, targetBlock.nextSibling);
+            }
+        }
+
+        enhanceBlocks();
+        sendDomUpdated();
+        return;
+    }
+
+    // Delete block by ID from CMS (optional)
+    if (data.type === "delete-block") {
+        const { blockId } = data;
+        if (!blockId) return;
+
+        const block = document.querySelector(
+            `[data-editable-block][data-block-id="${blockId}"]`
+        );
+        if (!block) return;
+
+        block.parentNode.removeChild(block);
+        sendDomUpdated();
+        return;
+    }
+});
+
+// -------------------------------
+// Messaging: send DOM updates to CMS
+// -------------------------------
+function sendDomUpdated() {
+    const html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    window.parent.postMessage(
+        {
+            type: "dom-updated",
+            html
+        },
+        "*"
+    );
+}
+
+// -------------------------------
+// Hover + click behavior
+// -------------------------------
 document.addEventListener("mouseover", (e) => {
+    const block = e.target.closest("[data-editable-block]");
+    if (block) {
+        highlightBlock(block);
+        return;
+    }
+
     const el = e.target.closest("[data-editable]");
-    if (el) highlightElement(el);
-    else removeHighlight();
+    if (el) {
+        highlightElement(el);
+    } else {
+        removeElementHighlight();
+    }
 });
 
 document.addEventListener("mouseout", (e) => {
+    const block = e.target.closest("[data-editable-block]");
+    if (!block) removeBlockHighlight();
+
     const el = e.target.closest("[data-editable]");
-    if (!el) removeHighlight();
+    if (!el) removeElementHighlight();
 });
 
 document.addEventListener("click", (e) => {
@@ -140,7 +342,7 @@ document.addEventListener("click", (e) => {
     e.stopPropagation();
 
     const selector = getUniqueSelector(el);
-    const extracted = extractContent(el);
+    const extracted = extractElementContent(el);
 
     window.parent.postMessage(
         {
@@ -150,4 +352,11 @@ document.addEventListener("click", (e) => {
         },
         "*"
     );
+});
+
+// -------------------------------
+// Init
+// -------------------------------
+document.addEventListener("DOMContentLoaded", () => {
+    enhanceBlocks();
 });
