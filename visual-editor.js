@@ -1,8 +1,5 @@
 // visual-editor.js — Valor Wave CMS Visual Editor
-// Phase 13 — VE-FULL-CTX
-// Features: grid editing, table editing, drag handles, resize handles,
-// block selection overlays, duplication, deletion, movement, Webflow-style handles,
-// table column resizing, grid snapping, placeholder logic, DOM sync, theme sync, safety guards.
+// Phase 14 — VE-FULL-CTX + Hybrid Panel + Theme + Block Insert + DOM Sync
 
 (function () {
   "use strict";
@@ -12,12 +9,10 @@
   // =========================
 
   if (typeof window === "undefined" || typeof document === "undefined") {
-    // Hard guard for non-DOM environments
     console.warn("[VE] visual-editor.js loaded without DOM — exiting safely.");
     return;
   }
 
-  // Avoid double-initialization
   if (window.__VALOR_WAVE_VE_INITIALIZED__) {
     console.warn("[VE] visual-editor.js already initialized — skipping re-init.");
     return;
@@ -54,10 +49,10 @@
   const CLASS_VE_RESIZING = "ve-resizing";
   const CLASS_VE_GRID_GHOST = "ve-grid-ghost";
 
-  const GRID_SNAP_SIZE = 8; // px
-  const MIN_BLOCK_WIDTH = 40; // px
-  const MIN_BLOCK_HEIGHT = 24; // px;
-  const TABLE_MIN_COL_WIDTH = 40; // px
+  const GRID_SNAP_SIZE = 8;
+  const MIN_BLOCK_WIDTH = 40;
+  const MIN_BLOCK_HEIGHT = 24;
+  const TABLE_MIN_COL_WIDTH = 40;
 
   // =========================
   // Global editor state
@@ -67,7 +62,7 @@
     initialized: false,
     root: null,
     theme: "light",
-    blocks: new Map(), // id -> { el, type, meta }
+    blocks: new Map(),
     selectedBlockId: null,
     overlayEl: null,
     handlesContainer: null,
@@ -172,7 +167,6 @@
   function shallowCloneBlock(el) {
     if (!isElement(el)) return null;
     const clone = el.cloneNode(true);
-    // Ensure new ID
     setBlockId(clone, generateBlockId());
     return clone;
   }
@@ -202,18 +196,37 @@
     document.documentElement.setAttribute("data-ve-theme", theme);
   }
 
+  // Phase 14 theme: site-theme-* classes
+  function setTheme(theme) {
+    const t = theme || "original";
+    document.documentElement.classList.remove(
+      "site-theme-original",
+      "site-theme-army",
+      "site-theme-patriotic"
+    );
+    document.documentElement.classList.add(`site-theme-${t}`);
+    applyThemeToEditor(t);
+    if (VEState.root) {
+      VEState.root.setAttribute(VE_ATTR_THEME, t);
+    }
+    VEState.lastSyncSnapshot = createDomSnapshot();
+  }
+
+  function getTheme() {
+    return VEState.theme;
+  }
+
   function isInsideRoot(el) {
     if (!VEState.root || !isElement(el)) return false;
     return VEState.root.contains(el);
   }
 
   // =========================
-  // DOM sync & snapshot
+  // DOM sync, snapshot, and parent messaging
   // =========================
 
   function createDomSnapshot() {
     if (!VEState.root) return null;
-    // Lightweight snapshot: list of block IDs and their order + basic meta
     const blocks = [];
     safeQueryAll("[" + VE_ATTR_BLOCK_ID + "]", VEState.root).forEach((el) => {
       const id = ensureBlockId(el);
@@ -241,9 +254,23 @@
     }
   }
 
+  function sendDomUpdated() {
+    try {
+      const html = document.documentElement.outerHTML;
+      window.parent.postMessage(
+        {
+          type: "dom-updated",
+          html,
+        },
+        "*"
+      );
+    } catch (e) {
+      console.warn("[VE] Failed to postMessage dom-updated:", e);
+    }
+  }
+
   function syncDomState() {
     if (!VEState.root) return;
-    // Rebuild VEState.blocks map from DOM
     VEState.blocks.clear();
     safeQueryAll("[" + VE_ATTR_BLOCK_ID + "]", VEState.root).forEach((el) => {
       const id = ensureBlockId(el);
@@ -259,6 +286,7 @@
     applyThemeToEditor(theme);
 
     VEState.lastSyncSnapshot = createDomSnapshot();
+    sendDomUpdated();
   }
 
   // =========================
@@ -284,25 +312,21 @@
     container.style.display = "none";
     container.style.zIndex = "10000";
 
-    // Move handle (Webflow-style top-left)
     const moveHandle = document.createElement("div");
     moveHandle.className = `${CLASS_VE_HANDLE} ${CLASS_VE_HANDLE_MOVE}`;
     moveHandle.dataset.veHandleType = "move";
     container.appendChild(moveHandle);
 
-    // Resize handle (bottom-right)
     const resizeHandle = document.createElement("div");
     resizeHandle.className = `${CLASS_VE_HANDLE} ${CLASS_VE_HANDLE_RESIZE}`;
     resizeHandle.dataset.veHandleType = "resize";
     container.appendChild(resizeHandle);
 
-    // Duplicate handle (top-right)
     const dupHandle = document.createElement("div");
     dupHandle.className = `${CLASS_VE_HANDLE} ${CLASS_VE_HANDLE_DUPLICATE}`;
     dupHandle.dataset.veHandleType = "duplicate";
     container.appendChild(dupHandle);
 
-    // Delete handle (top-right, offset)
     const delHandle = document.createElement("div");
     delHandle.className = `${CLASS_VE_HANDLE} ${CLASS_VE_HANDLE_DELETE}`;
     delHandle.dataset.veHandleType = "delete";
@@ -311,7 +335,6 @@
     document.body.appendChild(container);
     VEState.handlesContainer = container;
 
-    // Pointer events for handles
     container.addEventListener("mousedown", onHandleMouseDown, { passive: false });
     container.addEventListener("click", onHandleClick, { passive: false });
   }
@@ -329,7 +352,6 @@
     const width = rect.width;
     const height = rect.height;
 
-    // Overlay
     const overlay = VEState.overlayEl;
     overlay.style.display = "block";
     overlay.style.left = left + "px";
@@ -337,7 +359,6 @@
     overlay.style.width = width + "px";
     overlay.style.height = height + "px";
 
-    // Handles container
     const handles = VEState.handlesContainer;
     handles.style.display = "block";
     handles.style.left = left + "px";
@@ -345,7 +366,6 @@
     handles.style.width = width + "px";
     handles.style.height = height + "px";
 
-    // Position individual handles (relative)
     const moveHandle = handles.querySelector("." + CLASS_VE_HANDLE_MOVE);
     const resizeHandle = handles.querySelector("." + CLASS_VE_HANDLE_RESIZE);
     const dupHandle = handles.querySelector("." + CLASS_VE_HANDLE_DUPLICATE);
@@ -401,7 +421,6 @@
       return;
     }
 
-    // Clear previous
     if (VEState.selectedBlockId && VEState.blocks.has(VEState.selectedBlockId)) {
       const prev = VEState.blocks.get(VEState.selectedBlockId).el;
       if (prev && prev.classList) {
@@ -429,6 +448,17 @@
     }
     VEState.selectedBlockId = null;
     hideOverlayAndHandles();
+  }
+
+  function getSelectedBlock() {
+    if (!VEState.selectedBlockId || !VEState.blocks.has(VEState.selectedBlockId)) return null;
+    const block = VEState.blocks.get(VEState.selectedBlockId);
+    return {
+      id: VEState.selectedBlockId,
+      type: block.type,
+      placeholder: block.placeholder,
+      el: block.el,
+    };
   }
 
   // =========================
@@ -486,7 +516,7 @@
     state.ghostEl.style.top = newTop + "px";
   }
 
-  function onBlockDragMouseUp(e) {
+  function onBlockDragMouseUp() {
     const state = VEState.dragState;
     if (!state) return;
 
@@ -501,7 +531,6 @@
       const targetLeft = ghostRect.left + scroll.x;
       const targetTop = ghostRect.top + scroll.y;
 
-      // Apply transform via inline style (non-destructive to layout if positioned)
       const parentRect = getRect(blockEl.offsetParent || blockEl.parentElement || document.body);
       if (parentRect) {
         const relLeft = targetLeft - (parentRect.left + scroll.x);
@@ -518,9 +547,9 @@
     blockEl.classList.remove(CLASS_VE_DRAGGING);
     VEState.dragState = null;
 
-    // Reposition overlay/handles
     positionOverlayAndHandlesForBlock(blockEl);
     VEState.lastSyncSnapshot = createDomSnapshot();
+    sendDomUpdated();
   }
 
   // =========================
@@ -579,6 +608,7 @@
     VEState.resizeState = null;
 
     VEState.lastSyncSnapshot = createDomSnapshot();
+    sendDomUpdated();
   }
 
   // =========================
@@ -654,7 +684,6 @@
     const parent = blockEl.parentElement;
     blockEl.remove();
 
-    // If parent becomes empty, consider inserting a placeholder
     if (!parent.querySelector("[" + VE_ATTR_BLOCK_ID + "]")) {
       insertPlaceholder(parent);
     }
@@ -693,7 +722,7 @@
 
   function ensureGridMeta(blockEl) {
     if (!isGridBlock(blockEl)) return;
-    // For now, rely on CSS grid; this is a hook for future meta if needed.
+    // Hook for future meta if needed.
   }
 
   function moveBlockWithinGrid(blockEl, direction) {
@@ -711,7 +740,10 @@
     if (direction === "down") newIndex = Math.min(children.length - 1, index + 1);
 
     if (newIndex !== index) {
-      parent.insertBefore(blockEl, newIndex > index ? children[newIndex].nextSibling : children[newIndex]);
+      parent.insertBefore(
+        blockEl,
+        newIndex > index ? children[newIndex].nextSibling : children[newIndex]
+      );
       syncDomState();
       selectBlockByElement(blockEl);
     }
@@ -724,7 +756,6 @@
   function createTableColumnHandles(tableEl) {
     if (!isTableBlock(tableEl)) return;
 
-    // Remove existing handles
     safeQueryAll("." + CLASS_VE_HANDLE_TABLE_COL, tableEl).forEach((h) => h.remove());
 
     const headerRow = tableEl.querySelector("thead tr") || tableEl.querySelector("tr");
@@ -745,7 +776,6 @@
       handle.style.zIndex = "5";
       handle.style.pointerEvents = "auto";
 
-      // Wrap cell content in relative container if needed
       cell.style.position = cell.style.position || "relative";
       cell.appendChild(handle);
     });
@@ -810,6 +840,7 @@
 
     VEState.tableResizeState = null;
     VEState.lastSyncSnapshot = createDomSnapshot();
+    sendDomUpdated();
   }
 
   function onTableHandleMouseDown(e) {
@@ -826,7 +857,7 @@
   }
 
   // =========================
-  // EDITOR INTEGRATION (open-editor + apply-edit + theme)
+  // EDITOR INTEGRATION (open-editor + apply-edit + theme + insert-block)
   // =========================
 
   function getEditTypeForElement(el) {
@@ -898,7 +929,6 @@
     const tagName = el.tagName.toLowerCase();
     const editType = data.editType || getEditTypeForElement(el);
 
-    // Text / block content
     if (editType === "text" || editType === "block") {
       if (typeof data.html === "string" && data.html.length > 0) {
         el.innerHTML = data.html;
@@ -907,7 +937,6 @@
       }
     }
 
-    // Link
     if (editType === "link" || tagName === "a") {
       if (typeof data.label === "string") {
         el.textContent = data.label;
@@ -921,7 +950,6 @@
       }
     }
 
-    // Image
     if (editType === "image" || tagName === "img") {
       if (typeof data.imageUrl === "string") {
         el.setAttribute("src", data.imageUrl);
@@ -931,7 +959,6 @@
       }
     }
 
-    // Common style updates (font, color, size, etc.)
     if (typeof data.style === "string") {
       el.setAttribute("style", data.style);
     }
@@ -943,18 +970,57 @@
     }
 
     VEState.lastSyncSnapshot = createDomSnapshot();
+    sendDomUpdated();
+  }
+
+  function insertBlock(html, position, targetBlockId) {
+    const doc = document;
+    let referenceNode = null;
+
+    if (targetBlockId) {
+      referenceNode = doc.querySelector(`[${VE_ATTR_BLOCK_ID}="${targetBlockId}"]`);
+    }
+
+    const wrapper = doc.createElement("div");
+    wrapper.innerHTML = html;
+    const fragment = doc.createDocumentFragment();
+    while (wrapper.firstChild) {
+      fragment.appendChild(wrapper.firstChild);
+    }
+
+    if (!referenceNode) {
+      doc.body.appendChild(fragment);
+      syncDomState();
+      return;
+    }
+
+    if (position === "before") {
+      referenceNode.parentNode.insertBefore(fragment, referenceNode);
+    } else {
+      referenceNode.parentNode.insertBefore(fragment, referenceNode.nextSibling);
+    }
+
+    syncDomState();
   }
 
   window.addEventListener("message", (event) => {
     const data = event.data || {};
+    if (!data.type) return;
+
     if (data.type === "apply-edit") {
       applyChangesFromParent(data);
       return;
     }
+
     if (data.type === "set-theme") {
       if (typeof data.theme === "string") {
         setTheme(data.theme);
       }
+      return;
+    }
+
+    if (data.type === "insert-block") {
+      insertBlock(data.html || "", data.position || "after", data.targetBlockId || null);
       return;
     }
   });
@@ -967,16 +1033,13 @@
     const target = e.target;
     if (!isElement(target)) return;
 
-    // If clicking inside handles container, let handle logic manage it
     if (VEState.handlesContainer && VEState.handlesContainer.contains(target)) {
       return;
     }
 
-    // Find nearest block
     const blockEl = target.closest("[" + VE_ATTR_BLOCK_ID + "]");
     if (blockEl && isInsideRoot(blockEl)) {
       selectBlockByElement(blockEl);
-      // Also notify parent editor with full element context
       sendOpenEditorForBlock(blockEl);
     } else {
       clearSelection();
@@ -1061,28 +1124,17 @@
     createHandlesContainer();
     setupMutationObserver();
 
-    // Attach root listeners
     root.addEventListener("mousedown", onRootMouseDown, { passive: false });
 
-    // Initialize table column handles for existing tables
     safeQueryAll("[" + VE_ATTR_TABLE + "=true]", root).forEach((tableEl) => {
       createTableColumnHandles(tableEl);
     });
 
-    // Theme sync
     const theme = getThemeFromDOM(root);
     applyThemeToEditor(theme);
 
     console.log("[VE] Visual editor initialized.");
   }
-
-  // Expose init on window (safe)
-  window.ValorWaveVisualEditor = {
-    init: initVisualEditor,
-    selectBlockById,
-    clearSelection,
-    syncDomState,
-  };
 
   // =========================
   // Keyboard shortcuts (movement, duplication, deletion)
@@ -1096,28 +1148,30 @@
 
     const isGrid = isGridBlock(blockEl);
 
-    // Basic movement in grid (up/down reorders siblings)
     if (isGrid && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
       e.preventDefault();
       moveBlockWithinGrid(blockEl, e.key === "ArrowUp" ? "up" : "down");
       return;
     }
 
-    // Nudge absolute-positioned blocks
-    if (!isGrid && (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+    if (
+      !isGrid &&
+      (e.key === "ArrowUp" ||
+        e.key === "ArrowDown" ||
+        e.key === "ArrowLeft" ||
+        e.key === "ArrowRight")
+    ) {
       e.preventDefault();
       nudgeBlock(blockEl, e.key, e.shiftKey ? GRID_SNAP_SIZE * 2 : GRID_SNAP_SIZE);
       return;
     }
 
-    // Duplicate (Cmd/Ctrl + D)
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "d") {
       e.preventDefault();
       duplicateBlock(blockEl);
       return;
     }
 
-    // Delete (Delete / Backspace)
     if (e.key === "Delete" || e.key === "Backspace") {
       e.preventDefault();
       deleteBlock(blockEl);
@@ -1154,7 +1208,10 @@
 
     positionOverlayAndHandlesForBlock(blockEl);
     VEState.lastSyncSnapshot = createDomSnapshot();
+    sendDomUpdated();
   }
+
+  document.addEventListener("keydown", onKeyDown, { passive: false });
 
   // =========================
   // Public API for external integrations
@@ -1182,6 +1239,7 @@
 
     removePlaceholderIfNeeded(el.parentElement || el);
     VEState.lastSyncSnapshot = createDomSnapshot();
+    sendDomUpdated();
   }
 
   function unregisterBlock(elOrId) {
@@ -1206,39 +1264,12 @@
     }
 
     VEState.lastSyncSnapshot = createDomSnapshot();
-  }
-
-  function setTheme(theme) {
-    if (!theme) return;
-    applyThemeToEditor(theme);
-    if (VEState.root) {
-      VEState.root.setAttribute(VE_ATTR_THEME, theme);
-    }
-    VEState.lastSyncSnapshot = createDomSnapshot();
-  }
-
-  function getTheme() {
-    return VEState.theme;
-  }
-
-  function getSelectedBlock() {
-    if (!VEState.selectedBlockId || !VEState.blocks.has(VEState.selectedBlockId)) return null;
-    const block = VEState.blocks.get(VEState.selectedBlockId);
-    return {
-      id: VEState.selectedBlockId,
-      type: block.type,
-      placeholder: block.placeholder,
-      el: block.el,
-    };
+    sendDomUpdated();
   }
 
   function getBlocksSnapshot() {
     return createDomSnapshot();
   }
-
-  // =========================
-  // Safety guards & cleanup
-  // =========================
 
   function destroyVisualEditor() {
     if (!VEState.initialized) return;
@@ -1279,11 +1310,11 @@
     console.log("[VE] Visual editor destroyed.");
   }
 
-  // Attach global keydown once
-  document.addEventListener("keydown", onKeyDown, { passive: false });
-
-  // Extend public API
-  window.ValorWaveVisualEditor = Object.assign(window.ValorWaveVisualEditor || {}, {
+  window.ValorWaveVisualEditor = {
+    init: initVisualEditor,
+    selectBlockById,
+    clearSelection,
+    syncDomState,
     registerBlock,
     unregisterBlock,
     setTheme,
@@ -1291,7 +1322,7 @@
     getSelectedBlock,
     getBlocksSnapshot,
     destroy: destroyVisualEditor,
-  });
+  };
 
   // =========================
   // Auto-init (optional, guarded)
@@ -1308,5 +1339,4 @@
   } else {
     autoInitIfConfigured();
   }
-
 })();
