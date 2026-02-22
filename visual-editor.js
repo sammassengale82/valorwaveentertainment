@@ -216,7 +216,7 @@
     // Lightweight snapshot: list of block IDs and their order + basic meta
     const blocks = [];
     safeQueryAll("[" + VE_ATTR_BLOCK_ID + "]", VEState.root).forEach((el) => {
-      const id = getBlockId(el);
+      const id = ensureBlockId(el);
       if (!id) return;
       blocks.push({
         id,
@@ -826,6 +826,140 @@
   }
 
   // =========================
+  // EDITOR INTEGRATION (open-editor + apply-edit + theme)
+  // =========================
+
+  function getEditTypeForElement(el) {
+    if (!isElement(el)) return "block";
+    const tag = el.tagName.toLowerCase();
+    if (tag === "a") return "link";
+    if (tag === "img") return "image";
+    return "block";
+  }
+
+  function buildEditorPayloadForElement(el) {
+    if (!isElement(el)) return null;
+
+    const selectorId = ensureBlockId(el);
+    const selector = `[${VE_ATTR_BLOCK_ID}="${selectorId}"]`;
+    const tagName = el.tagName.toLowerCase();
+    const classes = (el.className || "").toString().trim();
+    const style = el.getAttribute("style") || "";
+    const html = el.innerHTML;
+    const text = el.textContent;
+    const editType = getEditTypeForElement(el);
+
+    const base = {
+      type: "open-editor",
+      editType,
+      targetSelector: selector,
+      tagName,
+      classes,
+      style,
+      html,
+      text,
+    };
+
+    if (editType === "link") {
+      return Object.assign(base, {
+        label: el.textContent,
+        url: el.getAttribute("href") || "",
+        target: el.getAttribute("target") || "",
+      });
+    }
+
+    if (editType === "image") {
+      return Object.assign(base, {
+        imageUrl: el.getAttribute("src") || "",
+        alt: el.getAttribute("alt") || "",
+      });
+    }
+
+    return base;
+  }
+
+  function sendOpenEditorForBlock(blockEl) {
+    const payload = buildEditorPayloadForElement(blockEl);
+    if (!payload) return;
+    try {
+      window.parent.postMessage(payload, "*");
+    } catch (e) {
+      console.warn("[VE] Failed to postMessage open-editor:", e);
+    }
+  }
+
+  function applyChangesFromParent(data) {
+    const selector = data.targetSelector;
+    if (!selector) return;
+
+    const el = safeQuery(selector, VEState.root || document);
+    if (!el) return;
+
+    const tagName = el.tagName.toLowerCase();
+    const editType = data.editType || getEditTypeForElement(el);
+
+    // Text / block content
+    if (editType === "text" || editType === "block") {
+      if (typeof data.html === "string" && data.html.length > 0) {
+        el.innerHTML = data.html;
+      } else if (typeof data.text === "string") {
+        el.textContent = data.text;
+      }
+    }
+
+    // Link
+    if (editType === "link" || tagName === "a") {
+      if (typeof data.label === "string") {
+        el.textContent = data.label;
+      }
+      if (typeof data.url === "string") {
+        el.setAttribute("href", data.url);
+      }
+      if (typeof data.target === "string") {
+        if (data.target) el.setAttribute("target", data.target);
+        else el.removeAttribute("target");
+      }
+    }
+
+    // Image
+    if (editType === "image" || tagName === "img") {
+      if (typeof data.imageUrl === "string") {
+        el.setAttribute("src", data.imageUrl);
+      }
+      if (typeof data.alt === "string") {
+        el.setAttribute("alt", data.alt);
+      }
+    }
+
+    // Common style updates (font, color, size, etc.)
+    if (typeof data.style === "string") {
+      el.setAttribute("style", data.style);
+    }
+
+    if (Array.isArray(data.classes)) {
+      el.className = data.classes.join(" ");
+    } else if (typeof data.classes === "string") {
+      el.className = data.classes;
+    }
+
+    VEState.lastSyncSnapshot = createDomSnapshot();
+  }
+
+  window.addEventListener("message", (event) => {
+    const data = event.data || {};
+    if (data.type === "apply-edit") {
+      applyChangesFromParent(data);
+      return;
+    }
+    if (data.type === "set-theme") {
+      if (typeof data.theme === "string") {
+        setTheme(data.theme);
+      }
+      return;
+    }
+  });
+
+  // =========================
   // Global mouse handling for selection
   // =========================
 
@@ -842,6 +976,8 @@
     const blockEl = target.closest("[" + VE_ATTR_BLOCK_ID + "]");
     if (blockEl && isInsideRoot(blockEl)) {
       selectBlockByElement(blockEl);
+      // Also notify parent editor with full element context
+      sendOpenEditorForBlock(blockEl);
     } else {
       clearSelection();
     }
@@ -948,7 +1084,6 @@
     syncDomState,
   };
 
-// ===== End of Chunk 5A/5B =====
   // =========================
   // Keyboard shortcuts (movement, duplication, deletion)
   // =========================
