@@ -1,0 +1,288 @@
+// visual-editor.js
+// Runs inside the EDITABLE PREVIEW iframe for Valor Wave CMS
+
+(function () {
+  // ============================================================
+  // CONFIG
+  // ============================================================
+  const EDIT_ATTR = "data-vw-edit"; // mark editable elements with this
+  const HOVER_CLASS = "vw-edit-hover";
+  const ACTIVE_CLASS = "vw-edit-active";
+
+  // You can tweak these if you want different visuals
+  const HOVER_STYLE = `
+    .${HOVER_CLASS} {
+      outline: 2px dashed rgba(0, 173, 255, 0.7);
+      cursor: pointer;
+    }
+  `;
+  const ACTIVE_STYLE = `
+    .${ACTIVE_CLASS} {
+      outline: 2px solid rgba(0, 255, 173, 0.9);
+      box-shadow: 0 0 0 2px rgba(0, 255, 173, 0.4);
+    }
+  `;
+
+  let activeEl = null;
+
+  // ============================================================
+  // STYLE INJECTION
+  // ============================================================
+  function injectStyles() {
+    const style = document.createElement("style");
+    style.textContent = `${HOVER_STYLE}\n${ACTIVE_STYLE}`;
+    document.head.appendChild(style);
+  }
+
+  // ============================================================
+  // UTILS
+  // ============================================================
+  function getUniqueSelector(el) {
+    if (!el) return null;
+
+    // Prefer explicit id
+    if (el.id) return `#${CSS.escape(el.id)}`;
+
+    // Prefer explicit data attributes if present
+    const dataKey = el.getAttribute("data-key");
+    if (dataKey) return `[data-key="${CSS.escape(dataKey)}"]`;
+
+    // Build a simple path selector
+    const parts = [];
+    let node = el;
+    while (node && node.nodeType === 1 && parts.length < 6) {
+      let part = node.tagName.toLowerCase();
+
+      if (node.className) {
+        const cls = node.className
+          .toString()
+          .trim()
+          .split(/\s+/)
+          .filter(Boolean)[0];
+        if (cls) part += `.${CSS.escape(cls)}`;
+      }
+
+      const parent = node.parentElement;
+      if (parent) {
+        const siblings = Array.from(parent.children).filter(
+          (child) => child.tagName === node.tagName
+        );
+        if (siblings.length > 1) {
+          const index = siblings.indexOf(node) + 1;
+          part += `:nth-of-type(${index})`;
+        }
+      }
+
+      parts.unshift(part);
+      node = parent;
+    }
+
+    return parts.join(" > ");
+  }
+
+  function clearActive() {
+    if (activeEl) {
+      activeEl.classList.remove(ACTIVE_CLASS);
+      activeEl = null;
+    }
+  }
+
+  function markActive(el) {
+    clearActive();
+    activeEl = el;
+    if (activeEl) {
+      activeEl.classList.add(ACTIVE_CLASS);
+    }
+  }
+
+  function isEditable(el) {
+    return !!el.closest(`[${EDIT_ATTR}]`);
+  }
+
+  function getEditableElement(target) {
+    return target.closest(`[${EDIT_ATTR}]`);
+  }
+
+  // ============================================================
+  // HOVER + CLICK HANDLERS
+  // ============================================================
+  function handleMouseOver(e) {
+    const el = getEditableElement(e.target);
+    if (!el) return;
+    el.classList.add(HOVER_CLASS);
+  }
+
+  function handleMouseOut(e) {
+    const el = getEditableElement(e.target);
+    if (!el) return;
+    el.classList.remove(HOVER_CLASS);
+  }
+
+  function handleClick(e) {
+    const el = getEditableElement(e.target);
+    if (!el) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    markActive(el);
+
+    const editTypeAttr = el.getAttribute(EDIT_ATTR);
+    const tag = el.tagName.toLowerCase();
+
+    let editType = editTypeAttr || "text";
+
+    if (!editTypeAttr) {
+      if (tag === "a") editType = "link";
+      else if (tag === "img") editType = "image";
+      else editType = "block";
+    }
+
+    const selector = getUniqueSelector(el);
+
+    const payload = buildPayloadForElement(el, editType, selector);
+
+    window.parent.postMessage(payload, "*");
+  }
+
+  // ============================================================
+  // PAYLOAD BUILDING
+  // ============================================================
+  function buildPayloadForElement(el, editType, selector) {
+    const tagName = el.tagName.toLowerCase();
+    const classes = (el.className || "").toString().trim();
+    const style = el.getAttribute("style") || "";
+    const html = el.innerHTML;
+    const text = el.textContent;
+
+    const base = {
+      type: "open-editor",
+      editType,
+      targetSelector: selector,
+      tagName,
+      classes,
+      style,
+      html,
+      text
+    };
+
+    if (editType === "link" || tagName === "a") {
+      return {
+        ...base,
+        editType: "link",
+        label: el.textContent,
+        url: el.getAttribute("href") || "",
+        target: el.getAttribute("target") || ""
+      };
+    }
+
+    if (editType === "image" || tagName === "img") {
+      return {
+        ...base,
+        editType: "image",
+        imageUrl: el.getAttribute("src") || "",
+        alt: el.getAttribute("alt") || ""
+      };
+    }
+
+    return base;
+  }
+
+  // ============================================================
+  // APPLY CHANGES FROM CMS
+  // ============================================================
+  function applyChangesFromParent(data) {
+    const { targetSelector, editType } = data;
+    if (!targetSelector) return;
+
+    const el = document.querySelector(targetSelector);
+    if (!el) return;
+
+    const tagName = el.tagName.toLowerCase();
+
+    // Text / block content
+    if (editType === "text" || editType === "block") {
+      if (typeof data.html === "string" && data.html.length > 0) {
+        el.innerHTML = data.html;
+      } else if (typeof data.text === "string") {
+        el.textContent = data.text;
+      }
+    }
+
+    // Link
+    if (editType === "link" || tagName === "a") {
+      if (typeof data.label === "string") {
+        el.textContent = data.label;
+      }
+      if (typeof data.url === "string") {
+        el.setAttribute("href", data.url);
+      }
+      if (typeof data.target === "string") {
+        if (data.target) el.setAttribute("target", data.target);
+        else el.removeAttribute("target");
+      }
+    }
+
+    // Image
+    if (editType === "image" || tagName === "img") {
+      if (typeof data.imageUrl === "string") {
+        el.setAttribute("src", data.imageUrl);
+      }
+      if (typeof data.alt === "string") {
+        el.setAttribute("alt", data.alt);
+      }
+    }
+
+    // Common style updates (font, color, size, etc.)
+    if (typeof data.style === "string") {
+      el.setAttribute("style", data.style);
+    }
+
+    if (Array.isArray(data.classes)) {
+      el.className = data.classes.join(" ");
+    } else if (typeof data.classes === "string") {
+      el.className = data.classes;
+    }
+  }
+
+  // ============================================================
+  // THEME HANDLING
+  // ============================================================
+  function applyTheme(theme) {
+    if (!theme) return;
+    document.documentElement.setAttribute("data-theme", theme);
+  }
+
+  // ============================================================
+  // MESSAGE LISTENER FROM CMS
+  // ============================================================
+  window.addEventListener("message", (event) => {
+    const data = event.data || {};
+
+    if (data.type === "apply-edit") {
+      applyChangesFromParent(data);
+      return;
+    }
+
+    if (data.type === "set-theme") {
+      applyTheme(data.theme);
+      return;
+    }
+  });
+
+  // ============================================================
+  // INIT
+  // ============================================================
+  function init() {
+    injectStyles();
+    document.addEventListener("mouseover", handleMouseOver);
+    document.addEventListener("mouseout", handleMouseOut);
+    document.addEventListener("click", handleClick);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
