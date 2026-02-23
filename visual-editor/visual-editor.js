@@ -1,98 +1,185 @@
 /* ============================================================
-   PREVENT DOUBLE-LOADING
-============================================================ */
-if (window.__VE_LOADED__) {
-    console.warn("[VE] visual-editor.js already loaded — skipping.");
-    // Stop this script from executing again
-    throw new Error("VE already loaded");
-}
-window.__VE_LOADED__ = true;
-
-/* ============================================================
-   VALOR WAVE VISUAL EDITOR (runs inside GitHub Pages iframe)
-   Phase 14 — message-driven, cross-origin safe
+   VISUAL EDITOR — PHASE 14 (Hybrid Inspector Panel)
+   Runs inside the editable iframe
 ============================================================ */
 
-/* -----------------------------
-   GLOBAL STATE (SAFE)
------------------------------ */
-window.__VE_INITIALIZED__ = window.__VE_INITIALIZED__ || false;
+(function () {
+    let ve = {};
+    let currentTheme = "original";
 
-/* -----------------------------
-   ENTRY POINT
------------------------------ */
-function initializeVisualEditor() {
-    if (window.__VE_INITIALIZED__) {
-        console.log("[VE] Already initialized — skipping.");
-        return;
-    }
-    window.__VE_INITIALIZED__ = true;
+    /* ============================================================
+       INIT
+    ============================================================= */
+    window.addEventListener("message", (event) => {
+        const data = event.data || {};
+        if (!data.type) return;
 
-    console.log("[VE] Initializing Visual Editor...");
+        if (data.type === "ve-init") {
+            initVisualEditor();
+        }
 
-    attachEditableClickHandlers();
-}
+        if (data.type === "set-theme") {
+            applyTheme(data.theme);
+        }
 
-/* -----------------------------
-   THEME APPLICATION
------------------------------ */
-function applyTheme(themeName) {
-    console.log("[VE] Applying theme:", themeName);
-    // Example: document.documentElement.setAttribute("data-site-theme", themeName);
-}
+        if (data.type === "apply-edit") {
+            applyEditFromCMS(data);
+        }
 
-/* -----------------------------
-   ATTACH CLICK HANDLERS
------------------------------ */
-function attachEditableClickHandlers() {
-    const editableElements = document.querySelectorAll("[data-ve-edit]");
-
-    if (!editableElements.length) {
-        console.warn("[VE] No editable elements found with [data-ve-edit].");
-        return;
-    }
-
-    editableElements.forEach((el) => {
-        el.addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const editType = el.getAttribute("data-ve-edit") || "block";
-            const blockId = el.id || null;
-
-            const payload = {
-                type: "open-editor",
-                editType,
-                blockId,
-                innerHTML: el.innerHTML
-            };
-
-            console.log("[VE] Sending open-editor payload to CMS:", payload);
-
-            window.parent.postMessage(payload, "*");
-        });
+        if (data.type === "insert-block") {
+            insertBlock(data);
+        }
     });
 
-    console.log("[VE] Click handlers attached to editable elements.");
-}
+    function initVisualEditor() {
+        console.log("[VE] Initializing Visual Editor...");
 
-/* -----------------------------
-   MESSAGE LISTENER (CMS → VE)
------------------------------ */
-window.addEventListener("message", (event) => {
-    const data = event.data || {};
-    if (!data.type) return;
+        attachClickHandlers();
+        applyTheme(currentTheme);
 
-    switch (data.type) {
-        case "ve-init":
-            initializeVisualEditor();
-            break;
-
-        case "set-theme":
-            if (data.theme) applyTheme(data.theme);
-            break;
-
-        default:
-            break;
+        console.log("[VE] Click handlers attached to editable elements.");
     }
-});
+
+    /* ============================================================
+       CLICK HANDLERS — SEND OPEN-EDITOR PAYLOAD TO CMS
+    ============================================================= */
+    function attachClickHandlers() {
+        const doc = document;
+
+        doc.querySelectorAll("[data-ve-editable]").forEach(el => {
+            el.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const editType = el.getAttribute("data-ve-editable") || "block";
+
+                const payload = {
+                    type: "open-editor",
+                    editType,
+                    blockId: el.getAttribute("data-ve-block-id") || null,
+                    innerHTML: el.innerHTML
+                };
+
+                console.log("[VE] Sending open-editor payload to CMS:", payload);
+                parent.postMessage(payload, "*");
+            });
+        });
+    }
+
+    /* ============================================================
+       APPLY THEME
+    ============================================================= */
+    function applyTheme(theme) {
+        currentTheme = theme;
+        document.documentElement.setAttribute("data-site-theme", theme);
+        console.log("[VE] Applying theme:", theme);
+    }
+
+    /* ============================================================
+       APPLY EDIT FROM CMS
+    ============================================================= */
+    function applyEditFromCMS(data) {
+        const { editType, html, design, settings } = data;
+
+        const target = findEditableElement(editType);
+        if (!target) {
+            console.warn("[VE] No target found for editType:", editType);
+            return;
+        }
+
+        /* -------------------------------
+           APPLY CONTENT
+        -------------------------------- */
+        if (html !== undefined && html !== null) {
+            target.innerHTML = html;
+        }
+
+        /* -------------------------------
+           APPLY DESIGN (inline styles)
+        -------------------------------- */
+        if (design && typeof design === "object") {
+            Object.entries(design).forEach(([key, value]) => {
+                if (value === "") return;
+
+                if (key === "padding") {
+                    target.style.padding = `${value}px`;
+                } else {
+                    target.style[key] = value;
+                }
+            });
+        }
+
+        /* -------------------------------
+           APPLY SETTINGS (id, class, visibility)
+        -------------------------------- */
+        if (settings && typeof settings === "object") {
+            if (settings.id) target.id = settings.id;
+
+            if (settings.class) {
+                target.className = settings.class;
+            }
+
+            if (settings.visibility) {
+                target.style.visibility = settings.visibility;
+            }
+        }
+
+        /* -------------------------------
+           SEND UPDATED DOM BACK TO CMS
+        -------------------------------- */
+        const fullHtml = document.documentElement.outerHTML;
+
+        parent.postMessage(
+            {
+                type: "dom-updated",
+                html: fullHtml
+            },
+            "*"
+        );
+    }
+
+    /* ============================================================
+       FIND TARGET ELEMENT
+    ============================================================= */
+    function findEditableElement(editType) {
+        const doc = document;
+
+        let el = doc.querySelector(`[data-ve-editable="${editType}"]`);
+        if (el) return el;
+
+        el = doc.querySelector(`[data-ve-block-id="${editType}"]`);
+        if (el) return el;
+
+        return null;
+    }
+
+    /* ============================================================
+       INSERT BLOCK (TEMPLATES)
+    ============================================================= */
+    function insertBlock({ html, position, targetBlockId }) {
+        const doc = document;
+
+        if (!targetBlockId) {
+            doc.body.insertAdjacentHTML("beforeend", html);
+        } else {
+            const target = doc.querySelector(`[data-ve-block-id="${targetBlockId}"]`);
+            if (!target) return;
+
+            if (position === "before") {
+                target.insertAdjacentHTML("beforebegin", html);
+            } else {
+                target.insertAdjacentHTML("afterend", html);
+            }
+        }
+
+        const fullHtml = document.documentElement.outerHTML;
+
+        parent.postMessage(
+            {
+                type: "dom-updated",
+                html: fullHtml
+            },
+            "*"
+        );
+    }
+})();
