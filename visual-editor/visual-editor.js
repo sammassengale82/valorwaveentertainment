@@ -1,3 +1,13 @@
+// Prevent VE from running inside the CMS parent window
+if (window === window.parent) {
+    // Running on the live site normally — OK
+} else {
+    // Running inside CMS iframe — OK
+}
+
+// BUT: prevent VE from interfering with CMS drag logic
+window.__VE_DISABLE_GLOBAL_MOUSEMOVE__ = true;
+
 // visual-editor.js — Valor Wave CMS Visual Editor
 // Phase 14 — VE-FULL-CTX + Hybrid Panel + Theme + Block Insert + DOM Sync
 
