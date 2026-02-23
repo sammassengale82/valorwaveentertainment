@@ -1,19 +1,32 @@
 /* ============================================================
+   PREVENT DOUBLE-LOADING
+============================================================ */
+if (window.__VE_LOADED__) {
+    console.warn("[VE] visual-editor.js already loaded — skipping.");
+    // Stop this script from executing again
+    throw new Error("VE already loaded");
+}
+window.__VE_LOADED__ = true;
+
+/* ============================================================
    VALOR WAVE VISUAL EDITOR (runs inside GitHub Pages iframe)
    Phase 14 — message-driven, cross-origin safe
 ============================================================ */
 
 /* -----------------------------
-   STATE
+   GLOBAL STATE (SAFE)
 ----------------------------- */
-let veInitialized = false;
+window.__VE_INITIALIZED__ = window.__VE_INITIALIZED__ || false;
 
 /* -----------------------------
    ENTRY POINT
 ----------------------------- */
 function initializeVisualEditor() {
-    if (veInitialized) return;
-    veInitialized = true;
+    if (window.__VE_INITIALIZED__) {
+        console.log("[VE] Already initialized — skipping.");
+        return;
+    }
+    window.__VE_INITIALIZED__ = true;
 
     console.log("[VE] Initializing Visual Editor...");
 
@@ -21,9 +34,7 @@ function initializeVisualEditor() {
 }
 
 /* -----------------------------
-   THEME APPLICATION (STUB)
-   You can expand this to actually
-   toggle classes, data-theme, etc.
+   THEME APPLICATION
 ----------------------------- */
 function applyTheme(themeName) {
     console.log("[VE] Applying theme:", themeName);
@@ -32,13 +43,8 @@ function applyTheme(themeName) {
 
 /* -----------------------------
    ATTACH CLICK HANDLERS
-   Looks for elements marked as editable.
-   You can adjust the selector to match
-   your markup strategy.
 ----------------------------- */
 function attachEditableClickHandlers() {
-    // Example strategy:
-    // Any element with data-ve-edit="text" or data-ve-edit="hero" etc.
     const editableElements = document.querySelectorAll("[data-ve-edit]");
 
     if (!editableElements.length) {
@@ -58,8 +64,7 @@ function attachEditableClickHandlers() {
                 type: "open-editor",
                 editType,
                 blockId,
-                innerHTML: el.innerHTML,
-                // You can add more structured data here later if needed
+                innerHTML: el.innerHTML
             };
 
             console.log("[VE] Sending open-editor payload to CMS:", payload);
@@ -72,14 +77,10 @@ function attachEditableClickHandlers() {
 }
 
 /* -----------------------------
-   MESSAGE LISTENER
-   Receives commands from CMS:
-   - ve-init: initialize VE
-   - set-theme: apply theme
+   MESSAGE LISTENER (CMS → VE)
 ----------------------------- */
 window.addEventListener("message", (event) => {
     const data = event.data || {};
-
     if (!data.type) return;
 
     switch (data.type) {
@@ -88,24 +89,10 @@ window.addEventListener("message", (event) => {
             break;
 
         case "set-theme":
-            if (data.theme) {
-                applyTheme(data.theme);
-            }
+            if (data.theme) applyTheme(data.theme);
             break;
 
         default:
-            // Ignore unknown messages
             break;
     }
 });
-
-/* -----------------------------
-   OPTIONAL: AUTO-INIT FOR LOCAL
-   If you ever load this directly
-   without CMS, you can uncomment:
-
-document.addEventListener("DOMContentLoaded", () => {
-    initializeVisualEditor();
-});
-
------------------------------ */
