@@ -778,7 +778,46 @@
     </div>
   </div>
 
-  <!-- Phase 14 Visual Editor script (loaded once; initialization via postMessage ve-init) -->
-  <script src="/visual-editor/visual-editor.js"></script>
+   <!-- Theme CSS -->
+  <link rel="stylesheet" href="/themes.css">
+
+  <!-- Visual Editor -->
+  <script src="/visual-editor/visual-editor.js" defer></script>
+
+  <!-- VE Theme Receiver + Click-to-Edit -->
+  <script>
+    window.addEventListener("message", (event) => {
+      const msg = event.data;
+
+      if (msg.type === "set-theme") {
+        document.body.classList.remove(
+          "theme-original",
+          "theme_army",
+          "theme_patriotic"
+        );
+        document.body.classList.add(`theme-${msg.theme}`);
+      }
+
+      if (msg.type === "ve-init") {
+        enableClickToEdit();
+      }
+    });
+
+    function enableClickToEdit() {
+      document.body.addEventListener("click", (e) => {
+        const target = e.target.closest("[data-ve-editable]");
+        if (!target) return;
+
+        window.parent.postMessage(
+          {
+            type: "open-editor",
+            blockId: target.getAttribute("data-ve-editable"),
+            html: target.innerHTML
+          },
+          "*"
+        );
+      });
+    }
+  </script>
 </body>
 </html>
