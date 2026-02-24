@@ -70,10 +70,16 @@
        APPLY THEME
     ============================================================= */
     function applyTheme(theme) {
-        currentTheme = theme;
-        document.documentElement.setAttribute("data-site-theme", theme);
-        console.log("[VE] Applying theme:", theme);
-    }
+    const body = document.body;
+
+    // Remove all theme classes
+    body.classList.remove("theme-original", "theme-multicam", "theme-patriotic");
+
+    // Add the new theme class
+    body.classList.add(`theme-${theme}`);
+
+    console.log("[VE] Theme applied to body:", `theme-${theme}`);
+}
 
     /* ============================================================
        APPLY EDIT FROM CMS
