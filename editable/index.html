@@ -790,39 +790,55 @@
   <script src="/visual-editor/visual-editor.js" defer></script>
 
   <!-- VE Theme Receiver + Click-to-Edit -->
-  <script>
-    window.addEventListener("message", (event) => {
-      const msg = event.data;
+ <script>
+  window.addEventListener("message", (event) => {
+    const msg = event.data || {};
+    if (!msg.type) return;
 
-      if (msg.type === "set-theme") {
-        document.body.classList.remove(
-          "theme-original",
-          "theme_acu",
-          "theme_patriotic"
-        );
-        document.body.classList.add(`theme-${msg.theme}`);
-      }
+    /* THEME SWITCHING */
+    if (msg.type === "set-theme") {
+      document.body.classList.remove("theme-original", "theme-acu", "theme-patriotic");
+      document.body.classList.add(`theme-${msg.theme}`);
+    }
 
-      if (msg.type === "ve-init") {
-        enableClickToEdit();
-      }
-    });
+    /* INITIALIZE CLICK-TO-EDIT */
+    if (msg.type === "ve-init") {
+      enableClickToEdit();
+    }
 
-    function enableClickToEdit() {
-      document.body.addEventListener("click", (e) => {
-        const target = e.target.closest("[data-ve-edit]");
-        if (!target) return;
+    /* APPLY EDIT FROM CMS POPUP */
+    if (msg.type === "ve-apply-edit") {
+      const target = document.querySelector(`[data-ve-edit="${msg.blockId}"]`);
+      if (target) {
+        target.innerHTML = msg.html;
 
+        // Send updated DOM back to CMS
         window.parent.postMessage(
           {
-            type: "open-editor",
-            blockId: target.getAttribute("data-ve-block-id") || target.getAttribute("data-ve-edit"),
-            html: target.innerHTML
+            type: "dom-updated",
+            html: document.documentElement.outerHTML
           },
           "*"
         );
-      });
+      }
     }
-  </script>
+  });
+
+  function enableClickToEdit() {
+    document.body.addEventListener("click", (e) => {
+      const target = e.target.closest("[data-ve-edit]");
+      if (!target) return;
+
+      window.parent.postMessage(
+        {
+          type: "open-editor",
+          blockId: target.getAttribute("data-ve-edit"),
+          html: target.innerHTML
+        },
+        "*"
+      );
+    });
+  }
+</script>
 </body>
 </html>
