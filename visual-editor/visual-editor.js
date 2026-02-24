@@ -73,7 +73,7 @@
     const body = document.body;
 
     // Remove all theme classes
-    body.classList.remove("theme-original", "theme-multicam", "theme-patriotic");
+    body.classList.remove("theme-original", "theme-acu", "theme-patriotic");
 
     // Add the new theme class
     body.classList.add(`theme-${theme}`);
