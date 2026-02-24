@@ -394,32 +394,74 @@
   </script>
 </head>
 
-<body>
-
+<body data-theme-scope="all">
   <div id="top"></div>
-
-  <!-- HEADER -->
-  <header class="site-header">
+    <!-- HEADER -->
+  <header class="site-header" data-theme-scope="all">
     <div class="header-inner">
-      <a class="brand-mini" href="#top">
-        <img src="/images/mini-logo.png" alt="Valor Wave Entertainment" data-ve-editable="header-logo">
-        <span class="brand-text" data-ve-editable="header-brand-text">Valor Wave Entertainment</span>
+      <a class="brand-mini" href="#top" aria-label="Go to top">
+        <img
+          src="images/mini-logo.png"
+          alt="Valor Wave Entertainment"
+          data-ve-edit="header-logo"
+        />
+        <span class="brand-text" data-ve-edit="header-brand-text">Valor Wave Entertainment</span>
       </a>
 
-      <nav class="header-nav">
-        <a class="nav-link" href="#services" data-ve-editable="nav-services">Services</a>
-        <a class="nav-link" href="#calendar" data-ve-editable="nav-availability">Availability</a>
-        <a class="nav-link" href="#hero-discount" data-ve-editable="nav-hero-discount">Hero Discount</a>
-        <a class="nav-link" href="https://portal.valorwaveentertainment.com/request_information.asp?djidnumber=28542" data-ve-editable="nav-request-quote">Request a Quote</a>
-        <a class="nav-link" href="https://portal.valorwaveentertainment.com/clientlogon.asp?djidnumber=28542" target="_blank" rel="noopener" data-ve-editable="nav-client-portal">Client Portal</a>
+      <nav class="header-nav" aria-label="Primary">
+        <a class="nav-link" href="#services" data-ve-edit="nav-services">Services</a>
+        <a class="nav-link" href="#calendar" data-ve-edit="nav-availability">Availability</a>
+        <a class="nav-link" href="#hero-discount" data-ve-edit="nav-hero-discount">Hero Discount</a>
+        <a class="nav-link" href="https://portal.valorwaveentertainment.com/request_information.asp?djidnumber=28542" data-ve-edit="nav-request-quote">Request a Quote</a>
+        <a
+          class="nav-link"
+          href="https://portal.valorwaveentertainment.com/clientlogon.asp?djidnumber=28542"
+          target="_blank"
+          rel="noopener"
+          data-ve-edit="nav-client-portal"
+        >
+          Client Portal
+        </a>
 
-        <div class="social-links" data-ve-editable="header-social-links">
-          <a href="https://www.facebook.com/valorwaveentertainment" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24">
-<div class="kicker" data-ve-editable="hero-kicker">Faith-Based DJ Services</div>
-      <div class="tagline" data-ve-editable="hero-tagline">Honoring Every Moment • Honoring All Heroes</div>
-      <div class="subline" data-ve-editable="hero-subline">Veteran-owned • Faith-based • Professional DJ services</div>
-      <a class="btn" href="https://portal.valorwaveentertainment.com/request_information.asp?djidnumber=28542" data-ve-editable="hero-cta">Request a Quote</a>
+        <div
+          class="social-links"
+          aria-label="Social links"
+          data-ve-edit="header-social-links"
+        >
+          <a href="https://www.facebook.com/valorwaveentertainment" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+              <path d="M22 12a10 10 0 1 0-11.6 9.9v-7h-2.4V12h2.4V9.8c0-2.4 1.4-3.7 3.6-3.7 1 0 2 .2 2 .2v2.2h-1.1c-1.1 0-1.4.7-1.4 1.4V12h2.5l-.4 2.9h-2.1v7A10 10 0 0 0 22 12z"/>
+            </svg>
+          </a>
+          <a href="https://www.instagram.com/valorwaveentertainment/" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+              <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm6.5-.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z"/>
+            </svg>
+          </a>
+          <a href="https://x.com/ValorwaveEnt" target="_blank" rel="noopener" aria-label="X">
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+              <path d="M18.9 2H22l-7.3 8.3L23 22h-6.7l-5.2-6.7L4.9 22H2l7.8-9L1 2h6.8l4.7 6L18.9 2z"/>
+            </svg>
+          </a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <header class="hero" data-theme-scope="all">
+    <div class="hero-inner">
+      <h1 class="hero-h1" data-ve-edit="hero-h1">Wedding DJ in Chattanooga • Faith-Based Events</h1>
+      <img
+        class="hero-logo"
+        src="logo.png"
+        alt="Valor Wave Entertainment Logo"
+        data-ve-edit="hero-logo"
+      />
+      <div class="kicker" data-ve-edit="hero-kicker">Faith-Based DJ Services</div>
+      <div class="tagline" data-ve-edit="hero-tagline">Honoring Every Moment • Honoring All Heroes</div>
+      <div class="subline" data-ve-edit="hero-subline">Veteran-owned • Faith-based • Professional DJ services</div>
+      <a class="btn" href="https://portal.valorwaveentertainment.com/request_information.asp?djidnumber=28542" data-ve-edit="hero-cta">Request a Quote</a>
     </div>
   </header>
 
