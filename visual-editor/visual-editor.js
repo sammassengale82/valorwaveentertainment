@@ -36,34 +36,47 @@
     }
 
     function applyEdit({ blockId, html, design, settings }) {
-        const el = document.querySelector(`[data-ve-edit="${blockId}"]`);
-        if (!el) return;
+  const el = document.querySelector(`[data-ve-edit="${blockId}"]`);
+  if (!el) return;
 
-        /* CONTENT */
-        el.innerHTML = html;
+  el.innerHTML = html;
 
-        /* DESIGN */
-        if (design) {
-            Object.entries(design).forEach(([key, value]) => {
-                if (value !== "") el.style[key] = value;
-            });
-        }
+  if (design) {
+    Object.entries(design).forEach(([key, value]) => {
+      if (value !== "") el.style[key] = value;
+    });
+  }
 
-        /* SETTINGS */
-        if (settings) {
-            if (settings.id) el.id = settings.id;
-            if (settings.class) el.className = settings.class;
-            if (settings.visibility) el.style.visibility = settings.visibility;
-        }
+  if (settings) {
+    if (settings.id) el.id = settings.id;
+    if (settings.class) el.className = settings.class;
+    if (settings.visibility) el.style.visibility = settings.visibility;
 
-        /* SEND UPDATED DOM BACK */
-        window.parent.postMessage(
-            {
-                type: "dom-updated",
-                html: document.documentElement.outerHTML
-            },
-            "*"
-        );
+    // Button URL
+    if (settings.buttonUrl) {
+      const btn = el.querySelector("a, button");
+      if (btn && btn.tagName === "A") {
+        btn.href = settings.buttonUrl;
+      }
+    }
+
+    // Image fields
+    if (settings.imageSrc || settings.imageAlt) {
+      const img = el.querySelector("img");
+      if (img) {
+        if (settings.imageSrc) img.src = settings.imageSrc;
+        if (settings.imageAlt) img.alt = settings.imageAlt;
+      }
+    }
+  }
+
+  window.parent.postMessage(
+    {
+      type: "dom-updated",
+      html: document.documentElement.outerHTML
+    },
+    "*"
+  );
     }
 
     function insertBlock({ html, position, targetBlockId }) {
