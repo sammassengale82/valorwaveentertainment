@@ -825,19 +825,33 @@
   });
 
   function enableClickToEdit() {
-    document.body.addEventListener("click", (e) => {
-      const target = e.target.closest("[data-ve-edit]");
-      if (!target) return;
+  document.body.addEventListener("click", (e) => {
+    const target = e.target.closest("[data-ve-edit]");
+    if (!target) return;
 
-      window.parent.postMessage(
-        {
-          type: "open-editor",
-          blockId: target.getAttribute("data-ve-edit"),
-          html: target.innerHTML
-        },
-        "*"
-      );
-    });
+    // STOP ALL NAVIGATION + BUBBLING
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    const blockId = target.getAttribute("data-ve-edit");
+
+    // Extract URL if this is a link
+    let url = "";
+    if (target.tagName === "A") {
+      url = target.getAttribute("href") || "";
+    }
+
+    window.parent.postMessage(
+      {
+        type: "open-editor",
+        blockId,
+        html: target.innerHTML,
+        url
+      },
+      "*"
+    );
+  }, true); // <-- capture phase prevents link navigation
   }
 </script>
 </body>
