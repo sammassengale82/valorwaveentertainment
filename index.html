@@ -711,6 +711,16 @@
 
  <script src="https://admin.valorwaveentertainment.com/admin/sections/seo.js"></script>
   <script src="https://admin.valorwaveentertainment.com/cms-render.js" type="module"></script>
+<script>
+fetch("/publish.json")
+  .then(res => res.json())
+  .then(data => {
+    if (data.site_theme) {
+      document.documentElement.setAttribute("data-theme", data.site_theme);
+    }
+  })
+  .catch(err => console.error("Theme load error:", err));
+</script>
 </body>
 </html>
 
