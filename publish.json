@@ -1,0 +1,120 @@
+{
+  "site_theme": "original",
+
+  "hero-h1": "",
+  "hero-logo": "",
+  "hero-kicker": "",
+  "hero-tagline": "",
+  "hero-subline": "",
+  "hero-cta": "",
+  "hero-cta__href": "",
+
+  "nav-services": "",
+  "nav-availability": "",
+  "nav-hero-discount": "",
+  "nav-request-quote": "",
+  "nav-request-quote__href": "",
+  "nav-client-portal": "",
+  "nav-client-portal__href": "",
+
+  "header-logo": "",
+  "header-brand-text": "",
+  "header-social-links": "",
+
+  "services-heading": "",
+
+  "service-card-1-image": "",
+  "service-card-1-title": "",
+  "service-card-1-text": "",
+
+  "service-card-2-image": "",
+  "service-card-2-title": "",
+  "service-card-2-text": "",
+
+  "service-card-3-image": "",
+  "service-card-3-title": "",
+  "service-card-3-text": "",
+
+  "service-card-4-image": "",
+  "service-card-4-title": "",
+  "service-card-4-text": "",
+
+  "service-area-heading": "",
+  "service-area-text": "",
+
+  "bio-heading": "",
+  "bio-image": "",
+  "bio-name": "",
+  "bio-text-1": "",
+  "bio-text-2": "",
+  "bio-text-3": "",
+
+  "wedding-dj-heading": "",
+  "wedding-dj-intro": "",
+
+  "wedding-dj-card-1-title": "",
+  "wedding-dj-card-1-text": "",
+
+  "wedding-dj-card-2-title": "",
+  "wedding-dj-card-2-text": "",
+
+  "wedding-dj-card-3-title": "",
+  "wedding-dj-card-3-text": "",
+
+  "faq-heading": "",
+  "faq-1": "",
+  "faq-2": "",
+  "faq-3": "",
+
+  "brand-meaning-heading": "",
+  "brand-meaning-1": "",
+  "brand-meaning-2": "",
+  "brand-meaning-3": "",
+
+  "hero-discount-heading": "",
+  "hero-discount-subheading": "",
+  "hero-discount-text-1": "",
+  "hero-discount-text-2": "",
+
+  "calendar-heading": "",
+  "calendar-intro": "",
+  "calendar-note": "",
+  "calendar-button": "",
+  "calendar-button__href": "",
+
+  "testimonial-form-heading": "",
+  "testimonial-form-name": "",
+  "testimonial-form-email": "",
+  "testimonial-form-event-type": "",
+  "testimonial-form-date": "",
+  "testimonial-form-message": "",
+  "testimonial-form-permission": "",
+  "testimonial-form-submit": "",
+  "testimonial-form-footer": "",
+
+  "testimonial-heading": "",
+  "testimonial-1-text": "",
+  "testimonial-1-author": "",
+  "testimonial-2-text": "",
+  "testimonial-2-author": "",
+  "testimonial-3-text": "",
+  "testimonial-3-author": "",
+
+  "footer-logo": "",
+  "footer-line-1": "",
+  "footer-line-2": "",
+  "footer-line-3": "",
+  "footer-line-4": "",
+  "footer-social-links": "",
+
+  "meta_title": "",
+  "meta_description": "",
+  "meta_keywords": "",
+  "og_title": "",
+  "og_description": "",
+  "og_image": "",
+
+  "google_analytics_id": "",
+  "google_tag_manager_id": "",
+  "google_site_verification": ""
+}
