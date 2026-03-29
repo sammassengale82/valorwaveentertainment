@@ -1,219 +1,568 @@
 {
-  "theme": "original",
-
+  "theme": "all",
   "seo": {
-    "title": "",
-    "description": "",
+    "title": "Faith-Based DJ Services | Valor Wave Entertainment",
+    "description": "Veteran-owned, faith-based wedding and event DJ in Chattanooga serving Southeast Tennessee and Northwest Georgia. Clean music, professional sound, MC services, lighting, and worry-free planning. Request a quote today.",
     "keywords": "",
-    "ogTitle": "",
-    "ogDescription": "",
-    "ogImage": ""
+    "ogTitle": "Valor Wave Entertainment | Faith-Based • Veteran-Owned DJ",
+    "ogDescription": "Veteran-owned, faith-based DJ service serving Southeast Tennessee & Northwest Georgia. Weddings, church events, corporate & community celebrations. Hero Discounts available.",
+    "ogImage": "https://valorwaveentertainment.com/og-image.jpg"
   },
-
   "analytics": {
-    "googleAnalyticsId": "",
-    "googleTagManagerId": "",
-    "googleSiteVerification": ""
+    "googleAnalyticsId": "G-PPBLPGS51B"
   },
-
-  "header": {
-    "logo": "",
-    "brandText": "",
-    "socialLinks": "",
-    "nav": {
-      "services": "",
-      "availability": "",
-      "heroDiscount": "",
-      "requestQuote": "",
-      "requestQuoteHref": "",
-      "clientPortal": "",
-      "clientPortalHref": ""
-    }
-  },
-
-  "footer": {
-    "logo": "",
-    "line1": "",
-    "line2": "",
-    "line3": "",
-    "line4": "",
-    "socialLinks": ""
-  },
-
   "sections": [
     {
-      "id": "hero",
-      "component": "HeroSection",
+      "id": "header",
+      "type": "HeaderSection",
       "props": {
-        "h1": "",
-        "logo": "",
-        "kicker": "",
-        "tagline": "",
-        "subline": "",
-        "cta": "",
-        "ctaHref": ""
+        "header-logo": {
+          "type": "image",
+          "src": "/image/mini-logo.png",
+          "alt": "Valor Wave Entertainment"
+        },
+        "header-brand-text": {
+          "type": "text",
+          "html": "Valor Wave Entertainment",
+          "text": "Valor Wave Entertainment"
+        },
+        "nav-services": {
+          "type": "link",
+          "href": "#services",
+          "text": "Services"
+        },
+        "nav-availability": {
+          "type": "link",
+          "href": "#calendar",
+          "text": "Availability"
+        },
+        "nav-hero-discount": {
+          "type": "link",
+          "href": "#hero-discount",
+          "text": "Hero Discount"
+        },
+        "nav-request-quote": {
+          "type": "link",
+          "href": "https://portal.valorwaveentertainment.com/request_information.asp?djidnumber=28542",
+          "text": "Request a Quote"
+        },
+        "nav-client-portal": {
+          "type": "link",
+          "href": "https://portal.valorwaveentertainment.com/clientlogon.asp?djidnumber=28542",
+          "text": "Client Portal"
+        },
+        "header-social-links": {
+          "type": "text",
+          "html": "<a href=\"https://www.facebook.com/valorwaveentertainment\" target=\"_blank\" rel=\"noopener\" aria-label=\"Facebook\">\n            <svg viewBox=\"0 0 24 24\" role=\"img\" aria-hidden=\"true\">\n              <path d=\"M22 12a10 10 0 1 0-11.6 9.9v-7h-2.4V12h2.4V9.8c0-2.4 1.4-3.7 3.6-3.7 1 0 2 .2 2 .2v2.2h-1.1c-1.1 0-1.4.7-1.4 1.4V12h2.5l-.4 2.9h-2.1v7A10 10 0 0 0 22 12z\"></path>\n            </svg>\n          </a>\n          <a href=\"https://www.instagram.com/valorwaveentertainment/\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\">\n            <svg viewBox=\"0 0 24 24\" role=\"img\" aria-hidden=\"true\">\n              <path d=\"M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm6.5-.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z\"></path>\n            </svg>\n          </a>\n          <a href=\"https://x.com/ValorwaveEnt\" target=\"_blank\" rel=\"noopener\" aria-label=\"X\">\n            <svg viewBox=\"0 0 24 24\" role=\"img\" aria-hidden=\"true\">\n              <path d=\"M18.9 2H22l-7.3 8.3L23 22h-6.7l-5.2-6.7L4.9 22H2l7.8-9L1 2h6.8l4.7 6L18.9 2z\"></path>\n            </svg>\n          </a>",
+          "text": null
+        }
       }
     },
-
+    {
+      "id": "hero",
+      "type": "HeroSection",
+      "props": {
+        "hero-h1": {
+          "type": "text",
+          "html": "Wedding DJ in Chattanooga • Faith-Based Events",
+          "text": "Wedding DJ in Chattanooga • Faith-Based Events"
+        },
+        "hero-logo": {
+          "type": "image",
+          "src": "/image/logo.png",
+          "alt": "Valor Wave Entertainment Logo"
+        },
+        "hero-kicker": {
+          "type": "text",
+          "html": "Faith-Based DJ Services",
+          "text": "Faith-Based DJ Services"
+        },
+        "hero-tagline": {
+          "type": "text",
+          "html": "Honoring Every Moment • Honoring All Heroes",
+          "text": "Honoring Every Moment • Honoring All Heroes"
+        },
+        "hero-subline": {
+          "type": "text",
+          "html": "Veteran-owned • Faith-based • Professional DJ services",
+          "text": "Veteran-owned • Faith-based • Professional DJ services"
+        },
+        "hero-cta": {
+          "type": "link",
+          "href": "https://portal.valorwaveentertainment.com/request_information.asp?djidnumber=28542",
+          "text": "Request a Quote"
+        }
+      }
+    },
     {
       "id": "services",
-      "component": "ServicesSection",
+      "type": "ServicesSection",
       "props": {
-        "heading": "",
-        "cards": [
-          {
-            "image": "",
-            "title": "",
-            "text": ""
-          },
-          {
-            "image": "",
-            "title": "",
-            "text": ""
-          },
-          {
-            "image": "",
-            "title": "",
-            "text": ""
-          },
-          {
-            "image": "",
-            "title": "",
-            "text": ""
-          }
-        ]
+        "services-heading": {
+          "type": "text",
+          "html": "Services",
+          "text": "Services"
+        },
+        "service-card-1": {
+          "type": "text",
+          "html": "<img src=\"images/service-wedding.jpg\" alt=\"Wedding DJ Services\" data-ve-edit=\"service-card-1-image\">\n        <div class=\"card-body\">\n          <h3 data-ve-edit=\"service-card-1-title\">Wedding DJ Services</h3>\n          <p data-ve-edit=\"service-card-1-text\">\n            Professional, faith-respectful wedding DJ services with clean music, structured timelines, and stress-free coordination.\n          </p>\n        </div>",
+          "text": "Wedding DJ Services\n          \n            Professional, faith-respectful wedding DJ services with clean music, structured timelines, and stress-free coordination."
+        },
+        "service-card-1-image": {
+          "type": "image",
+          "src": "/image/service-wedding.jpg",
+          "alt": "Wedding DJ Services"
+        },
+        "service-card-1-title": {
+          "type": "text",
+          "html": "Wedding DJ Services",
+          "text": "Wedding DJ Services"
+        },
+        "service-card-1-text": {
+          "type": "text",
+          "html": "Professional, faith-respectful wedding DJ services with clean music, structured timelines, and stress-free coordination.",
+          "text": "Professional, faith-respectful wedding DJ services with clean music, structured timelines, and stress-free coordination."
+        },
+        "service-card-2": {
+          "type": "text",
+          "html": "<img src=\"images/service-dj-mc.jpg\" alt=\"DJ and MC Services\" data-ve-edit=\"service-card-2-image\">\n        <div class=\"card-body\">\n          <h3 data-ve-edit=\"service-card-2-title\">DJ &amp; MC Services</h3>\n          <p data-ve-edit=\"service-card-2-text\">\n            Confident MC presence, clear communication, and modern music tailored to your values and your guests.\n          </p>\n        </div>",
+          "text": "DJ & MC Services\n          \n            Confident MC presence, clear communication, and modern music tailored to your values and your guests."
+        },
+        "service-card-2-image": {
+          "type": "image",
+          "src": "/image/service-dj-mc.jpg",
+          "alt": "DJ and MC Services"
+        },
+        "service-card-2-title": {
+          "type": "text",
+          "html": "DJ &amp; MC Services",
+          "text": "DJ & MC Services"
+        },
+        "service-card-2-text": {
+          "type": "text",
+          "html": "Confident MC presence, clear communication, and modern music tailored to your values and your guests.",
+          "text": "Confident MC presence, clear communication, and modern music tailored to your values and your guests."
+        },
+        "service-card-3": {
+          "type": "text",
+          "html": "<img src=\"images/service-sound-lighting.jpg\" alt=\"Sound and Lighting\" data-ve-edit=\"service-card-3-image\">\n        <div class=\"card-body\">\n          <h3 data-ve-edit=\"service-card-3-title\">Sound &amp; Lighting</h3>\n          <p data-ve-edit=\"service-card-3-text\">\n            High-quality audio and tasteful lighting designed to enhance your event without overwhelming it.\n          </p>\n        </div>",
+          "text": "Sound & Lighting\n          \n            High-quality audio and tasteful lighting designed to enhance your event without overwhelming it."
+        },
+        "service-card-3-image": {
+          "type": "image",
+          "src": "/image/service-sound-lighting.jpg",
+          "alt": "Sound and Lighting"
+        },
+        "service-card-3-title": {
+          "type": "text",
+          "html": "Sound &amp; Lighting",
+          "text": "Sound & Lighting"
+        },
+        "service-card-3-text": {
+          "type": "text",
+          "html": "High-quality audio and tasteful lighting designed to enhance your event without overwhelming it.",
+          "text": "High-quality audio and tasteful lighting designed to enhance your event without overwhelming it."
+        },
+        "service-card-4": {
+          "type": "text",
+          "html": "<img src=\"images/service-corporate.jpg\" alt=\"Corporate and Community Events\" data-ve-edit=\"service-card-4-image\">\n        <div class=\"card-body\">\n          <h3 data-ve-edit=\"service-card-4-title\">Corporate &amp; Community Events</h3>\n          <p data-ve-edit=\"service-card-4-text\">\n            Reliable, positive entertainment for corporate gatherings, churches, and community celebrations.\n          </p>\n        </div>",
+          "text": "Corporate & Community Events\n          \n            Reliable, positive entertainment for corporate gatherings, churches, and community celebrations."
+        },
+        "service-card-4-image": {
+          "type": "image",
+          "src": "/image/service-corporate.jpg",
+          "alt": "Corporate and Community Events"
+        },
+        "service-card-4-title": {
+          "type": "text",
+          "html": "Corporate &amp; Community Events",
+          "text": "Corporate & Community Events"
+        },
+        "service-card-4-text": {
+          "type": "text",
+          "html": "Reliable, positive entertainment for corporate gatherings, churches, and community celebrations.",
+          "text": "Reliable, positive entertainment for corporate gatherings, churches, and community celebrations."
+        },
+        "service-card-5": {
+          "type": "text",
+          "html": "<img src=\"images/karaoke.jpg\" alt=\"Karaoke DJ Services\" data-ve-edit=\"service-card-5-image\">\n        <div class=\"card-body\">\n          <h3 data-ve-edit=\"service-card-5-title\">Karaoke DJ Services</h3>\n          <p data-ve-edit=\"service-card-5-text\">\n            Turn any event into an unforgettable experience with our high‑quality karaoke setup, clean current music library, and professional hosting.\n          </p>\n        </div>",
+          "text": "Karaoke DJ Services\n          \n            Turn any event into an unforgettable experience with our high‑quality karaoke setup, clean current music library, and professional hosting."
+        },
+        "service-card-5-image": {
+          "type": "image",
+          "src": "/image/karaoke.jpg",
+          "alt": "Karaoke DJ Services"
+        },
+        "service-card-5-title": {
+          "type": "text",
+          "html": "Karaoke DJ Services",
+          "text": "Karaoke DJ Services"
+        },
+        "service-card-5-text": {
+          "type": "text",
+          "html": "Turn any event into an unforgettable experience with our high‑quality karaoke setup, clean current music library, and professional hosting.",
+          "text": "Turn any event into an unforgettable experience with our high‑quality karaoke setup, clean current music library, and professional hosting."
+        }
       }
     },
-
     {
       "id": "service-area",
-      "component": "ServiceAreaSection",
+      "type": "ServiceAreaSection",
       "props": {
-        "heading": "",
-        "text": ""
+        "service-area-heading": {
+          "type": "text",
+          "html": "Serving Your Area",
+          "text": "Serving Your Area"
+        },
+        "service-area-text": {
+          "type": "text",
+          "html": "Valor Wave Entertainment proudly serves weddings and events throughout <strong>Southeast Tennessee</strong>, including Chattanooga and Cleveland,\n      as well as <strong>Northwest Georgia</strong> communities such as Dalton, Ringgold, and Fort Oglethorpe. Travel outside these areas may be available upon request.",
+          "text": "Valor Wave Entertainment proudly serves weddings and events throughout Southeast Tennessee, including Chattanooga and Cleveland,\n      as well as Northwest Georgia communities such as Dalton, Ringgold, and Fort Oglethorpe. Travel outside these areas may be available upon request."
+        }
       }
     },
-
     {
       "id": "bio",
-      "component": "BioSection",
+      "type": "BioSection",
       "props": {
-        "heading": "",
-        "image": "",
-        "name": "",
-        "text1": "",
-        "text2": "",
-        "text3": ""
+        "bio-heading": {
+          "type": "text",
+          "html": "Meet the DJ",
+          "text": "Meet the DJ"
+        },
+        "bio-image": {
+          "type": "image",
+          "src": "/image/dj-portrait-sam.jpg",
+          "alt": "Sam Massengale - Founder & DJ"
+        },
+        "bio-name": {
+          "type": "text",
+          "html": "Sam Massengale – Founder &amp; DJ",
+          "text": "Sam Massengale – Founder & DJ"
+        },
+        "bio-text-1": {
+          "type": "text",
+          "html": "Hello! My name is <strong>Sam Massengale</strong>, and I’ve proudly called Chattanooga home my entire life. I served over 12 years in the\n        <strong>United States Army</strong> and hold a <strong>Master’s Degree from Belhaven University</strong>. I am blessed with a wonderful wife and four amazing boys.",
+          "text": "Hello! My name is Sam Massengale, and I’ve proudly called Chattanooga home my entire life. I served over 12 years in the\n        United States Army and hold a Master’s Degree from Belhaven University. I am blessed with a wonderful wife and four amazing boys."
+        },
+        "bio-text-2": {
+          "type": "text",
+          "html": "Alongside my wife, I decided it was time to turn our passion for <strong>music and singing</strong> into something special — and that’s how\n        <strong>Valor Wave Entertainment</strong> was born. With over 12 years of DJ experience across weddings, corporate events, and community celebrations, I bring\n        professionalism, creativity, and heart to every event.",
+          "text": "Alongside my wife, I decided it was time to turn our passion for music and singing into something special — and that’s how\n        Valor Wave Entertainment was born. With over 12 years of DJ experience across weddings, corporate events, and community celebrations, I bring\n        professionalism, creativity, and heart to every event."
+        },
+        "bio-text-3": {
+          "type": "text",
+          "html": "Guided by our loving Father and Jesus Christ, our mission is simple: to provide a <strong>worry-free, faith-based, unforgettable experience</strong>.\n        We look forward to honoring every moment — and all heroes — while creating memories that last a lifetime.",
+          "text": "Guided by our loving Father and Jesus Christ, our mission is simple: to provide a worry-free, faith-based, unforgettable experience.\n        We look forward to honoring every moment — and all heroes — while creating memories that last a lifetime."
+        }
       }
     },
-
     {
       "id": "wedding-dj",
-      "component": "WeddingDJSection",
+      "type": "WeddingDJSection",
       "props": {
-        "heading": "",
-        "intro": "",
-        "cards": [
-          {
-            "title": "",
-            "text": ""
-          },
-          {
-            "title": "",
-            "text": ""
-          },
-          {
-            "title": "",
-            "text": ""
-          }
-        ]
+        "wedding-dj-heading": {
+          "type": "text",
+          "html": "Wedding DJ Chattanooga",
+          "text": "Wedding DJ Chattanooga"
+        },
+        "wedding-dj-intro": {
+          "type": "text",
+          "html": "Looking for a <strong>wedding DJ in Chattanooga</strong> who brings modern energy with faith-based values? Valor Wave Entertainment provides DJ + MC services,\n    sound, and lighting for weddings and events across <strong>Southeast Tennessee</strong> and <strong>Northwest Georgia</strong>.\n    We focus on clear communication, clean music options, and a smooth, stress-free experience from ceremony to last dance.",
+          "text": "Looking for a wedding DJ in Chattanooga who brings modern energy with faith-based values? Valor Wave Entertainment provides DJ + MC services,\n    sound, and lighting for weddings and events across Southeast Tennessee and Northwest Georgia.\n    We focus on clear communication, clean music options, and a smooth, stress-free experience from ceremony to last dance."
+        },
+        "wedding-dj-card-1": {
+          "type": "text",
+          "html": "<div class=\"card-body\">\n        <h3 data-ve-edit=\"wedding-dj-card-1-title\">What you get</h3>\n        <p data-ve-edit=\"wedding-dj-card-1-text\">\n          Professional planning, timeline support, reliable equipment, and a confident MC—so your day stays on track.\n        </p>\n      </div>",
+          "text": "What you get\n        \n          Professional planning, timeline support, reliable equipment, and a confident MC—so your day stays on track."
+        },
+        "wedding-dj-card-1-title": {
+          "type": "text",
+          "html": "What you get",
+          "text": "What you get"
+        },
+        "wedding-dj-card-1-text": {
+          "type": "text",
+          "html": "Professional planning, timeline support, reliable equipment, and a confident MC—so your day stays on track.",
+          "text": "Professional planning, timeline support, reliable equipment, and a confident MC—so your day stays on track."
+        },
+        "wedding-dj-card-2": {
+          "type": "text",
+          "html": "<div class=\"card-body\">\n        <h3 data-ve-edit=\"wedding-dj-card-2-title\">Where we serve</h3>\n        <p data-ve-edit=\"wedding-dj-card-2-text\">\n          Chattanooga, Cleveland, Hixson, and nearby communities—plus Northwest GA including Ringgold, Fort Oglethorpe, and Dalton.\n        </p>\n      </div>",
+          "text": "Where we serve\n        \n          Chattanooga, Cleveland, Hixson, and nearby communities—plus Northwest GA including Ringgold, Fort Oglethorpe, and Dalton."
+        },
+        "wedding-dj-card-2-title": {
+          "type": "text",
+          "html": "Where we serve",
+          "text": "Where we serve"
+        },
+        "wedding-dj-card-2-text": {
+          "type": "text",
+          "html": "Chattanooga, Cleveland, Hixson, and nearby communities—plus Northwest GA including Ringgold, Fort Oglethorpe, and Dalton.",
+          "text": "Chattanooga, Cleveland, Hixson, and nearby communities—plus Northwest GA including Ringgold, Fort Oglethorpe, and Dalton."
+        },
+        "wedding-dj-card-3": {
+          "type": "text",
+          "html": "<div class=\"card-body\">\n        <h3 data-ve-edit=\"wedding-dj-card-3-title\">Faith-based option</h3>\n        <p data-ve-edit=\"wedding-dj-card-3-text\">\n          We can tailor music to your preferences and venue guidelines while keeping the atmosphere fun and welcoming.\n        </p>\n      </div>",
+          "text": "Faith-based option\n        \n          We can tailor music to your preferences and venue guidelines while keeping the atmosphere fun and welcoming."
+        },
+        "wedding-dj-card-3-title": {
+          "type": "text",
+          "html": "Faith-based option",
+          "text": "Faith-based option"
+        },
+        "wedding-dj-card-3-text": {
+          "type": "text",
+          "html": "We can tailor music to your preferences and venue guidelines while keeping the atmosphere fun and welcoming.",
+          "text": "We can tailor music to your preferences and venue guidelines while keeping the atmosphere fun and welcoming."
+        }
       }
     },
-
     {
       "id": "faq",
-      "component": "FAQSection",
+      "type": "FAQSection",
       "props": {
-        "heading": "",
-        "items": [
-          "",
-          "",
-          ""
-        ]
+        "faq-heading": {
+          "type": "text",
+          "html": "FAQ",
+          "text": "FAQ"
+        },
+        "faq-1": {
+          "type": "text",
+          "html": "<strong>How far in advance should we book?</strong><br>\n      For peak wedding season, we recommend reaching out as early as possible to secure your date.",
+          "text": "How far in advance should we book?\n      For peak wedding season, we recommend reaching out as early as possible to secure your date."
+        },
+        "faq-2": {
+          "type": "text",
+          "html": "<strong>Do you travel outside Chattanooga?</strong><br>\n      Yes—Southeast Tennessee and Northwest Georgia are our core service areas, and extended travel is available upon request.",
+          "text": "Do you travel outside Chattanooga?\n      Yes—Southeast Tennessee and Northwest Georgia are our core service areas, and extended travel is available upon request."
+        },
+        "faq-3": {
+          "type": "text",
+          "html": "<strong>Can you keep music clean/family-friendly?</strong><br>\n      Absolutely. We can customize playlists to match your values and your guest list.",
+          "text": "Can you keep music clean/family-friendly?\n      Absolutely. We can customize playlists to match your values and your guest list."
+        }
       }
     },
-
     {
       "id": "brand-meaning",
-      "component": "BrandMeaningSection",
+      "type": "BrandMeaningSection",
       "props": {
-        "heading": "",
-        "points": [
-          "",
-          "",
-          ""
-        ]
+        "brand-meaning-heading": {
+          "type": "text",
+          "html": "The Meaning Behind Valor Wave Entertainment",
+          "text": "The Meaning Behind Valor Wave Entertainment"
+        },
+        "brand-meaning-1": {
+          "type": "text",
+          "html": "<strong>Valor Wave Entertainment</strong> represents the powerful blend of <strong>honor, service, and celebration</strong>.\n        <em>Valor</em> reflects courage, sacrifice, and respect for those who serve — our military, veterans, first responders,\n        healthcare workers, educators, and everyday heroes in our communities.",
+          "text": "Valor Wave Entertainment represents the powerful blend of honor, service, and celebration.\n        Valor reflects courage, sacrifice, and respect for those who serve — our military, veterans, first responders,\n        healthcare workers, educators, and everyday heroes in our communities."
+        },
+        "brand-meaning-2": {
+          "type": "text",
+          "html": "The word <em>Wave</em> symbolizes movement, energy, and the moments that bring people together.\n        Just like a wave, music carries emotion, creates connection, and leaves a lasting impact long after the event ends.",
+          "text": "The word Wave symbolizes movement, energy, and the moments that bring people together.\n        Just like a wave, music carries emotion, creates connection, and leaves a lasting impact long after the event ends."
+        },
+        "brand-meaning-3": {
+          "type": "text",
+          "html": "Together, <strong>Valor Wave Entertainment</strong> stands for honoring what matters most while creating unforgettable,\n        joy-filled experiences — all delivered with professionalism, integrity, and faith-based values.",
+          "text": "Together, Valor Wave Entertainment stands for honoring what matters most while creating unforgettable,\n        joy-filled experiences — all delivered with professionalism, integrity, and faith-based values."
+        }
       }
     },
-
     {
       "id": "hero-discount",
-      "component": "HeroDiscountSection",
+      "type": "HeroDiscountSection",
       "props": {
-        "heading": "",
-        "subheading": "",
-        "text1": "",
-        "text2": ""
+        "hero-discount-heading": {
+          "type": "text",
+          "html": "Hero Discount",
+          "text": "Hero Discount"
+        },
+        "hero-discount-subheading": {
+          "type": "text",
+          "html": "We Honor All Heroes",
+          "text": "We Honor All Heroes"
+        },
+        "hero-discount-text-1": {
+          "type": "text",
+          "html": "We proudly offer a <strong>Hero Discount</strong> for <strong>active-duty military, veterans, first responders, healthcare workers, and teachers</strong>.\n        Mention it in your quote request and we’ll apply it to qualifying events.",
+          "text": "We proudly offer a Hero Discount for active-duty military, veterans, first responders, healthcare workers, and teachers.\n        Mention it in your quote request and we’ll apply it to qualifying events."
+        },
+        "hero-discount-text-2": {
+          "type": "text",
+          "html": "Proof of service may be requested. Discount amount varies by package and date availability.",
+          "text": "Proof of service may be requested. Discount amount varies by package and date availability."
+        }
       }
     },
-
     {
       "id": "calendar",
-      "component": "CalendarSection",
+      "type": "CalendarSection",
       "props": {
-        "heading": "",
-        "intro": "",
-        "note": "",
-        "button": "",
-        "buttonHref": ""
+        "calendar-heading": {
+          "type": "text",
+          "html": "Availability Calendar",
+          "text": "Availability Calendar"
+        },
+        "calendar-intro": {
+          "type": "text",
+          "html": "View our availability and request your date. If you don’t see your date listed, submit a quote request and we’ll confirm promptly.",
+          "text": "View our availability and request your date. If you don’t see your date listed, submit a quote request and we’ll confirm promptly."
+        },
+        "calendar-note": {
+          "type": "text",
+          "html": "Note: For this calendar to display, the Valor Wave Entertainment Google Calendar must be shared publicly (or shared with anyone who has the link).",
+          "text": "Note: For this calendar to display, the Valor Wave Entertainment Google Calendar must be shared publicly (or shared with anyone who has the link)."
+        },
+        "calendar-button": {
+          "type": "link",
+          "href": "https://calendar.app.google/9MS5C8rhqfmR3aqM7",
+          "text": "Open Calendar"
+        }
       }
     },
-
     {
-      "id": "testimonial-form",
-      "component": "TestimonialFormSection",
+      "id": "submit-testimonial",
+      "type": "TestimonialFormSection",
       "props": {
-        "heading": "",
-        "nameLabel": "",
-        "emailLabel": "",
-        "eventTypeLabel": "",
-        "dateLabel": "",
-        "messageLabel": "",
-        "permissionLabel": "",
-        "submitLabel": "",
-        "footerText": ""
+        "testimonial-form-heading": {
+          "type": "text",
+          "html": "Submit a Testimonial",
+          "text": "Submit a Testimonial"
+        },
+        "testimonial-form-name": {
+          "type": "text",
+          "html": "",
+          "text": null
+        },
+        "testimonial-form-email": {
+          "type": "text",
+          "html": "",
+          "text": null
+        },
+        "testimonial-form-event-type": {
+          "type": "text",
+          "html": "",
+          "text": null
+        },
+        "testimonial-form-date": {
+          "type": "text",
+          "html": "",
+          "text": null
+        },
+        "testimonial-form-message": {
+          "type": "text",
+          "html": "",
+          "text": null
+        },
+        "testimonial-form-permission": {
+          "type": "text",
+          "html": "<input type=\"checkbox\" name=\"permission\" value=\"Yes\" required=\"\">\n        I give Valor Wave Entertainment permission to use my testimonial on the website.",
+          "text": "I give Valor Wave Entertainment permission to use my testimonial on the website."
+        },
+        "testimonial-form-submit": {
+          "type": "text",
+          "html": "Send Testimonial",
+          "text": "Send Testimonial"
+        },
+        "testimonial-form-footer": {
+          "type": "text",
+          "html": "Thank you—your feedback helps future couples and clients book with confidence.",
+          "text": "Thank you—your feedback helps future couples and clients book with confidence."
+        }
       }
     },
-
     {
-      "id": "testimonials",
-      "component": "TestimonialsSection",
+      "id": "testimonial-scroll",
+      "type": "TestimonialScrollSection",
       "props": {
-        "heading": "",
-        "items": [
-          {
-            "text": "",
-            "author": ""
-          },
-          {
-            "text": "",
-            "author": ""
-          },
-          {
-            "text": "",
-            "author": ""
-          }
-        ]
+        "testimonial-heading": {
+          "type": "text",
+          "html": "What Our Clients Say",
+          "text": "What Our Clients Say"
+        },
+        "testimonial-1": {
+          "type": "text",
+          "html": "<div class=\"card-body\">\n        <p data-ve-edit=\"testimonial-1-text\">\n          \"Valor Wave Entertainment made our wedding absolutely perfect. Professional, faith-centered, and fun!\"\n        </p>\n        <strong data-ve-edit=\"testimonial-1-author\">- Sarah M.</strong>\n      </div>",
+          "text": "\"Valor Wave Entertainment made our wedding absolutely perfect. Professional, faith-centered, and fun!\"\n        \n        - Sarah M."
+        },
+        "testimonial-1-text": {
+          "type": "text",
+          "html": "\"Valor Wave Entertainment made our wedding absolutely perfect. Professional, faith-centered, and fun!\"",
+          "text": "\"Valor Wave Entertainment made our wedding absolutely perfect. Professional, faith-centered, and fun!\""
+        },
+        "testimonial-1-author": {
+          "type": "text",
+          "html": "- Sarah M.",
+          "text": "- Sarah M."
+        },
+        "testimonial-2": {
+          "type": "text",
+          "html": "<div class=\"card-body\">\n        <p data-ve-edit=\"testimonial-2-text\">\n          \"Sam was incredible. From ceremony to reception, everything was smooth and stress-free.\"\n        </p>\n        <strong data-ve-edit=\"testimonial-2-author\">- James &amp; Emily</strong>\n      </div>",
+          "text": "\"Sam was incredible. From ceremony to reception, everything was smooth and stress-free.\"\n        \n        - James & Emily"
+        },
+        "testimonial-2-text": {
+          "type": "text",
+          "html": "\"Sam was incredible. From ceremony to reception, everything was smooth and stress-free.\"",
+          "text": "\"Sam was incredible. From ceremony to reception, everything was smooth and stress-free.\""
+        },
+        "testimonial-2-author": {
+          "type": "text",
+          "html": "- James &amp; Emily",
+          "text": "- James & Emily"
+        },
+        "testimonial-3": {
+          "type": "text",
+          "html": "<div class=\"card-body\">\n        <p data-ve-edit=\"testimonial-3-text\">\n          \"Highly recommend for church and community events. Clean music and great energy.\"\n        </p>\n        <strong data-ve-edit=\"testimonial-3-author\">- Pastor David R.</strong>\n      </div>",
+          "text": "\"Highly recommend for church and community events. Clean music and great energy.\"\n        \n        - Pastor David R."
+        },
+        "testimonial-3-text": {
+          "type": "text",
+          "html": "\"Highly recommend for church and community events. Clean music and great energy.\"",
+          "text": "\"Highly recommend for church and community events. Clean music and great energy.\""
+        },
+        "testimonial-3-author": {
+          "type": "text",
+          "html": "- Pastor David R.",
+          "text": "- Pastor David R."
+        }
+      }
+    },
+    {
+      "id": "footer",
+      "type": "FooterSection",
+      "props": {
+        "footer-logo": {
+          "type": "image",
+          "src": "/image/logo.png",
+          "alt": "Valor Wave Entertainment Logo"
+        },
+        "footer-line-1": {
+          "type": "text",
+          "html": "© 2026 Valor Wave Entertainment",
+          "text": "© 2026 Valor Wave Entertainment"
+        },
+        "footer-line-2": {
+          "type": "text",
+          "html": "Faith-Based Wedding &amp; Event DJ | Southeast TN &amp; Northwest GA",
+          "text": "Faith-Based Wedding & Event DJ | Southeast TN & Northwest GA"
+        },
+        "footer-line-3": {
+          "type": "text",
+          "html": "Phone: (423) 680-2700 • Email:\n      <a href=\"mailto:valorwaveentertainment@gmail.com\">valorwaveentertainment@gmail.com</a>",
+          "text": "Phone: (423) 680-2700 • Email:\n      valorwaveentertainment@gmail.com"
+        },
+        "footer-line-4": {
+          "type": "text",
+          "html": "Address: 5424 School Dr, Hixson, TN 37343",
+          "text": "Address: 5424 School Dr, Hixson, TN 37343"
+        },
+        "footer-social-links": {
+          "type": "text",
+          "html": "<a href=\"https://www.facebook.com/valorwaveentertainment\" target=\"_blank\" rel=\"noopener\" aria-label=\"Facebook\">\n        <svg viewBox=\"0 0 24 24\" role=\"img\" aria-hidden=\"true\">\n          <path d=\"M22 12a10 10 0 1 0-11.6 9.9v-7h-2.4V12h2.4V9.8c0-2.4 1.4-3.7 3.6-3.7 1 0 2 .2 2 .2v2.2h-1.1c-1.1 0-1.4.7-1.4 1.4V12h2.5l-.4 2.9h-2.1v7A10 10 0 0 0 22 12z\"></path>\n        </svg>\n      </a>\n      <a href=\"https://www.instagram.com/valorwaveentertainment/\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\">\n        <svg viewBox=\"0 0 24 24\" role=\"img\" aria-hidden=\"true\">\n          <path d=\"M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm6.5-.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z\"></path>\n        </svg>\n      </a>\n      <a href=\"https://x.com/ValorwaveEnt\" target=\"_blank\" rel=\"noopener\" aria-label=\"X\">\n        <svg viewBox=\"0 0 24 24\" role=\"img\" aria-hidden=\"true\">\n          <path d=\"M18.9 2H22l-7.3 8.3L23 22h-6.7l-5.2-6.7L4.9 22H2l7.8-9L1 2h6.8l4.7 6L18.9 2z\"></path>\n        </svg>\n      </a>",
+          "text": null
+        }
       }
     }
   ]
